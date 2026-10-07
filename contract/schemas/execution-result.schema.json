@@ -1,0 +1,41 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://essential-os.dev/contract/execution-result.schema.json",
+  "title": "ExecutionResult",
+  "description": "The structured outcome of an action. 'success' means the executor accepted and performed the action, not that the intended end state was observed.",
+  "type": "object",
+  "required": ["status"],
+  "additionalProperties": false,
+  "properties": {
+    "status": {
+      "type": "string",
+      "enum": ["success", "failed", "blocked", "cancelled", "unknown"]
+    },
+    "entities": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "type", "name"],
+        "additionalProperties": false,
+        "properties": {
+          "id": { "type": "string" },
+          "type": { "type": "string" },
+          "name": { "type": "string" },
+          "source": { "type": "string" },
+          "metadata": { "type": "object" }
+        }
+      }
+    },
+    "output": {
+      "type": "string",
+      "description": "Human-readable detail. Never the only source of truth."
+    },
+    "error": {
+      "type": "string",
+      "description": "The cause, if any. Must not contain user text, file paths or arguments."
+    },
+    "metadata": {
+      "type": "object"
+    }
+  }
+}

@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 150" role="img" aria-label="Essential OS">
+  <title>Essential OS</title>
+  <desc>The Essential OS wordmark. A double integral replaces the two s characters in "Essential".</desc>
+  <!-- The wordmark is set in currentColor so it works on dark and light. -->
+  <g fill="currentColor">
+    <!-- Surrounding type: thin grotesque, wide tracking. -->
+    <text x="24" y="100"
+          font-family="Inter, 'Helvetica Neue', Helvetica, Arial, sans-serif"
+          font-size="86" font-weight="300" letter-spacing="10">E</text>
+    <!-- The anchor: a double integral in a contrasting serif, set larger. -->
+    <text x="96" y="102"
+          font-family="Georgia, 'Times New Roman', 'DejaVu Serif', serif"
+          font-size="104" font-weight="400">&#x222C;</text>
+    <text x="176" y="100"
+          font-family="Inter, 'Helvetica Neue', Helvetica, Arial, sans-serif"
+          font-size="86" font-weight="300" letter-spacing="10">ENTIAL</text>
+    <text x="596" y="100"
+          font-family="Inter, 'Helvetica Neue', Helvetica, Arial, sans-serif"
+          font-size="86" font-weight="300" letter-spacing="10">OS</text>
+  </g>
+</svg>

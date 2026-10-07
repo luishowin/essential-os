@@ -1,0 +1,47 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://essential-os.dev/contract/capability.schema.json",
+  "title": "Capability",
+  "description": "An operation the system is willing to perform, with a contract the runtime can validate. The model sees capabilities, never implementation details.",
+  "type": "object",
+  "required": ["id", "description", "input", "permission", "confirmation", "executor"],
+  "additionalProperties": false,
+  "properties": {
+    "id": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9_]*(\\.[a-z][a-z0-9_]*)+$"
+    },
+    "description": {
+      "type": "string",
+      "minLength": 8
+    },
+    "input": {
+      "type": "object",
+      "description": "A map of argument name to a type descriptor."
+    },
+    "output": {
+      "type": "object",
+      "description": "A map of result name to a type descriptor."
+    },
+    "permission": {
+      "type": "string",
+      "description": "What the capability may do to the machine.",
+      "enum": ["read", "low_risk", "execute", "destructive", "privileged"]
+    },
+    "confirmation": {
+      "type": "string",
+      "description": "Whether the capability asks before running.",
+      "enum": ["never", "when_ambiguous", "always"]
+    },
+    "context_requirements": {
+      "type": "array",
+      "description": "Context fields this capability needs to be resolvable.",
+      "items": { "type": "string" }
+    },
+    "executor": {
+      "type": "string",
+      "description": "Where the side effect happens. Only the runtime chooses an executor; the model never does.",
+      "enum": ["os", "panel", "network", "microphone", "model"]
+    }
+  }
+}

@@ -1,0 +1,19 @@
+# OS noise
+.DS_Store
+Thumbs.db
+*.swp
+*~
+
+# Editor / tooling
+.idea/
+.vscode/
+node_modules/
+
+# Build output
+dist/
+build/
+target/
+
+# Local scratch
+/tmp/
+*.local.md

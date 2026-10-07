@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Essential OS — a personal computing system toward 2030</title>
+  <meta name="description" content="Essential OS is a personal computing system being built toward 2030: a modular ultrabook, a Linux-based operating system assembled from proven components, and Ida, an intelligent system layer." />
+  <meta name="color-scheme" content="dark light" />
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='0.9em' font-size='90'%3E%E2%88%AC%3C/text%3E%3C/svg%3E" />
+</head>
+<body>
+  <a class="skip" href="#main">Skip to content</a>
+
+  <header class="topbar">
+    <a class="brand" href="#top" aria-label="Essential OS">
+      <span class="brand__word">E<span class="brand__int">&#x222C;</span>ENTIAL&nbsp;OS</span>
+    </a>
+    <button id="theme" class="theme" type="button" aria-label="Switch theme">
+      <span data-theme-label>Light</span>
+    </button>
+  </header>
+
+  <main id="main">
+    <!-- ── Hero ─────────────────────────────────────────────────────── -->
+    <section id="top" class="hero">
+      <p class="eyebrow">A personal computing system I'm building toward 2030.</p>
+      <h1 class="hero__mark">E<span class="serif">&#x222C;</span>ENTIAL OS</h1>
+      <p class="hero__modes">EXPLORATION.&nbsp;&nbsp;CREATION.&nbsp;&nbsp;PLAY.</p>
+      <p class="lede">
+        Essential OS combines a modular personal computer, a Linux-based
+        operating system assembled from proven open-source components, and an
+        intelligent system layer called Ida&nbsp;<span class="serif">&lt;&#x222B;&gt;</span>
+        that decides where computation belongs.
+      </p>
+      <p class="hero__note">This is a project journal, not a product page. Everything below is labelled honestly — what exists, what is being explored, what is planned, and what is speculative.</p>
+    </section>
+
+    <!-- ── Inspiration ──────────────────────────────────────────────── -->
+    <section class="block" aria-labelledby="inspiration">
+      <h2 id="inspiration">Why this exists</h2>
+      <p>
+        This project was inspired partly by watching modern platform companies
+        move toward <em>system-level</em> intelligence — an orchestrator that
+        reasons about a request, retrieves context, selects structured system
+        and app actions, and lets the operating system execute them — rather than
+        putting a chatbot inside an application.
+      </p>
+      <p class="pull">What happens when the computer itself becomes the interface to intelligence?</p>
+      <p>
+        Alongside that, there is a real frustration with the current state of
+        personal computing: expensive proprietary software, subscription
+        dependency, vendor lock-in, opaque AI systems, cloud dependence, and
+        software that increasingly assumes access to personal data.
+      </p>
+      <p>
+        The response is not to build everything from scratch, and it is not to
+        design around resentment. It is to
+        <strong>build what can reasonably be owned</strong>, and to assemble the
+        rest from components that are already excellent.
+      </p>
+    </section>
+
+    <!-- ── Vision ───────────────────────────────────────────────────── -->
+    <section class="block" aria-labelledby="vision">
+      <h2 id="vision">The vision</h2>
+      <div class="layers" role="list">
+        <article class="layer" role="listitem">
+          <h3>SLATE</h3>
+          <p class="layer__sub">The hardware</p>
+          <p>An extremely light, thin, modular ultrabook — 999&nbsp;g, no more than 13 inches. <em>Simple at rest, powerful on demand.</em></p>
+          <p class="tag tag--spec">Speculative</p>
+        </article>
+        <div class="layer__arrow" aria-hidden="true">&#x2193;</div>
+        <article class="layer" role="listitem">
+          <h3>Essential&nbsp;OS</h3>
+          <p class="layer__sub">The substrate</p>
+          <p>A coherent, Linux-based operating system assembled from proven components, with our own UX and system services on top.</p>
+          <p class="tag tag--proto">Prototype / research</p>
+        </article>
+        <div class="layer__arrow" aria-hidden="true">&#x2193;</div>
+        <article class="layer" role="listitem">
+          <h3><span class="serif">&lt;&#x222B;&gt;</span> Ida</h3>
+          <p class="layer__sub">The intelligence</p>
+          <p>A launcher that becomes an operating-system agent: it understands intent, resolves context, selects capabilities, acts, and verifies.</p>
+          <p class="tag tag--impl">Core implemented</p>
+        </article>
+      </div>
+    </section>
+
+    <!-- ── Ida ──────────────────────────────────────────────────────── -->
+    <section class="block" aria-labelledby="ida">
+      <h2 id="ida">Ida evolves from a search bar into an agent</h2>
+      <p>
+        The defining interaction idea is
+        <strong>actualise intents as fast as you can type.</strong>
+        Ida should interpret partial input in real time — while never committing
+        a destructive action just because a partial phrase resembles one.
+      </p>
+
+      <div class="demo" id="demo" aria-live="polite">
+        <div class="demo__line">
+          <span class="demo__prompt" aria-hidden="true">&gt;</span>
+          <span class="demo__typed" id="demo-typed"></span><span class="caret" aria-hidden="true"></span>
+        </div>
+        <div class="demo__result" id="demo-result"></div>
+      </div>
+
+      <p class="caption">
+        A preview of the intended interaction. This is a design target, not
+        shipped behaviour. Preview aggressively; commit conservatively.
+      </p>
+    </section>
+
+    <!-- ── Architecture ─────────────────────────────────────────────── -->
+    <section class="block" aria-labelledby="architecture">
+      <h2 id="architecture">How it works, simply</h2>
+      <p>
+        The intelligence never controls the operating system directly. It
+        proposes; the system decides. That single boundary is what makes it safe
+        to hand a computer to an agent.
+      </p>
+
+      <div class="diagram" role="img" aria-label="Request flow: user, input, interaction runtime, intent, context, plan, capability, native action, verification.">
+        <div class="node">User</div>
+        <div class="flow">&#x2193;</div>
+        <div class="node">Input &nbsp;<span class="dim">keyboard · voice</span></div>
+        <div class="flow">&#x2193;</div>
+        <div class="node node--accent">Ida Interaction Runtime</div>
+        <div class="flow">&#x2193;</div>
+        <div class="row">
+          <div class="node node--sm">Intent</div>
+          <div class="node node--sm">Context</div>
+          <div class="node node--sm">Plan</div>
+        </div>
+        <div class="flow">&#x2193;</div>
+        <div class="node">Capability <span class="dim">a typed, permitted operation</span></div>
+        <div class="flow">&#x2193;</div>
+        <div class="node">Native Action</div>
+        <div class="flow">&#x2193;</div>
+        <div class="node">Verification</div>
+      </div>
+
+      <h3 class="sub">Local versus external intelligence</h3>
+      <p>
+        Ida runs locally whenever the local system can handle the task. It may
+        pass work outward when a task genuinely needs larger reasoning, current
+        information, or a specialised service — sharing only the minimum
+        necessary context. The objective is not "never use cloud AI." It is that
+        <strong>Ida decides where computation belongs.</strong>
+      </p>
+      <div class="split">
+        <div class="split__side">
+          <h4>Stays local</h4>
+          <ul>
+            <li>system control and native actions</li>
+            <li>personal files and private material</li>
+            <li>offline and latency-sensitive work</li>
+          </ul>
+        </div>
+        <div class="split__side">
+          <h4>May pass outward</h4>
+          <ul>
+            <li>tasks needing substantially larger reasoning</li>
+            <li>current web information</li>
+            <li>services genuinely better suited to the job</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── SLATE ────────────────────────────────────────────────────── -->
+    <section class="block" aria-labelledby="slate">
+      <h2 id="slate">SLATE</h2>
+      <p>
+        The eventual hardware expression of the project: an extremely light,
+        thin, modular personal computer, most likely based around a
+        Framework-style motherboard architecture.
+      </p>
+      <div class="specs">
+        <div class="spec"><span class="spec__num">999&nbsp;g</span><span class="spec__label">target mass</span></div>
+        <div class="spec"><span class="spec__num">&#x2264;&nbsp;13&#8243;</span><span class="spec__label">display</span></div>
+        <div class="spec"><span class="spec__num">modular</span><span class="spec__label">repairable, upgradeable</span></div>
+      </div>
+      <p class="pull">simple at rest. powerful on demand.</p>
+      <p class="tag tag--spec">SLATE is an eventual hardware target, not an existing product.</p>
+    </section>
+
+    <!-- ── Roadmap ──────────────────────────────────────────────────── -->
+    <section class="block" aria-labelledby="roadmap">
+      <h2 id="roadmap">An intended trajectory</h2>
+      <ol class="timeline">
+        <li>
+          <span class="timeline__year">2026</span>
+          <div>
+            <h3>Foundation</h3>
+            <p>Ida architecture, the capability system, local AI research, Essential OS research.</p>
+          </div>
+        </li>
+        <li>
+          <span class="timeline__year">2027–28</span>
+          <div>
+            <h3>Agent</h3>
+            <p>Natural language, real-time intent, voice, context, memory, real system control.</p>
+          </div>
+        </li>
+        <li>
+          <span class="timeline__year">2028–29</span>
+          <div>
+            <h3>Computing fabric</h3>
+            <p>Model routing, personal servers, distributed workloads.</p>
+          </div>
+        </li>
+        <li>
+          <span class="timeline__year">2030</span>
+          <div>
+            <h3>SLATE</h3>
+            <p>Hardware + Essential OS + Ida together.</p>
+          </div>
+        </li>
+      </ol>
+      <p class="caption">This is an intended trajectory, not a promise. The project favours reality over preserving old plans.</p>
+    </section>
+
+    <!-- ── Challenges ───────────────────────────────────────────────── -->
+    <section class="block" aria-labelledby="challenges">
+      <h2 id="challenges">What remains difficult</h2>
+      <p>This is not straightforward, and pretending otherwise would be dishonest. The real challenges include:</p>
+      <ul class="challenges">
+        <li>real-time inference latency</li>
+        <li>local model resource constraints</li>
+        <li>hardware thermals and battery</li>
+        <li>Linux hardware compatibility</li>
+        <li>safe OS-level automation</li>
+        <li>ambiguity in natural-language commands</li>
+        <li>permissions and security</li>
+        <li>semantic indexing of personal information</li>
+        <li>reliable cross-application actions</li>
+        <li>keeping the system maintainable as it grows</li>
+        <li>the enormous scope of an operating-system layer</li>
+        <li>a good UX while the architecture becomes complex</li>
+        <li>knowing when local computation is sufficient</li>
+      </ul>
+    </section>
+
+    <!-- ── Where we are ─────────────────────────────────────────────── -->
+    <section class="block status" aria-labelledby="status">
+      <h2 id="status">Where we are</h2>
+      <p class="status__stamp">October 2026 · Early Stage</p>
+      <ul class="status__list">
+        <li>Ida has an existing prototype lineage and three released versions.</li>
+        <li>Ida 0.0.45 established a useful UI/UX baseline.</li>
+        <li>The project is moving from launcher toward interaction-runtime architecture.</li>
+        <li>Local AI infrastructure is being investigated and partly implemented.</li>
+        <li>Embedding and semantic retrieval have been explored, not adopted.</li>
+        <li>Essential OS is a vision and research project with a real desktop assembly in progress.</li>
+        <li>SLATE is a long-term hardware concept.</li>
+        <li>This repository is becoming the project's canonical documentation and experimentation space.</li>
+      </ul>
+    </section>
+
+    <!-- ── Closing ──────────────────────────────────────────────────── -->
+    <section class="closing" aria-labelledby="closing">
+      <h2 id="closing" class="visually-hidden">Closing</h2>
+      <p class="closing__line">Build what you can own.</p>
+      <p class="closing__sub">The machine is the project. Ida is how it thinks.</p>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <p>
+      Essential OS · <span class="serif">E&#x222C;ENTIAL OS</span> ·
+      <span class="serif">&lt;&#x222B;&gt;</span> Ida · SLATE
+    </p>
+    <p class="footer__meta">MIT · an ongoing personal project · <span id="year"></span></p>
+  </footer>
+
+  <script src="main.js"></script>
+</body>
+</html>

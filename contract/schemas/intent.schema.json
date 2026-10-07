@@ -1,0 +1,31 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://essential-os.dev/contract/intent.schema.json",
+  "title": "Intent",
+  "description": "A structured statement of what the user wants. Inert data: it grants no authority and performs no action. It becomes actionable only after registry validation and a permission decision.",
+  "type": "object",
+  "required": ["action", "args", "source", "confidence"],
+  "additionalProperties": false,
+  "properties": {
+    "action": {
+      "type": "string",
+      "description": "A capability id, dotted and lowercase.",
+      "pattern": "^[a-z][a-z0-9_]*(\\.[a-z][a-z0-9_]*)+$"
+    },
+    "args": {
+      "type": "object",
+      "description": "Capability-specific arguments, validated against the capability's input schema."
+    },
+    "source": {
+      "type": "string",
+      "description": "The origin of the intent. Origin is separate from permission: it informs the permission decision.",
+      "enum": ["automatic", "user", "model", "voice"]
+    },
+    "confidence": {
+      "type": "number",
+      "description": "How confident the producer is, 0..1. Deterministic producers report 1.",
+      "minimum": 0,
+      "maximum": 1
+    }
+  }
+}

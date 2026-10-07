@@ -1,0 +1,93 @@
+{
+  "description": "Conformance fixtures for deterministic intent resolution. Each case is an utterance and the resolution the contract expects. The four examples from the original design brief are marked, and where reality diverges the divergence is recorded rather than hidden.",
+  "cases": [
+    {
+      "id": "brief-open-firefox",
+      "brief": "open firefox → apps.open",
+      "input": "open firefox",
+      "source": "user",
+      "expect": { "kind": "intent", "action": "app.launch", "args": { "app_id": "firefox.desktop" } },
+      "note": "The brief said apps.open; the real registry uses app.launch."
+    },
+    {
+      "id": "brief-reboot",
+      "brief": "reboot → system.reboot",
+      "input": "reboot",
+      "source": "user",
+      "expect": { "kind": "intent", "action": "session.restart", "args": {} },
+      "note": "The brief said system.reboot; the real registry uses session.restart. The OS's own end-session dialog is the confirmation."
+    },
+    {
+      "id": "brief-calculate",
+      "brief": "17 * 42 → calculator",
+      "input": "17 * 42",
+      "source": "user",
+      "expect": { "kind": "calculation", "value": 714 },
+      "note": "There is no calculator capability. A calculation is a direct result, copied with clipboard.copy when the user takes it."
+    },
+    {
+      "id": "brief-disk-usage",
+      "brief": "show disk usage → system.disk_usage",
+      "input": "show disk usage",
+      "source": "user",
+      "expect": { "kind": "unresolved" },
+      "note": "There is no system.disk_usage capability. It may resolve to the controlled shell.run, or become a structured capability later. This is an open question (docs/research/README.md)."
+    },
+    {
+      "id": "lock-screen",
+      "input": "lock my computer",
+      "source": "user",
+      "expect": { "kind": "intent", "action": "system.lock", "args": {} }
+    },
+    {
+      "id": "dark-mode-on",
+      "input": "dark mode on",
+      "source": "user",
+      "expect": { "kind": "intent", "action": "appearance.dark", "args": { "state": "on" } }
+    },
+    {
+      "id": "volume-up",
+      "input": "volume up",
+      "source": "user",
+      "expect": { "kind": "intent", "action": "audio.volume", "args": { "direction": "up" } }
+    },
+    {
+      "id": "bluetooth-off",
+      "input": "turn off bluetooth",
+      "source": "user",
+      "expect": { "kind": "intent", "action": "bluetooth.set", "args": { "state": "off" } }
+    },
+    {
+      "id": "do-not-disturb",
+      "input": "enable do not disturb",
+      "source": "user",
+      "expect": { "kind": "intent", "action": "notifications.dnd", "args": { "state": "on" } }
+    },
+    {
+      "id": "open-downloads",
+      "input": "open my downloads",
+      "source": "user",
+      "expect": { "kind": "intent", "action": "place.open", "args": { "place": "downloads" } }
+    },
+    {
+      "id": "help",
+      "input": "/help",
+      "source": "user",
+      "expect": { "kind": "intent", "action": "help.show", "args": {} }
+    },
+    {
+      "id": "typed-shell-gesture",
+      "input": "> df -h",
+      "source": "user",
+      "expect": { "kind": "intent", "action": "shell.run", "args": { "command": "df -h" } },
+      "note": "A typed shell gesture is a run-dialog gesture: visible, deliberate, and unambiguous, so it runs. A model-proposed shell.run is ambiguous and confirms. See contract/fixtures/security.json."
+    },
+    {
+      "id": "weather",
+      "input": "weather in Nairobi",
+      "source": "user",
+      "expect": { "kind": "intent", "action": "weather.show", "args": { "place": "Nairobi" } },
+      "note": "Requires the network door to be open (AI mode on)."
+    }
+  ]
+}

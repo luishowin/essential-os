@@ -1,0 +1,197 @@
+{
+  "description": "The canonical capability registry subset, mirroring the real Ida registry. Every action id used in intents.json must appear here. Permission and confirmation are separate axes (see docs/ida/security-and-permissions.md).",
+  "capabilities": [
+    {
+      "id": "app.launch",
+      "description": "Open an installed application.",
+      "input": { "app_id": "string" },
+      "permission": "low_risk",
+      "confirmation": "never",
+      "executor": "os"
+    },
+    {
+      "id": "file.open",
+      "description": "Open a file with its default application.",
+      "input": { "uri": "string" },
+      "permission": "low_risk",
+      "confirmation": "never",
+      "executor": "os"
+    },
+    {
+      "id": "file.reveal",
+      "description": "Show a file in the file browser.",
+      "input": { "uri": "string" },
+      "permission": "low_risk",
+      "confirmation": "never",
+      "executor": "os"
+    },
+    {
+      "id": "search.files",
+      "description": "Search files accessible to the user.",
+      "input": { "query": "string" },
+      "permission": "read",
+      "confirmation": "never",
+      "executor": "panel"
+    },
+    {
+      "id": "place.open",
+      "description": "Open a standard folder such as Downloads or Documents.",
+      "input": { "place": "string" },
+      "permission": "low_risk",
+      "confirmation": "never",
+      "executor": "os"
+    },
+    {
+      "id": "url.open",
+      "description": "Open a web link in the default browser.",
+      "input": { "url": "string" },
+      "permission": "low_risk",
+      "confirmation": "never",
+      "executor": "os"
+    },
+    {
+      "id": "system.lock",
+      "description": "Lock the screen immediately.",
+      "input": {},
+      "permission": "low_risk",
+      "confirmation": "never",
+      "executor": "os"
+    },
+    {
+      "id": "system.suspend",
+      "description": "Suspend the machine to RAM.",
+      "input": {},
+      "permission": "privileged",
+      "confirmation": "always",
+      "executor": "os"
+    },
+    {
+      "id": "session.restart",
+      "description": "Restart the computer.",
+      "input": {},
+      "permission": "low_risk",
+      "confirmation": "never",
+      "executor": "os"
+    },
+    {
+      "id": "session.power_off",
+      "description": "Power off the computer.",
+      "input": {},
+      "permission": "low_risk",
+      "confirmation": "never",
+      "executor": "os"
+    },
+    {
+      "id": "bluetooth.set",
+      "description": "Switch Bluetooth on, off or toggle it.",
+      "input": { "state": "string" },
+      "permission": "low_risk",
+      "confirmation": "never",
+      "executor": "os"
+    },
+    {
+      "id": "wifi.set",
+      "description": "Switch Wi-Fi on, off or toggle it.",
+      "input": { "state": "string" },
+      "permission": "low_risk",
+      "confirmation": "never",
+      "executor": "os"
+    },
+    {
+      "id": "audio.volume",
+      "description": "Turn the volume up or down a step.",
+      "input": { "direction": "string" },
+      "permission": "low_risk",
+      "confirmation": "never",
+      "executor": "os"
+    },
+    {
+      "id": "audio.volume_set",
+      "description": "Set the volume to a level from 0 to 100.",
+      "input": { "level": "number" },
+      "permission": "low_risk",
+      "confirmation": "never",
+      "executor": "os"
+    },
+    {
+      "id": "audio.mute",
+      "description": "Mute or unmute the audio output.",
+      "input": { "state": "string" },
+      "permission": "low_risk",
+      "confirmation": "never",
+      "executor": "os"
+    },
+    {
+      "id": "media.control",
+      "description": "Control the currently playing media.",
+      "input": { "command": "string" },
+      "permission": "low_risk",
+      "confirmation": "never",
+      "executor": "os"
+    },
+    {
+      "id": "appearance.dark",
+      "description": "Turn dark mode on or off.",
+      "input": { "state": "string" },
+      "permission": "low_risk",
+      "confirmation": "never",
+      "executor": "os"
+    },
+    {
+      "id": "notifications.dnd",
+      "description": "Turn Do Not Disturb on or off.",
+      "input": { "state": "string" },
+      "permission": "low_risk",
+      "confirmation": "never",
+      "executor": "os"
+    },
+    {
+      "id": "shell.run",
+      "description": "Run a shell command in a new terminal window.",
+      "input": { "command": "string" },
+      "permission": "execute",
+      "confirmation": "when_ambiguous",
+      "executor": "os"
+    },
+    {
+      "id": "help.show",
+      "description": "Show what Ida can do.",
+      "input": {},
+      "permission": "read",
+      "confirmation": "never",
+      "executor": "panel"
+    },
+    {
+      "id": "clipboard.copy",
+      "description": "Copy text to the clipboard.",
+      "input": { "text": "string" },
+      "permission": "low_risk",
+      "confirmation": "never",
+      "executor": "panel"
+    },
+    {
+      "id": "ask.question",
+      "description": "Ask the intelligence a question.",
+      "input": { "question": "string" },
+      "permission": "low_risk",
+      "confirmation": "never",
+      "executor": "network"
+    },
+    {
+      "id": "weather.show",
+      "description": "Show the weather for a place.",
+      "input": { "place": "string" },
+      "permission": "low_risk",
+      "confirmation": "never",
+      "executor": "network"
+    },
+    {
+      "id": "voice.listen",
+      "description": "Listen for a spoken request.",
+      "input": {},
+      "permission": "low_risk",
+      "confirmation": "never",
+      "executor": "microphone"
+    }
+  ]
+}
