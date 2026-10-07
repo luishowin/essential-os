@@ -31,7 +31,7 @@ The defining philosophy, in one line:
 
 Ida's intelligence **never controls the operating system directly.** Parsers,
 providers and (later) models emit inert `Intent` values. Only the policy layer
-can mint an approval, and only the executor — which accepts nothing else —
+can mint an approval, and only the executor, which accepts nothing else,
 performs a side effect.
 
 This is the one trust path that every future capability must go through, so it
@@ -60,11 +60,11 @@ See [security-and-permissions.md](security-and-permissions.md) and ADR
 ## Source of truth
 
 This directory is the **narrative** of Ida: what it is for and how it is shaped.
-The **implementation specification** — the frozen/provisional register, the
-capability table, the measured budgets, the dated decision log — lives in the
-Ida repository:
+The **implementation specification** lives in the Ida repository: the frozen
+and provisional register, the capability table, the measured budgets, and the
+dated decision log.
 
-> <https://github.com/luishowin/ida> — `docs/ARCHITECTURE.md`,
+> <https://github.com/luishowin/ida>: `docs/ARCHITECTURE.md`,
 > `docs/DECISIONS.md`, `docs/SPIKE-*.md`
 
 Those documents are the authority on implementation detail. This directory does

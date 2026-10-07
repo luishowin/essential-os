@@ -1,4 +1,4 @@
-// Essential OS — site behaviour.
+// Essential OS, site behaviour.
 // Small, dependency-free. Theme, year, and one restrained interaction demo.
 
 (function () {

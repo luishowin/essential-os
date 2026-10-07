@@ -1,4 +1,4 @@
-# Ida — history
+# Ida: history
 
 **Status:** Record · **Date:** 2026-10-07
 

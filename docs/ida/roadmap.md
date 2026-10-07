@@ -1,4 +1,4 @@
-# Ida — roadmap
+# Ida: roadmap
 
 **Status:** Planned + Implemented · **Date:** 2026-10-07
 
@@ -104,8 +104,8 @@ In summary:
   (Fireworks) earlier than the "non-AI stabilisation" plan suggested.
 - **`0.0.45`/`0.0.46`** became the real UI/UX and behaviour milestones.
 - **`0.0.6`** became the real architectural milestone: the capability registry,
-  ephemeral context, the bounded planner, a local action model and verification
-  — all implemented, and deliberately **unreleased** until a by-hand pass
+  ephemeral context, the bounded planner, a local action model and verification,
+  all implemented, and deliberately **unreleased** until a by-hand pass
   proves it.
 - The "Ida Core / **Go**" idea did not survive contact with the existing Rust
   codebase; the Rust workspace *is* Ida Core.

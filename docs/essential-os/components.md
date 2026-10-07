@@ -1,4 +1,4 @@
-# Essential OS — components
+# Essential OS: components
 
 **Status:** Research · **Date:** 2026-10-07
 
@@ -41,10 +41,10 @@ Most rows are "choose". The "build" rows are where the project's effort belongs.
 
 A component is acceptable if it is:
 
-1. **proven** — it is already doing this job well, somewhere real;
-2. **inspectable** — its behaviour can be understood and changed;
-3. **replaceable** — it does not trap the project;
-4. **licence-compatible** — it can be part of an owned system.
+1. **proven**: it is already doing this job well, somewhere real;
+2. **inspectable**: its behaviour can be understood and changed;
+3. **replaceable**: it does not trap the project;
+4. **licence-compatible**: it can be part of an owned system.
 
 If a component fails these, we either configure around it or build the part we
 need. We do not build a whole subsystem to avoid configuring a good one.

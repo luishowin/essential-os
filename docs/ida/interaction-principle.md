@@ -111,6 +111,6 @@ Core's stabilisation should treat it as a prototype target.
 ## Status
 
 **Architecture / future prototype target.** Not implemented. The pieces it
-depends on — a fast deterministic engine, the capability registry, the origin-
-aware permission model — are **Implemented**, which is what makes the idea
+depends on (a fast deterministic engine, the capability registry, the origin-
+aware permission model) are **Implemented**, which is what makes the idea
 feasible rather than aspirational.

@@ -1,4 +1,4 @@
-# SLATE — vision
+# SLATE: vision
 
 **Status:** Speculative · **Date:** 2026-10-07
 
@@ -23,7 +23,7 @@ This is the organising principle, and it is both thermal and philosophical:
 
 - **At rest**, the machine is silent, cool and efficient. It does not spin fans
   to prove it is alive.
-- **On demand**, it can burst — for a compile, a render, a model, a game.
+- **On demand**, it can burst: for a compile, a render, a model, a game.
 - The user should not have to choose a "performance mode" and live with it; the
   machine should be good at both.
 
@@ -36,14 +36,14 @@ that realistic without inventing an ecosystem from nothing.
 
 ## Why 13 inches and 999 grams
 
-Because the machine is meant to be carried and used everywhere — and because a
+Because the machine is meant to be carried and used everywhere, and because a
 hard constraint forces honest engineering. 999 g is a design target that
 eliminates the lazy answer. It is not a measurement of anything that exists.
 
 ## How Ida fits
 
 Ida is the reason the hardware can be ambitious. If the intelligence layer can
-decide **where** work belongs — local burst, home server, or external compute —
+decide **where** work belongs (local burst, home server, or external compute),
 then a 999 g machine does not need to carry every ounce of compute itself. It
 can be the interface to a personal computing fabric.
 

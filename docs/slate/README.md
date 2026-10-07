@@ -2,7 +2,7 @@
 
 **The eventual hardware expression of the project.**
 
-**Status:** Speculative — a hardware concept, not a product · **Date:** 2026-10-07
+**Status:** Speculative, a hardware concept, not a product · **Date:** 2026-10-07
 
 ---
 
@@ -39,7 +39,7 @@ The concept:
 ## Relationship to the other layers
 
 SLATE is not just a host for the software. It is designed around the idea that
-Ida helps the user **exploit the hardware** — deciding when to be quiet and when
+Ida helps the user **exploit the hardware**: deciding when to be quiet and when
 to burst, and eventually deciding where computation belongs across a personal
 computing fabric.
 

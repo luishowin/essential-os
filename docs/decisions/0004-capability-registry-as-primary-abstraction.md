@@ -1,4 +1,4 @@
-# 0004 — The capability registry is the primary abstraction
+# 0004. The capability registry is the primary abstraction
 
 - **Status:** Accepted
 - **Date:** 2026-10-07

@@ -48,7 +48,7 @@ grow independently.
 
 ## The three layers
 
-### SLATE — the hardware
+### SLATE: the hardware
 
 An eventual, extremely light, thin and modular ultrabook. The design idea is
 **simple at rest, powerful on demand**: normally a quiet, efficient laptop with
@@ -56,7 +56,7 @@ the thermal and compute headroom to become serious when a workload requires it.
 Ida is not merely software shipped with SLATE; Ida is the thing that helps the
 user exploit the hardware. **Status: speculative.**
 
-### Essential OS — the substrate
+### Essential OS: the substrate
 
 A coherent operating system **assembled from excellent existing components**
 rather than written from scratch. Kernel, drivers, utilities, desktop
@@ -65,7 +65,7 @@ come from the open-source ecosystem. Differentiation lives in the UX,
 orchestration and system services layered on top. **Status: vision + research,
 with a real desktop assembly in progress.**
 
-### Ida `<∫>` — the intelligence
+### Ida `<∫>`: the intelligence
 
 The system-level agent. It begins as a tiny launcher/search interface and
 evolves into a layer that understands natural-language intent, resolves context

@@ -1,4 +1,4 @@
-# 0003 — Local-first, not local-only
+# 0003. Local-first, not local-only
 
 - **Status:** Accepted
 - **Date:** 2026-10-07

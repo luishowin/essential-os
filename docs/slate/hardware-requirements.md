@@ -1,4 +1,4 @@
-# SLATE — hardware requirements
+# SLATE: hardware requirements
 
 **Status:** Speculative · **Date:** 2026-10-07
 
@@ -39,7 +39,7 @@ and return to quiet.
 ## Development baseline (today)
 
 The machine the software is actually being built and measured on is an ordinary
-laptop — around a **Ryzen 5 5600U** class APU. That matters more than the SLATE
+laptop, around a **Ryzen 5 5600U** class APU. That matters more than the SLATE
 concept right now: the software must be excellent on ordinary hardware, not
 merely on hardware that does not exist yet.
 

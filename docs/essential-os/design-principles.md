@@ -1,4 +1,4 @@
-# Essential OS — design principles
+# Essential OS: design principles
 
 **Status:** Vision · **Date:** 2026-10-07
 

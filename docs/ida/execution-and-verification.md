@@ -92,7 +92,7 @@ ExecutionResult
  └── metadata
 ```
 
-`Success` means *the OS handler accepted the action* — launched, opened,
+`Success` means *the OS handler accepted the action*, launched, opened,
 switched, told. It does not mean the intended end state was observed. Keeping
 that distinction explicit is what prevents "LLM vibes determine whether it
 worked."
@@ -107,5 +107,5 @@ not an agent; it is a source of confident mistakes.
 
 **Prototype.** `ExecutionResult` and the states exist in Core; the bounded
 planner executes 1–5 validated steps sequentially and stops at the first
-refusal, denial or failure. No observation between steps, no replanning — that
+refusal, denial or failure. No observation between steps, no replanning; that
 loop is Max's.

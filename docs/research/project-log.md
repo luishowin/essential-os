@@ -5,11 +5,11 @@ entries.
 
 ---
 
-## 2026-10-07 — The record begins
+## 2026-10-07 · The record begins
 
 **What.** This repository is created as the canonical engineering and design
-record for the project. It documents three connected layers — **SLATE →
-Essential OS → Ida `<∫>`** — and establishes the conventions that keep the
+record for the project. It documents three connected layers (**SLATE →
+Essential OS → Ida `<∫>`**) and establishes the conventions that keep the
 record honest: ADRs, status labels, and a project log.
 
 **Why now.** The pieces of the project have been developed separately (an Ida

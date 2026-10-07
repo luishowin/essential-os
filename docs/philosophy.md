@@ -11,9 +11,9 @@
 A personal computer should be organised around what a person actually does with
 it, not around the categories software vendors impose.
 
-- **Exploration** — research, learning, browsing, experimentation, discovery.
-- **Creation** — design, code, writing, building, editing, making things.
-- **Play** — games, media, tinkering, experimentation for its own sake.
+- **Exploration**: research, learning, browsing, experimentation, discovery.
+- **Creation**: design, code, writing, building, editing, making things.
+- **Play**: games, media, tinkering, experimentation for its own sake.
 
 "Work" was considered as a fourth category and rejected. It is narrower than
 exploration, and it carries an assumption about who the machine is for. The

@@ -52,7 +52,7 @@ there is exactly one owner for every fact.
 ## Commit style
 
 Commits describe the change and its reason, in the present tense, e.g.
-`decisions: record the desktop-base question (0009)`. Keep the tree buildable —
+`decisions: record the desktop-base question (0009)`. Keep the tree buildable,
 for this repository that means the contract validator passes:
 
 ```sh

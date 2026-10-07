@@ -1,4 +1,4 @@
-# 0002 — Ida is an interaction runtime, not merely a router
+# 0002. Ida is an interaction runtime, not merely a router
 
 - **Status:** Accepted
 - **Date:** 2026-10-07

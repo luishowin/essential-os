@@ -92,7 +92,7 @@ allowed, for this user, from this origin, right now?"*
 
 ## The registry is also retrieval
 
-A model should never be handed the whole catalogue of capabilities — that
+A model should never be handed the whole catalogue of capabilities: that
 inflates the prompt and invites hallucinated ids. Instead the registry exposes a
 deterministic pre-filter over the capabilities relevant to a request (a small
 set, not the whole list). The model selects from that set; unknown or invented

@@ -1,4 +1,4 @@
-# Ida — architecture
+# Ida: architecture
 
 **Status:** Architecture + Implemented (Core) · **Date:** 2026-10-07
 
@@ -57,7 +57,7 @@ Ida a clean boundary, and it is what keeps the architecture from collapsing into
 
 ## Input
 
-Keyboard now, voice later — and both converge on one value, so that voice does
+Keyboard now, voice later, and both converge on one value, so that voice does
 not create a second assistant:
 
 ```text
@@ -75,7 +75,7 @@ be shown, spoken, or both.
 **Status:** keyboard Implemented; voice Prototype (transcribes locally, lands in
 the entry as typed text).
 
-## Intent Engine — do not invoke an LLM when deterministic logic can solve it
+## Intent Engine: do not invoke an LLM when deterministic logic can solve it
 
 The engine is a hierarchy, tried in order:
 
@@ -105,9 +105,9 @@ fallback is Implemented but wired to the voice path first (see
 
 This separation becomes valuable later, so it is established now.
 
-- **Intent** — *what does the user want?* `open_file`
-- **Plan** — *what steps are necessary?* search → filter → sort → select → open
-- **Action** — *what actually happens?* `files.search(...)`, `desktop.open(...)`
+- **Intent**: *what does the user want?* `open_file`
+- **Plan**: *what steps are necessary?* search → filter → sort → select → open
+- **Action**: *what actually happens?* `files.search(...)`, `desktop.open(...)`
 
 ```text
 Natural language
@@ -125,7 +125,7 @@ multi-step but does **not** need a heavyweight autonomous agent. Do not conflate
 "multi-step" with "agent."
 
 **Status:** Intent Implemented; bounded planning Implemented (1–5 validated
-steps, sequential, no replanning — that data-passing loop is Max's).
+steps, sequential, no replanning; that data-passing loop is Max's).
 
 ## The core boundary
 
@@ -145,7 +145,7 @@ an aspiration.
 
 ## Where to go deeper
 
-The implementation spec — the frozen register, the capability table, the
-measured budgets — is in [`luishowin/ida`](https://github.com/luishowin/ida)
-`docs/ARCHITECTURE.md`. This document describes the same pipeline at the level
+The implementation spec is in [`luishowin/ida`](https://github.com/luishowin/ida)
+`docs/ARCHITECTURE.md`: the frozen register, the capability table and the
+measured budgets. This document describes the same pipeline at the level
 of the platform.

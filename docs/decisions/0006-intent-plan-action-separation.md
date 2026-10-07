@@ -1,4 +1,4 @@
-# 0006 — Intent, Plan and Action are separate concepts
+# 0006. Intent, Plan and Action are separate concepts
 
 - **Status:** Accepted
 - **Date:** 2026-10-07
@@ -14,9 +14,9 @@ work, verification and permissions much harder later.
 Keep three concepts separate:
 
 ```text
-Intent   — what does the user want?
-Plan     — what steps are necessary?
-Action   — what actually happens?
+Intent   → what does the user want?
+Plan     → what steps are necessary?
+Action   → what actually happens?
 ```
 
 ```text

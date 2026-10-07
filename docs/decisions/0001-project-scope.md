@@ -1,14 +1,14 @@
-# 0001 — Project scope: a platform, not an application
+# 0001. Project scope: a platform, not an application
 
 - **Status:** Accepted
 - **Date:** 2026-10-07
 
 ## Context
 
-The project began as a small personal assistant ("Ida") — a launcher that could
+The project began as a small personal assistant ("Ida"), a launcher that could
 search, calculate, launch apps and run quick system commands. Over time it
 became clear that the interesting idea was larger than an assistant application:
-a *personal computing platform* made of three connected layers — hardware
+a *personal computing platform* made of three connected layers: hardware
 (SLATE), operating system (Essential OS) and intelligence (Ida).
 
 The risk of staying an "application" is that the architecture is shaped around

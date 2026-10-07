@@ -1,4 +1,4 @@
-# 0009 — The desktop base is an open question
+# 0009. The desktop base is an open question
 
 - **Status:** Open
 - **Date:** 2026-10-07
@@ -8,9 +8,9 @@
 Essential OS is assembled on Linux, and its desktop layer must sit on a concrete
 base. Two viable paths exist:
 
-- **KDE Plasma** — the current machine (Plasma 6.7.5) and the Essential Desktop
+- **KDE Plasma**: the current machine (Plasma 6.7.5) and the Essential Desktop
   assembly. Rich, configurable, strong Wayland story, mature shell.
-- **GNOME** — Ida's original target (Fedora 44 / GNOME 50), with Ida's existing
+- **GNOME**: Ida's original target (Fedora 44 / GNOME 50), with Ida's existing
   GNOME integration work already done.
 
 The machine has recently moved from GNOME to Plasma, which makes this a live
@@ -30,7 +30,7 @@ recorded as a new ADR that supersedes this one.
 - Choosing now would be guessing, and the cost of guessing wrong is a large
   amount of integration work.
 - The project's stable layer is Ida's capability and policy system, not the
-  shell — so this choice does not block Ida's architecture.
+  shell, so this choice does not block Ida's architecture.
 - Recording it as open prevents the false impression that it is settled.
 
 ## Criteria that will settle it

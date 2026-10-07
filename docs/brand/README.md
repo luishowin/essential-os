@@ -15,7 +15,7 @@ E∬ENTIAL OS      the operating system
 SLATE            the hardware
 ```
 
-These should feel like parts of the same universe — same typographic
+These should feel like parts of the same universe: same typographic
 sensibility, same restraint.
 
 ## The anchor
@@ -40,7 +40,7 @@ executable construct or a contained agent.
 - **Typography first.** The identity is carried by type, not imagery.
 - **Thin, Inter-like** surrounding letterforms with generous, even tracking.
 - **The `∬` in a contrasting serif**, larger, acting as the anchor.
-- **Restrained, almost monospaced rhythm** — understated, technical, elegant.
+- **Restrained, almost monospaced rhythm**: understated, technical, elegant.
 - **No** generic "AI startup" aesthetics: no excessive gradients, no glowing
   circuitry, no robot imagery, no generic futuristic nonsense.
 - **Dark and light capable.** The marks are set in `currentColor`.

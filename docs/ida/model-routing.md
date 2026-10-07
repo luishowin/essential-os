@@ -48,8 +48,8 @@ a model at all, and if so, how much of one?"**
 
 This is a performance, reliability and privacy decision at once. Typed text is
 already forgiven for typos deterministically, so typed text stays deterministic
-end to end. Interpretation earns its keep where the input is genuinely uncertain
-— a misheard voice transcript, a paraphrase, an ambiguous reference.
+end to end. Interpretation earns its keep where the input is genuinely
+uncertain: a misheard voice transcript, a paraphrase, an ambiguous reference.
 
 ## Local-first, not local-only
 
@@ -85,7 +85,7 @@ pass only necessary information
 
 That is a far more credible privacy architecture than simply declaring "local
 AI." A concrete example already in the real system: a cloud provider receives a
-question and nothing else about the machine — no files, no local context, no
+question and nothing else about the machine: no files, no local context, no
 typed text that the user did not choose to send.
 
 ## The computing fabric (long-term)

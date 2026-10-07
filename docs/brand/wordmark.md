@@ -20,7 +20,7 @@ The double integral `∬` (U+222C) replaces the two *s* characters in "Essential
 | Tracking | Generous and even (wide `letter-spacing`) |
 | Rhythm | Restrained, almost monospaced |
 | The `∬` | A contrasting **serif**, set larger, optically aligned to the cap height |
-| Weight | Light / regular — never bold |
+| Weight | Light / regular, never bold |
 | Colour | `currentColor`, so it works on dark and light without a second asset |
 | Case | Always uppercase |
 
@@ -30,15 +30,15 @@ The double integral `∬` (U+222C) replaces the two *s* characters in "Essential
   decoration.
 - The contrast between a thin grotesque and a serif integral gives the mark a
   single point of focus rather than an even texture.
-- Wide tracking makes it feel considered and calm — the opposite of a startup
+- Wide tracking makes it feel considered and calm, the opposite of a startup
   logo that shouts.
 
 ## The relationship to the other marks
 
 ```text
-E∬ENTIAL OS     double integral — the system
-<∫> Ida         single integral — the intelligence
-SLATE           plain uppercase — the hardware
+E∬ENTIAL OS     double integral, the system
+<∫> Ida         single integral, the intelligence
+SLATE           plain uppercase, the hardware
 ```
 
 The integral family ties the software layers together. SLATE stays plain,
@@ -46,7 +46,7 @@ because it is the physical object.
 
 ## Files
 
-- [`essential-os-wordmark.svg`](essential-os-wordmark.svg) — the canonical asset.
+- [`essential-os-wordmark.svg`](essential-os-wordmark.svg), the canonical asset.
 
 ## Rules
 

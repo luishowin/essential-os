@@ -1,4 +1,4 @@
-# 0007 — Ephemeral context before persistent memory
+# 0007. Ephemeral context before persistent memory
 
 - **Status:** Accepted
 - **Date:** 2026-10-07
@@ -11,9 +11,9 @@ useful thing to build first, and the hardest to keep honest.
 
 There are two different problems hiding under the word:
 
-- **ephemeral context** — what is happening right now (current app, selection,
+- **ephemeral context**: what is happening right now (current app, selection,
   recent results, the previous turn);
-- **persistent memory** — long-lived preferences and facts.
+- **persistent memory**: long-lived preferences and facts.
 
 ## Decision
 

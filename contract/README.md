@@ -11,8 +11,8 @@ capability model is defined **once**, independently of any implementation.
 ## Why it exists
 
 Ida's implementation is in Rust ([`luishowin/ida`](https://github.com/luishowin/ida)).
-This repository must not duplicate that implementation, but the *contract* — what
-an Intent, a Capability and an ExecutionResult are — belongs to the platform,
+This repository must not duplicate that implementation, but the *contract* (what
+an Intent, a Capability and an ExecutionResult are) belongs to the platform,
 not to one language.
 
 So the contract lives here, as JSON Schema plus conformance fixtures, and any
@@ -48,7 +48,7 @@ auto-approved and that no unrestricted `run_shell` capability exists.
 
 ## The three shapes
 
-### Intent — inert
+### Intent: inert
 
 ```json
 { "action": "app.launch", "args": { "app_id": "firefox.desktop" },
@@ -58,7 +58,7 @@ auto-approved and that no unrestricted `run_shell` capability exists.
 An intent grants no authority and performs no action. It becomes actionable only
 after registry validation and a permission decision.
 
-### Capability — the contract
+### Capability: the contract
 
 ```json
 { "id": "app.launch", "description": "Open an installed application.",
@@ -70,7 +70,7 @@ Permission (`read` … `privileged`) and confirmation (`never` … `always`) are
 **separate axes**. `executor` names where the side effect happens, and only the
 runtime chooses it.
 
-### ExecutionResult — the truth
+### ExecutionResult: the truth
 
 ```json
 { "status": "success",
@@ -78,7 +78,7 @@ runtime chooses it.
   "output": "Opened Firefox." }
 ```
 
-`success` means the executor accepted and performed the action — **not** that
+`success` means the executor accepted and performed the action, **not** that
 the intended end state was observed. See
 [`../docs/ida/execution-and-verification.md`](../docs/ida/execution-and-verification.md).
 

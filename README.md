@@ -4,10 +4,12 @@
 
 > **EXPLORATION. CREATION. PLAY.**
 
+**Project site:** <https://luishowin.github.io/essential-os/>
+
 Essential OS is not an AI app and not a Linux distribution written from
 scratch. It is a long-term personal computing platform: a coherent operating
 system **assembled from proven open-source components**, with its own UX,
-orchestration and system-level software layered on top — and an intelligent
+orchestration and system-level software layered on top, and an intelligent
 system layer, **Ida `<∫>`**, that decides where computation belongs.
 
 This repository is the **canonical engineering and design record** for the
@@ -28,9 +30,9 @@ public site. The code lives in dedicated repositories, linked below.
 
 | Layer | What it is | State |
 |---|---|---|
-| **SLATE** | The eventual hardware: an extremely light, thin, modular ultrabook (999 g, ≤13″, Framework-style modularity). *Simple at rest, powerful on demand.* | **Speculative** — a hardware concept, not a product |
-| **Essential OS** | A Linux-based operating system assembled from excellent existing components (kernel, drivers, desktop, networking, audio, graphics, packaging, security), with our own UX and system services on top. | **Vision + research** — with a real desktop assembly in progress |
-| **Ida `<∫>`** | The intelligent system layer: a launcher that becomes an operating-system agent. Understands intent, resolves context, selects capabilities, executes native actions, verifies results, and routes work between local and external intelligence. | **Prototype → early architecture** — Core is real and released |
+| **SLATE** | The eventual hardware: an extremely light, thin, modular ultrabook (999 g, ≤13″, Framework-style modularity). *Simple at rest, powerful on demand.* | **Speculative**, a hardware concept, not a product |
+| **Essential OS** | A Linux-based operating system assembled from excellent existing components (kernel, drivers, desktop, networking, audio, graphics, packaging, security), with our own UX and system services on top. | **Vision + research**, with a real desktop assembly in progress |
+| **Ida `<∫>`** | The intelligent system layer: a launcher that becomes an operating-system agent. Understands intent, resolves context, selects capabilities, executes native actions, verifies results, and routes work between local and external intelligence. | **Prototype → early architecture**, Core is real and released |
 
 The relationship should feel like parts of one universe:
 
@@ -57,9 +59,9 @@ Keep the architecture understandable.
 Let AI accelerate the builder, not replace the builder.
 
 The project was inspired partly by watching modern platform companies move
-toward **system-level** AI — an orchestrator that reasons over a request,
+toward **system-level** AI: an orchestrator that reasons over a request,
 retrieves context, selects structured OS/app actions, and lets the operating
-system execute them — rather than putting a chatbot inside an application.
+system execute them, rather than putting a chatbot inside an application.
 
 The question underneath it:
 
@@ -86,7 +88,7 @@ unless it is.
   policy layer mints approval; only an executor touches the OS. Enforced in
   types and by tests, not by convention.
 - A capability registry, an ephemeral context engine, a bounded planner, a
-  local action model (Ollama + FunctionGemma), and verification — implemented
+  local action model (Ollama + FunctionGemma), and verification, implemented
   as the `0.0.6` foundation.
 - **Essential Desktop**, a real Fedora + KDE Plasma assembly: shell, app
   presentation, visual language, energy policy and interaction model.
@@ -97,7 +99,7 @@ unless it is.
 - Local AI infrastructure: small action models, embeddings and semantic
   retrieval, model quantisation, and the split between local and external
   inference.
-- The desktop base for Essential OS (GNOME vs KDE Plasma) — currently an open
+- The desktop base for Essential OS (GNOME vs KDE Plasma), currently an open
   question, recorded as an ADR.
 - How a launcher becomes an interaction runtime, and how partial input can be
   actualised safely as it is typed.
@@ -140,10 +142,10 @@ src/           why there is no implementation here
 
 **Implementation repositories:**
 
-- Ida — <https://github.com/luishowin/ida> (Rust: `ida-core`, `ida-linux`,
+- Ida: <https://github.com/luishowin/ida> (Rust: `ida-core`, `ida-linux`,
   `ida`, `ida-voice`)
-- Essential Desktop — the Fedora/Plasma assembly (working tree, private)
-- Early intent-router experiments — `Labs/jev-routing-test` (TypeScript)
+- Essential Desktop: the Fedora/Plasma assembly (working tree, private)
+- Early intent-router experiments: `Labs/jev-routing-test` (TypeScript)
 
 ---
 

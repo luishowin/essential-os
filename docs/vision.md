@@ -1,7 +1,7 @@
 # Vision
 
 > A personal computing system, built toward 2030, that is coherent, owned and
-> intelligent — where the computer itself is the interface to intelligence.
+> intelligent: where the computer itself is the interface to intelligence.
 
 **Status:** Vision · **Date:** 2026-10-07
 
@@ -23,7 +23,7 @@ Each layer is only useful because of the others. Ida is interesting because it
 lives *inside* the system rather than inside an app. Essential OS is interesting
 because it has an intelligence layer that can act on it safely. SLATE is
 interesting because it is designed around the idea that a machine can be simple
-at rest and powerful on demand — and around an agent that knows how to exploit
+at rest and powerful on demand, and around an agent that knows how to exploit
 that.
 
 The target horizon is **2030**. That is deliberate. The project is not one
@@ -35,7 +35,7 @@ maturing at once, and the builder matures with them.
 By 2030 this project will have more Linux knowledge, more systems engineering,
 more AI experience, more UI and product design, more hardware understanding, and
 more resources than it has today. The asset is not only the software being
-built — **the builder is also being upgraded.** Rushing the vision into today's
+built: **the builder is also being upgraded.** Rushing the vision into today's
 skill set would produce a worse version of it.
 
 The project therefore favours **reality over preserving old plans**. If a plan
@@ -78,14 +78,14 @@ section for the same timeline presented to the public.
 Not a product launch. The measure is whether, at some point, the machine in
 front of me is:
 
-- **mine** — the software can be inspected, changed and kept working without a
+- **mine**: the software can be inspected, changed and kept working without a
   vendor's permission;
-- **coherent** — one system rather than a pile of unrelated apps;
-- **intelligent in the right places** — fast and deterministic where it can be,
+- **coherent**: one system rather than a pile of unrelated apps;
+- **intelligent in the right places**: fast and deterministic where it can be,
   reasoning only where it must;
-- **safe to hand an operating system to** — the intelligence proposes, the
+- **safe to hand an operating system to**: the intelligence proposes, the
   system disposes;
-- **sustainable** — maintainable by one person over years, not a weekend demo.
+- **sustainable**: maintainable by one person over years, not a weekend demo.
 
 ## What this is not
 

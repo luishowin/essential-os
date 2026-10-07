@@ -66,8 +66,8 @@ The second request does not need another search. Ida has:
 "it" → screenshot_12.png
 ```
 
-The resolver turns references — *it, that, the PDF, the one I just opened, that
-folder, my latest screenshot, John* — into concrete entity ids. In Core this is
+The resolver turns references (*it, that, the PDF, the one I just opened, that
+folder, my latest screenshot, John*) into concrete entity ids. In Core this is
 deliberately narrow: *"open that/it/this"* and *"show it"* only. Phrases naming
 actions Core does not have (window management, file moves) stay honest misses
 rather than guesses.
@@ -95,7 +95,7 @@ Rules that matter:
   names types and counts, never content.
 - **Bounded.** A small cap on recent entities and actions, and a capped,
   redacted clipboard hint.
-- **Cleared with the conversation**, not on hide — clearing on hide would wipe
+- **Cleared with the conversation**, not on hide; clearing on hide would wipe
   context immediately after every launch.
 - **Honest about absence.** Active app/window and current directory may be
   `None` when the platform cannot tell us. Inventing them would be worse than

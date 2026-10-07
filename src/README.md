@@ -4,7 +4,7 @@
 
 ## There is no implementation here, on purpose.
 
-The design brief for this repository asked for a minimal Ida scaffold — stubs
+The design brief for this repository asked for a minimal Ida scaffold: stubs
 and interfaces for Input, Intent Engine, Context Engine, Capability Registry,
 Planner, Permission Engine, Action Runtime, Verification, Response Engine and
 Model Router.

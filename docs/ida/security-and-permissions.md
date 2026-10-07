@@ -17,7 +17,7 @@ as the generic mechanism for an agent. Ida does not have it, and will not.
 
 The intelligence never controls the operating system directly. Parsers,
 providers and models emit inert `Intent` values. Only the policy layer can mint
-an approval, and only the executor — which accepts nothing else — performs a
+an approval, and only the executor, which accepts nothing else, performs a
 side effect.
 
 ```text
@@ -69,9 +69,9 @@ permission, the confirmation policy, the **origin** of the request, and an
 
 Origins:
 
-- **Automatic** — as the user types, or a model's own unpicked proposal;
-- **UserSelected** — the user pressed Enter or clicked;
-- **Spoken** — a transcript.
+- **Automatic**: as the user types, or a model's own unpicked proposal;
+- **UserSelected**: the user pressed Enter or clicked;
+- **Spoken**: a transcript.
 
 Two invariants follow:
 
@@ -100,9 +100,9 @@ fixture in [`contract/fixtures/security.json`](../../contract/fixtures/security.
 Two OS resources are treated as doors with exactly one key each, opened only for
 an approved capability and only while it is needed:
 
-- **The network** — one module opens connections, and it is shut by default.
+- **The network**: one module opens connections, and it is shut by default.
   Plain HTTP is loopback only. Outbound redirects are checked hop by hop.
-- **The microphone** — one module opens it, for one session at a time. Audio
+- **The microphone**: one module opens it, for one session at a time. Audio
   never reaches disk and never leaves the machine.
 
 Speech itself runs in a helper process that exists only while listening, so the

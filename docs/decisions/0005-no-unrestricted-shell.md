@@ -1,4 +1,4 @@
-# 0005 — No unrestricted shell execution for the intelligence
+# 0005. No unrestricted shell execution for the intelligence
 
 - **Status:** Accepted
 - **Date:** 2026-10-07

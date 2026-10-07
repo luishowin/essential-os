@@ -1,4 +1,4 @@
-# 0008 — The LLM is a translator and planner, not the executor
+# 0008. The LLM is a translator and planner, not the executor
 
 - **Status:** Accepted
 - **Date:** 2026-10-07
@@ -8,7 +8,7 @@
 The default shape of an "AI agent" is a model in a loop with tools, deciding
 what to do and doing it. That shape makes the model the source of both intent
 and action, which means the system cannot meaningfully validate, permission or
-verify anything — the model has already acted.
+verify anything: the model has already acted.
 
 ## Decision
 
@@ -27,7 +27,7 @@ function. It is asked to emit structured intent.
   planning, and changes nothing about safety.
 - It makes the system testable: the model's output is data, and data can be
   validated and tested.
-- It is what lets a *small* model be useful — the model does not need to be
+- It is what lets a *small* model be useful: the model does not need to be
   trusted, because it is not trusted.
 
 ## Alternatives

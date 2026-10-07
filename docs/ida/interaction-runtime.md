@@ -23,7 +23,7 @@ tenth of what Ida has to do:
 - an action may need verifying afterwards;
 - the result may need a response shaped for the input that produced it.
 
-Calling that a router understates it and invites the wrong design — a single
+Calling that a router understates it and invites the wrong design: a single
 dispatch table rather than a stateful runtime.
 
 ## The runtime in one picture
@@ -58,10 +58,10 @@ UserRequest │  Intent Engine                            │
 
 Ida presents two interaction modes, but they are not two architectures:
 
-- **Action mode** — fast, terse, deterministic. *Open Photos.* *Done.* No
+- **Action mode**: fast, terse, deterministic. *Open Photos.* *Done.* No
   unnecessary conversation, no giant chat history, no *"Sure! I'd be happy to
   help you open Photos!"*
-- **Assistant mode** — natural language, reasoning, multi-step tasks, and a
+- **Assistant mode**: natural language, reasoning, multi-step tasks, and a
   conversational surface when one is warranted.
 
 Both enter through the same runtime. A single keyboard shortcut summons Ida;

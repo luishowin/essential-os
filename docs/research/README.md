@@ -3,7 +3,7 @@
 **Status:** Living record · **Date:** 2026-10-07
 
 This directory is the lightweight project journal. It records what was learned,
-what changed, and what remains uncertain — so that the project can be understood
+what changed, and what remains uncertain, so that the project can be understood
 later without reading chat history.
 
 ---
@@ -38,31 +38,31 @@ These are the questions the project is deliberately holding open. They are
 revisited rather than quietly forgotten. Each should eventually become an ADR
 with a decision, or a documented reason to stay open.
 
-1. **Desktop base** — KDE Plasma or GNOME for Essential OS? Ida is being ported
+1. **Desktop base**: KDE Plasma or GNOME for Essential OS? Ida is being ported
    from GNOME to Plasma. See ADR [0009](../decisions/0009-desktop-base-open.md).
-2. **`system.disk_usage` vs `shell.run`** — should common diagnostic commands
+2. **`system.disk_usage` vs `shell.run`**: should common diagnostic commands
    become structured capabilities, or stay behind the controlled terminal
    capability? The design brief assumed a `system.disk_usage` capability; the
    real registry does not have one.
-3. **Partial-input actualisation** — how can intents be actualised as the user
+3. **Partial-input actualisation**: how can intents be actualised as the user
    types without ever committing a destructive action on a partial phrase? See
    [interaction-principle.md](../ida/interaction-principle.md).
-4. **Local model quality** — a small local action model holds JSON shape but
+4. **Local model quality**: a small local action model holds JSON shape but
    does not map paraphrase to capability ids reliably. How much interpretation
    can move local, and what stays remote?
-5. **Semantic indexing of personal information** — what should be indexed, how,
+5. **Semantic indexing of personal information**: what should be indexed, how,
    and with what privacy boundary? Not before ephemeral context works.
-6. **Persistent memory** — what is worth remembering, in what form, and how is
+6. **Persistent memory**: what is worth remembering, in what form, and how is
    it kept honest and inspectable?
-7. **Where computation belongs** — the policy by which Ida chooses local,
+7. **Where computation belongs**: the policy by which Ida chooses local,
    home-server or external execution.
-8. **Cross-application actions** — reliable multi-app flows on Linux, given
+8. **Cross-application actions**: reliable multi-app flows on Linux, given
    compositor and sandbox constraints.
-9. **MCP's place** — an interoperability layer that projects external tools into
+9. **MCP's place**: an interoperability layer that projects external tools into
    the capability registry, never the fundamental architecture.
-10. **Maintainability** — keeping the system understandable by one person as it
+10. **Maintainability**: keeping the system understandable by one person as it
     grows.
-11. **SLATE feasibility** — whether the 999 g / ≤13″ / modular targets can be
+11. **SLATE feasibility**: whether the 999 g / ≤13″ / modular targets can be
     met together, and by what route.
 
 ## How to add an entry

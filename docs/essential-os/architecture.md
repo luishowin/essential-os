@@ -1,4 +1,4 @@
-# Essential OS — architecture
+# Essential OS: architecture
 
 **Status:** Vision + research · **Date:** 2026-10-07
 
@@ -12,7 +12,7 @@ the way a person interacts with the machine.
 ### 1. Foundation
 
 Kernel, firmware, drivers, init, filesystem, power management. Chosen, not
-written. The goal is hardware compatibility that is boring and predictable —
+written. The goal is hardware compatibility that is boring and predictable,
 especially for the eventual SLATE hardware.
 
 ### 2. System services
@@ -37,7 +37,7 @@ own design work belongs.
 ### 5. Intelligence
 
 Ida `<∫>`, reaching the system only through structured capabilities. Ida is a
-layer *of* Essential OS, not an application running on top of it — which is what
+layer *of* Essential OS, not an application running on top of it, which is what
 makes it a system-level agent rather than a chatbot in a window.
 
 ```text
@@ -58,9 +58,9 @@ makes it a system-level agent rather than a chatbot in a window.
 
 Two viable paths exist, and the choice is not yet made:
 
-- **KDE Plasma** — the current machine (Plasma 6.7.5) and the Essential Desktop
+- **KDE Plasma**: the current machine (Plasma 6.7.5) and the Essential Desktop
   assembly. Rich, configurable, strong Wayland story, mature shell.
-- **GNOME** — Ida's original target (Fedora 44 / GNOME 50), with Ida's existing
+- **GNOME**: Ida's original target (Fedora 44 / GNOME 50), with Ida's existing
   GNOME integration work already done.
 
 The criteria that will settle it include: Ida's integration cost on each base;
@@ -74,7 +74,7 @@ for one person. Until then, **both are documented**, and ADR
 Essential OS does not depend on Ida to function. Ida is a layer that, when
 present, makes the system easier to operate. The dependency runs the other way:
 Ida depends on the system exposing **structured capabilities**. The richer and
-more consistent that capability surface is, the more Ida can do — safely.
+more consistent that capability surface is, the more Ida can do, safely.
 
 ## Status
 

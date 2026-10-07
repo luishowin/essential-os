@@ -18,7 +18,7 @@ Platform companies have begun moving from "an assistant that calls an LLM" to
 > executes those tools.
 
 That is the same architectural direction as Ida, arrived at independently. It is
-worth studying carefully — while noting that only the interfaces are public, and
+worth studying carefully, while noting that only the interfaces are public, and
 the internals (planner topology, prompts, routing policy, ranking) are inferred.
 
 ## Apple's Siri (2026)
@@ -90,10 +90,10 @@ foundation.
 
 ## Other references
 
-- **Local inference stacks** (Ollama, llama.cpp) — the practical path to small
+- **Local inference stacks** (Ollama, llama.cpp): the practical path to small
   local models on ordinary hardware.
-- **Small instruction and action models** — enough to classify intent and select
+- **Small instruction and action models**: enough to classify intent and select
   a tool; not enough (yet) to map paraphrase reliably, which validation must
   absorb.
-- **Embedding models** — a lightweight semantic retrieval layer, without turning
+- **Embedding models**: a lightweight semantic retrieval layer, without turning
   Ida into a chatbot with a vector database stapled on.

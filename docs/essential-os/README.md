@@ -18,7 +18,7 @@ excellent existing components** rather than written from scratch.
 
 Kernel, drivers, utilities, desktop infrastructure, networking, audio, graphics,
 package management and security come from the open-source ecosystem. Our own
-work is the **UX, orchestration and system services** layered on top — the place
+work is the **UX, orchestration and system services** layered on top: the place
 where differentiation actually exists.
 
 ## Why assemble rather than build
@@ -42,7 +42,7 @@ other more valuable.
 
 ## An existing artifact
 
-There is already a real assembly in progress — an **Essential Desktop** working
+There is already a real assembly in progress: an **Essential Desktop** working
 tree: a Fedora + KDE Plasma environment with a defined shell, application
 presentation, visual language, energy policy and interaction model, plus
 documented invariants, rollback and audit. It is a strong concrete basis for

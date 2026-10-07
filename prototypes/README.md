@@ -2,7 +2,7 @@
 
 **Status:** Index · **Date:** 2026-10-07
 
-Where experiments live. This directory holds **notes and pointers**, not code —
+Where experiments live. This directory holds **notes and pointers**, not code:
 the real prototypes have their own homes and histories, and copying them here
 would create drift.
 
