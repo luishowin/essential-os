@@ -16,7 +16,7 @@ This project is three layers maturing together, not one feature:
           ↓
      Essential OS        the operating system
           ↓
-      Ida  <∫>           the intelligence
+      Ida           the intelligence
 ```
 
 Each layer is only useful because of the others. Ida is interesting because it
@@ -67,7 +67,7 @@ Computing fabric
 SLATE
   ├── hardware
   ├── Essential OS
-  └── Ida <∫>
+  └── Ida
 ```
 
 This is an **intended trajectory, not a promise.** See the site's roadmap

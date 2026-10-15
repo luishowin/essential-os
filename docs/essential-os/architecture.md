@@ -36,7 +36,7 @@ own design work belongs.
 
 ### 5. Intelligence
 
-Ida `<∫>`, reaching the system only through structured capabilities. Ida is a
+Ida, reaching the system only through structured capabilities. Ida is a
 layer *of* Essential OS, not an application running on top of it, which is what
 makes it a system-level agent rather than a chatbot in a window.
 
@@ -50,7 +50,7 @@ makes it a system-level agent rather than a chatbot in a window.
 ├─────────────────────────────────────────────┤
 │ 2  Foundation          kernel · drivers     │
 ├─────────────────────────────────────────────┤
-│ 5  Intelligence        Ida <∫>  (cross-cut) │
+│ 5  Intelligence        Ida  (cross-cut) │
 └─────────────────────────────────────────────┘
 ```
 

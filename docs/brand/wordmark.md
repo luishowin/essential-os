@@ -1,59 +1,62 @@
-# The E∬ENTIAL OS wordmark
+# The ESSENTIAL OS wordmark
 
-**Status:** Design · **Date:** 2026-10-07
+**Status:** Design · **Date:** 2026-10-16 (revised: integrals removed)
 
 ---
 
 ## The mark
 
 ```text
-E ∬ E N T I A L   O S
+ESSENTIAL OS
 ```
 
-The double integral `∬` (U+222C) replaces the two *s* characters in "Essential".
+Plain spelling. No substitutions. `ss` is just `ss`.
+
+Ida is plain as well:
+
+```text
+Ida
+```
+
+No angle brackets, no integral. Just `Ida`.
 
 ## Treatment
 
 | Property | Value |
 |---|---|
-| Surrounding type | Thin, Inter-like grotesque; uppercase |
-| Tracking | Generous and even (wide `letter-spacing`) |
-| Rhythm | Restrained, almost monospaced |
-| The `∬` | A contrasting **serif**, set larger, optically aligned to the cap height |
-| Weight | Light / regular, never bold |
+| Typeface | [Geo](https://fonts.google.com/specimen/Geo) (Google Fonts, OFL), uppercase |
+| Tracking | 21% (`letter-spacing: 0.21em`), even across the whole word |
+| Weight | Regular 400 (Geo ships a single weight) |
 | Colour | `currentColor`, so it works on dark and light without a second asset |
-| Case | Always uppercase |
+| Case | Always uppercase for `ESSENTIAL OS`; `Ida` is capital-I + lowercase-da |
 
 ## Why it works
 
-- The integral is the anchor: it reads as mathematical and technical without
-  decoration.
-- The contrast between a thin grotesque and a serif integral gives the mark a
-  single point of focus rather than an even texture.
-- Wide tracking makes it feel considered and calm, the opposite of a startup
-  logo that shouts.
+- One typeface, one tracking, no special glyph. It reads as calm and technical.
+- 21% tracking gives it air without breaking the word apart.
+- Geo's geometric construction carries the identity, so no contrasting serif is needed.
+- ESSENTIAL OS, Ida, and SLATE all share the same typographic sensibility. SLATE stays plain uppercase in the same treatment.
 
-## The relationship to the other marks
+## The relationship of the marks
 
 ```text
-E∬ENTIAL OS     double integral, the system
-<∫> Ida         single integral, the intelligence
-SLATE           plain uppercase, the hardware
+ESSENTIAL OS   the system
+Ida            the intelligence
+SLATE          the hardware
 ```
 
-The integral family ties the software layers together. SLATE stays plain,
-because it is the physical object.
+No integral family. The three names tie together through shared type and tracking, not shared symbols.
 
 ## Files
 
-- [`essential-os-wordmark.svg`](essential-os-wordmark.svg), the canonical asset.
+- [`essential-os-wordmark.svg`](essential-os-wordmark.svg), the canonical wordmark asset (Geo, 21% tracking).
+- [`eos-icon.svg`](eos-icon.svg), the EOS icon: block E-O-S letterforms, `currentColor` fill.
 
 ## Rules
 
-- Do not add gradients, shadows, glows or outlines to the wordmark.
-- Do not set the `∬` in the same typeface as the surrounding letters.
-- Do not letter-space the `∬` away from the word; it is part of the word.
-- Do not recolour the `∬` differently from the rest by default. The contrast is
-  in the *typeface*, not the colour.
-- The `<∫>` mark may be animated subtly (e.g. a slow pulse), but never
-  distractingly.
+- Do not add gradients, shadows, glows or outlines to the wordmark or icon.
+- Do not substitute glyphs into the word (`ss` stays `ss`).
+- Do not letterspace unevenly; tracking is 0.21em everywhere.
+- Do not recolour parts of the word differently by default.
+- Do not reintroduce integral / bracket marks.
+- The icon may be used alone (favicon, app icon, boot mark) or alongside the wordmark. When alongside, keep clear space equal to the cap height.

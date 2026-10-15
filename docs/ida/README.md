@@ -1,4 +1,4 @@
-# Ida `<∫>`
+# Ida
 
 **The intelligent system layer of Essential OS.**
 
@@ -13,13 +13,7 @@ system-level agent. It is not a chatbot, and it is not "an LLM that can run
 shell commands." The interesting part is the operating-system intent system
 underneath; models are replaceable components sitting above it.
 
-The shape of the mark reflects the idea: the angle brackets make it feel like a
-contained agent or executable construct, while the integral suggests
-accumulation, composition and continuous processing.
-
-```text
-<∫>
-```
+The name is plain: Ida, no mark, no brackets.
 
 The defining philosophy, in one line:
 

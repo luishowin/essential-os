@@ -7,14 +7,18 @@
   <meta name="description" content="Essential OS is a personal computing system being built toward 2030: a modular ultrabook, a Linux-based operating system assembled from proven components, and Ida, an intelligent system layer." />
   <meta name="color-scheme" content="dark light" />
   <link rel="stylesheet" href="styles.css" />
-  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='0.9em' font-size='90'%3E%E2%88%AC%3C/text%3E%3C/svg%3E" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Geo&display=swap" rel="stylesheet" />
+  <link rel="icon" href="eos-icon.svg" type="image/svg+xml" />
 </head>
 <body>
   <a class="skip" href="#main">Skip to content</a>
 
   <header class="topbar">
     <a class="brand" href="#top" aria-label="Essential OS">
-      <span class="brand__word">E<span class="brand__int">&#x222C;</span>ENTIAL&nbsp;OS</span>
+      <img class="brand__icon" src="eos-icon.svg" alt="" aria-hidden="true" />
+      <span class="brand__word">ESSENTIAL&nbsp;OS</span>
     </a>
     <button id="theme" class="theme" type="button" aria-label="Switch theme">
       <span data-theme-label>Light</span>
@@ -25,12 +29,12 @@
     <!-- ── Hero ─────────────────────────────────────────────────────── -->
     <section id="top" class="hero">
       <p class="eyebrow">A personal computing system I'm building toward 2030.</p>
-      <h1 class="hero__mark">E<span class="serif">&#x222C;</span>ENTIAL OS</h1>
+      <h1 class="hero__mark">ESSENTIAL OS</h1>
       <p class="hero__modes">EXPLORATION.&nbsp;&nbsp;CREATION.&nbsp;&nbsp;PLAY.</p>
       <p class="lede">
         Essential OS combines a modular personal computer, a Linux-based
         operating system assembled from proven open-source components, and an
-        intelligent system layer called Ida&nbsp;<span class="serif">&lt;&#x222B;&gt;</span>
+        intelligent system layer called Ida
         that decides where computation belongs.
       </p>
       <p class="hero__note">This is a project journal, not a product page. Everything below is labelled honestly: what exists, what is being explored, what is planned, and what is speculative.</p>
@@ -80,7 +84,7 @@
         </article>
         <div class="layer__arrow" aria-hidden="true">&#x2193;</div>
         <article class="layer" role="listitem">
-          <h3><span class="serif">&lt;&#x222B;&gt;</span> Ida</h3>
+          <h3>Ida</h3>
           <p class="layer__sub">The intelligence</p>
           <p>A launcher that becomes an operating-system agent: it understands intent, resolves context, selects capabilities, acts, and verifies.</p>
           <p class="tag tag--impl">Core implemented</p>
@@ -269,8 +273,8 @@
 
   <footer class="footer">
     <p>
-      Essential OS · <span class="serif">E&#x222C;ENTIAL OS</span> ·
-      <span class="serif">&lt;&#x222B;&gt;</span> Ida · SLATE
+      Essential OS · ESSENTIAL OS ·
+      Ida · SLATE
     </p>
     <p class="footer__meta">MIT · an ongoing personal project · <span id="year"></span></p>
   </footer>

@@ -14,6 +14,7 @@
   --warn: #d8b56a;
 
   --sans: Inter, "Helvetica Neue", Helvetica, Arial, system-ui, sans-serif;
+  --logo: Geo, Inter, "Helvetica Neue", Helvetica, Arial, system-ui, sans-serif;
   --serif: Georgia, "Times New Roman", "DejaVu Serif", serif;
   --mono: "JetBrains Mono", "SF Mono", "DejaVu Sans Mono", Menlo, monospace;
 
@@ -73,12 +74,13 @@ body {
   border-bottom: 1px solid var(--line);
 }
 
-.brand { text-decoration: none; color: var(--fg); }
+.brand { text-decoration: none; color: var(--fg); display: inline-flex; align-items: center; gap: 0.65rem; }
+.brand__icon { width: 1.35rem; height: 1.35rem; flex: none; }
 .brand__word {
-  font-size: 0.82rem; font-weight: 300; letter-spacing: 0.34em;
+  font-family: var(--logo);
+  font-size: 0.95rem; font-weight: 400; letter-spacing: 0.21em;
   text-transform: uppercase;
 }
-.brand__int { font-family: var(--serif); letter-spacing: 0; font-size: 1.05em; }
 
 .theme {
   font: inherit; font-size: 0.75rem; letter-spacing: 0.12em; text-transform: uppercase;
@@ -131,13 +133,13 @@ strong { font-weight: 550; }
 }
 
 .hero__mark {
+  font-family: var(--logo);
   font-size: clamp(2rem, 8.5vw, 4.4rem);
-  font-weight: 250;
-  letter-spacing: 0.16em;
+  font-weight: 400;
+  letter-spacing: 0.21em;
   margin: 0 0 1.2rem;
   white-space: nowrap;
 }
-.hero__mark .serif { letter-spacing: 0; font-size: 1.12em; }
 
 .hero__modes {
   font-size: clamp(0.72rem, 2vw, 0.85rem);
@@ -147,7 +149,6 @@ strong { font-weight: 550; }
 }
 
 .lede { font-size: clamp(1.05rem, 2.6vw, 1.25rem); line-height: 1.6; max-width: 38rem; }
-.lede .serif { font-size: 1.05em; }
 
 .hero__note {
   margin-top: 2rem; padding-top: 1.5rem; border-top: 1px solid var(--line);
@@ -164,7 +165,6 @@ strong { font-weight: 550; }
   background: var(--panel);
 }
 .layer h3 { font-size: 1.15rem; letter-spacing: 0.02em; }
-.layer h3 .serif { font-size: 1.05em; }
 .layer__sub { color: var(--muted); font-size: 0.78rem; letter-spacing: 0.14em; text-transform: uppercase; margin: 0.2rem 0 0.7rem; }
 .layer p { font-size: 0.95rem; }
 .layer__arrow { text-align: center; color: var(--faint); font-size: 1.1rem; line-height: 1; }

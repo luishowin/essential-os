@@ -1,4 +1,4 @@
-# E∬ENTIAL OS
+# ESSENTIAL OS
 
 **A personal computing system I'm building toward 2030.**
 
@@ -10,7 +10,7 @@ Essential OS is not an AI app and not a Linux distribution written from
 scratch. It is a long-term personal computing platform: a coherent operating
 system **assembled from proven open-source components**, with its own UX,
 orchestration and system-level software layered on top, and an intelligent
-system layer, **Ida `<∫>`**, that decides where computation belongs.
+system layer, **Ida**, that decides where computation belongs.
 
 This repository is the **canonical engineering and design record** for the
 project. It holds the vision, the decisions, the roadmap, the brand and the
@@ -25,26 +25,24 @@ public site. The code lives in dedicated repositories, linked below.
           ↓
      Essential OS
           ↓
-      Ida  <∫>
+      Ida
 ```
 
 | Layer | What it is | State |
 |---|---|---|
 | **SLATE** | The eventual hardware: an extremely light, thin, modular ultrabook (999 g, ≤13″, Framework-style modularity). *Simple at rest, powerful on demand.* | **Speculative**, a hardware concept, not a product |
 | **Essential OS** | A Linux-based operating system assembled from excellent existing components (kernel, drivers, desktop, networking, audio, graphics, packaging, security), with our own UX and system services on top. | **Vision + research**, with a real desktop assembly in progress |
-| **Ida `<∫>`** | The intelligent system layer: a launcher that becomes an operating-system agent. Understands intent, resolves context, selects capabilities, executes native actions, verifies results, and routes work between local and external intelligence. | **Prototype → early architecture**, Core is real and released |
+| **Ida** | The intelligent system layer: a launcher that becomes an operating-system agent. Understands intent, resolves context, selects capabilities, executes native actions, verifies results, and routes work between local and external intelligence. | **Prototype → early architecture**, Core is real and released |
 
 The relationship should feel like parts of one universe:
 
 ```text
-E∬ENTIAL OS
+ESSENTIAL OS
 
-<∫> Ida
+Ida
 
 SLATE
 ```
-
-The double integral `∬` replaces the two *s* characters in "Essential".
 
 ---
 

@@ -25,8 +25,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 - `docs/slate/`: the hardware layer: vision and requirements.
 - `docs/decisions/`: the ADR convention and the first nine decisions.
 - `docs/research/`: the project log, Ida's real history, and prior art.
-- `docs/brand/`: the E∬ENTIAL OS wordmark, the `<∫>` Ida mark, and the SLATE
-  relationship, with a real SVG wordmark.
+- `docs/brand/`: the ESSENTIAL OS wordmark, the Ida name, and the SLATE
+  relationship, with a real SVG wordmark and EOS icon.
 - `contract/`: language-neutral JSON Schemas for Intent, Capability and
   ExecutionResult, plus conformance fixtures and a zero-dependency validator.
 - `site/`: the one-page project site.
@@ -34,6 +34,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ### Changed
 
+- Branding simplified: integrals removed everywhere (`ss` is `ss`, Ida is `Ida`); wordmark set in Geo at 21% tracking; EOS block-letter icon added as `docs/brand/eos-icon.svg` and `site/eos-icon.svg` and used as site favicon / header.
 - Replaced em-dashes throughout with commas and colons, for a plainer
   typographic style.
 - The one-page site is deployed to GitHub Pages at

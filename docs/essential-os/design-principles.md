@@ -70,4 +70,4 @@ handle on the machine.
 
 Understated, technical, mathematical, elegant. No excessive gradients, glowing
 circuitry, robot imagery, or generic "futuristic" aesthetics. The identity
-anchor is typographic: **E∬ENTIAL OS**, **`<∫>` Ida**, **SLATE**.
+anchor is typographic: **ESSENTIAL OS**, **Ida**, **SLATE**.

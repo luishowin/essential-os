@@ -21,7 +21,7 @@ high-level. Detail lives in the layer documents:
 └───────────────────────────┬──────────────────────────────┘
                             ↓
 ┌──────────────────────────────────────────────────────────┐
-│  Ida  <∫>        the intelligence layer                  │
+│  Ida        the intelligence layer                  │
 │  understand → resolve context → plan → capabilities →    │
 │  execute native actions → verify                         │
 │  local-first · provider-agnostic · preview-first         │
@@ -65,7 +65,7 @@ come from the open-source ecosystem. Differentiation lives in the UX,
 orchestration and system services layered on top. **Status: vision + research,
 with a real desktop assembly in progress.**
 
-### Ida `<∫>`: the intelligence
+### Ida: the intelligence
 
 The system-level agent. It begins as a tiny launcher/search interface and
 evolves into a layer that understands natural-language intent, resolves context

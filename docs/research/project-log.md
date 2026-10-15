@@ -9,7 +9,7 @@ entries.
 
 **What.** This repository is created as the canonical engineering and design
 record for the project. It documents three connected layers (**SLATE →
-Essential OS → Ida `<∫>`**) and establishes the conventions that keep the
+Essential OS → Ida**) and establishes the conventions that keep the
 record honest: ADRs, status labels, and a project log.
 
 **Why now.** The pieces of the project have been developed separately (an Ida
@@ -42,3 +42,19 @@ to the implementation repositories so there is exactly one owner for every fact.
 
 **Open.** The desktop base; whether diagnostic commands become structured
 capabilities; and the partial-input interaction paradigm.
+
+---
+
+## 2026-10-16 · Branding simplified
+
+**What.** Integrals removed everywhere. `ESSENTIAL` is spelled `ss`, Ida is
+just `Ida`. Wordmark set in Geo (Google Fonts) at 21% tracking
+(`letter-spacing: 0.21em`). EOS block-letter icon added as
+`docs/brand/eos-icon.svg` and `site/eos-icon.svg`, wired as site favicon and
+header mark. Past records updated in place per explicit direction, against the
+usual append-only convention.
+
+**Why.** The integral substitution was clever but costly: hard to type, hard to
+search, easy to break across fonts and encodings. Plain spelling plus one
+typeface plus one icon carries the identity with less machinery. Same logic as
+the platform: do more with less.

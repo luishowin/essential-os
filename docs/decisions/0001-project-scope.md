@@ -19,7 +19,7 @@ one app's needs, and cannot grow into a system.
 The project is scoped as a **platform**, with three layers developed together:
 
 ```text
-SLATE → Essential OS → Ida <∫>
+SLATE → Essential OS → Ida
 ```
 
 The repository `essential-os` is the canonical engineering and design record.

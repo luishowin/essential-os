@@ -31,8 +31,8 @@ Most rows are "choose". The "build" rows are where the project's effort belongs.
 | Desktop | Visual language | **build** | colour, type, motion, icons | Prototype |
 | Desktop | Keyboard model | **build (config)** | global shortcuts, interaction model | Prototype |
 | Experience | App family | choose + configure | Files, Photos, Music, Notes, Terminal, Settings… | Prototype |
-| Experience | Design system | **build** | the E∬ENTIAL OS language | Design |
-| Intelligence | Runtime | **build** | Ida `<∫>` | Implemented (Core) |
+| Experience | Design system | **build** | the ESSENTIAL OS language | Design |
+| Intelligence | Runtime | **build** | Ida | Implemented (Core) |
 | Intelligence | Capability layer | **build** | the registry and trust path | Implemented |
 | Intelligence | Model routing | **build** | provider-agnostic router | Prototype |
 | Intelligence | Local models | choose | small action models, embeddings | Research |

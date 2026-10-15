@@ -48,5 +48,5 @@ SLATE            ← designed around "simple at rest, powerful on demand"
    ↓
 Essential OS     ← assembled, owned, local-first
    ↓
-Ida <∫>          ← the intelligence that uses the machine well
+Ida          ← the intelligence that uses the machine well
 ```
