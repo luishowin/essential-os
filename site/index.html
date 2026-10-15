@@ -3,9 +3,16 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Essential OS: a personal computing system toward 2030</title>
-  <meta name="description" content="Essential OS is a personal computing system being built toward 2030: a modular ultrabook, a Linux-based operating system assembled from proven components, and Ida, an intelligent system layer." />
+  <title>Essential OS: A computer that is yours</title>
+  <meta name="description" content="Essential OS is an open-source personal computing environment built to be understood, adapted, and rebuilt. Proven software, a coherent interface, efficient components, and optional intelligent tools." />
+  <link rel="canonical" href="https://luishowin.github.io/essential-os/" />
+  <meta property="og:title" content="Essential OS: A computer that is yours" />
+  <meta property="og:description" content="An open-source personal computing environment built to be understood, adapted, and rebuilt. Explore. Create. Play." />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://luishowin.github.io/essential-os/" />
+  <meta name="twitter:card" content="summary" />
   <meta name="color-scheme" content="dark light" />
+  <meta name="theme-color" content="#0a0a0b" />
   <link rel="stylesheet" href="styles.css" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -16,7 +23,7 @@
   <a class="skip" href="#main">Skip to content</a>
 
   <header class="topbar">
-    <a class="brand" href="#top" aria-label="Essential OS">
+    <a class="brand" href="#top" aria-label="Essential OS top">
       <span class="brand__word">ESSENTIAL&nbsp;OS</span>
     </a>
     <button id="theme" class="theme" type="button" aria-label="Switch theme">
@@ -24,83 +31,231 @@
     </button>
   </header>
 
+  <nav class="chapters" id="chapters" aria-label="Chapters">
+    <button class="chapters__toggle" type="button" aria-expanded="false" aria-controls="chapters-list">
+      <span class="chapters__cur"><span class="ch__num" data-current-num>001</span>&nbsp;&nbsp;<span data-current-label>What is Essential OS?</span></span>
+      <span class="chapters__chev" aria-hidden="true">&#x2191;</span>
+    </button>
+    <ol id="chapters-list">
+      <li><a href="#001-what-is"><span class="ch__num">001</span><span class="ch__label">What is Essential OS?</span></a></li>
+      <li><a href="#002-why"><span class="ch__num">002</span><span class="ch__label">Why it exists</span></a></li>
+      <li><a href="#003-architecture"><span class="ch__num">003</span><span class="ch__label">Architecture</span></a></li>
+      <li><a href="#004-experience"><span class="ch__num">004</span><span class="ch__label">The experience</span></a></li>
+      <li><a href="#005-applications"><span class="ch__num">005</span><span class="ch__label">Essential applications</span></a></li>
+      <li><a href="#006-intelligence"><span class="ch__num">006</span><span class="ch__label">Intelligence, safety and trust</span></a></li>
+      <li><a href="#007-ownership"><span class="ch__num">007</span><span class="ch__label">Ownership and recovery</span></a></li>
+      <li><a href="#008-machine"><span class="ch__num">008</span><span class="ch__label">The machine</span></a></li>
+      <li><a href="#009-roadmap"><span class="ch__num">009</span><span class="ch__label">The roadmap</span></a></li>
+    </ol>
+  </nav>
+  <noscript><style>.chapters__toggle{display:none}.chapters{position:static;transform:none;margin:2rem auto;max-width:var(--measure)}.chapters ol{display:block;position:static;max-height:none}</style></noscript>
+
   <main id="main">
-    <!-- ── Hero ─────────────────────────────────────────────────────── -->
-    <section id="top" class="hero">
-      <p class="eyebrow">A personal computing system I'm building toward 2030.</p>
-      <h1 class="hero__mark">ESSENTIAL OS</h1>
-      <p class="hero__modes">EXPLORATION.&nbsp;&nbsp;CREATION.&nbsp;&nbsp;PLAY.</p>
+    <!-- ── Intro ────────────────────────────────────────────────────── -->
+    <section id="top" class="hero" aria-labelledby="site-title">
+      <h1 id="site-title" class="hero__title">A computer that is yours.</h1>
+      <p class="hero__modes">EXPLORE.&nbsp;&nbsp;CREATE.&nbsp;&nbsp;PLAY.</p>
       <p class="lede">
-        Essential OS combines a modular personal computer, a Linux-based
-        operating system assembled from proven open-source components, and an
-        intelligent system layer called Ida
-        that decides where computation belongs.
+        Essential OS is an open-source personal computing environment built to be
+        understood, adapted, and rebuilt. It combines proven software, a coherent
+        interface, efficient system components, and intelligent tools that work
+        for the user, not the other way around.
       </p>
-      <p class="hero__note">This is a project journal, not a product page. Everything below is labelled honestly: what exists, what is being explored, what is planned, and what is speculative.</p>
+      <p class="hero__note">A project journal, not a product page. Status labels are honest: what is implemented, prototyped, planned, researched, or still an open question.</p>
     </section>
 
-    <!-- ── Inspiration ──────────────────────────────────────────────── -->
-    <section class="block" aria-labelledby="inspiration">
-      <h2 id="inspiration">Why this exists</h2>
+    <!-- ── 001 ──────────────────────────────────────────────────────── -->
+    <section class="block chapter" id="001-what-is" aria-labelledby="h-001">
+      <p class="chap__num" aria-hidden="true">001</p>
+      <h2 id="h-001">What is Essential OS?</h2>
       <p>
-        This project was inspired partly by watching modern platform companies
-        move toward <em>system-level</em> intelligence: an orchestrator that
-        reasons about a request, retrieves context, selects structured system
-        and app actions, and lets the operating system execute them, rather than
-        putting a chatbot inside an application.
-      </p>
-      <p class="pull">What happens when the computer itself becomes the interface to intelligence?</p>
-      <p>
-        Alongside that, there is a real frustration with the current state of
-        personal computing: expensive proprietary software, subscription
-        dependency, vendor lock-in, opaque AI systems, cloud dependence, and
-        software that increasingly assumes access to personal data.
+        Essential OS unifies five things that are usually left fragmented: a Linux
+        foundation, carefully integrated applications, a consistent desktop
+        experience, modular system components, and optional intelligent services.
       </p>
       <p>
-        The response is not to build everything from scratch, and it is not to
-        design around resentment. It is to
-        <strong>build what can reasonably be owned</strong>, and to assemble the
-        rest from components that are already excellent.
+        It is not a Linux distribution with a custom theme. It is an attempt to make
+        hardware, software, design, security, and ownership reinforce one another,
+        so the machine behaves like one system instead of a pile of unrelated parts.
+      </p>
+      <p>
+        This is a long-term project. Some parts exist now: Ida Core, a released Rust
+        launcher, and a real Fedora/KDE Plasma desktop assembly in progress. Some parts
+        are direction, not product: the full application suite, the agent-ready APIs,
+        and SLATE hardware. Each chapter below labels which is which.
+      </p>
+      <p>
+        Two names will recur. <strong>Ida</strong> is the optional intelligent layer:
+        a launcher growing into a system agent. <strong>SLATE</strong> is the eventual
+        hardware expression. Neither is the operating system itself.
+      </p>
+      <p class="caption">Read time for this section: about 30 seconds. Detail follows in chapters 003–009.</p>
+    </section>
+
+    <!-- ── 002 ──────────────────────────────────────────────────────── -->
+    <section class="block chapter" id="002-why" aria-labelledby="h-002">
+      <p class="chap__num" aria-hidden="true">002</p>
+      <h2 id="h-002">Why it exists</h2>
+      <p>
+        Personal computing has become complicated, fragmented, and dependent on
+        proprietary platforms. Essential OS starts from a different premise: a computer
+        should be capable without being needlessly complicated, beautiful without being
+        restrictive, and intelligent without taking control away from its owner.
+      </p>
+      <ul class="points">
+        <li>Use the simplest architecture that meets the actual requirements.</li>
+        <li>Reuse and integrate excellent open-source software instead of rewriting everything.</li>
+        <li>Build an interface that is consistent without restricting customisation.</li>
+        <li>Give users ownership of their software environment.</li>
+        <li>Make experimentation safer by making recovery reliable.</li>
+        <li>Treat the operating system as a foundation for exploration, creation, and play.</li>
+      </ul>
+      <p>
+        The project takes inspiration from the
+        <a href="https://omarchy.org/">Omarchy project led by DHH</a>, particularly the
+        principle that you can fix or build the things you need. Essential OS is its own
+        project with a distinct direction: a full personal computing environment toward
+        2030, not an Omarchy configuration, and is not affiliated with or part of Omarchy.
+      </p>
+      <p>
+        The practical reason to build it: if most of what you need can be assembled from
+        open components plus a small amount of your own software, the economics and the
+        independence of your computing life change.
       </p>
     </section>
 
-    <!-- ── Vision ───────────────────────────────────────────────────── -->
-    <section class="block" aria-labelledby="vision">
-      <h2 id="vision">The vision</h2>
-      <div class="layers" role="list">
-        <article class="layer" role="listitem">
-          <h3>SLATE</h3>
-          <p class="layer__sub">The hardware</p>
-          <p>An extremely light, thin, modular ultrabook, 999&nbsp;g, no more than 13 inches. <em>Simple at rest, powerful on demand.</em></p>
-          <p class="tag tag--spec">Speculative</p>
-        </article>
-        <div class="layer__arrow" aria-hidden="true">&#x2193;</div>
-        <article class="layer" role="listitem">
-          <h3>Essential&nbsp;OS</h3>
-          <p class="layer__sub">The substrate</p>
-          <p>A coherent, Linux-based operating system assembled from proven components, with our own UX and system services on top.</p>
-          <p class="tag tag--proto">Prototype / research</p>
-        </article>
-        <div class="layer__arrow" aria-hidden="true">&#x2193;</div>
-        <article class="layer" role="listitem">
-          <h3>Ida</h3>
-          <p class="layer__sub">The intelligence</p>
-          <p>A launcher that becomes an operating-system agent: it understands intent, resolves context, selects capabilities, acts, and verifies.</p>
-          <p class="tag tag--impl">Core implemented</p>
-        </article>
+    <!-- ── 003 ──────────────────────────────────────────────────────── -->
+    <section class="block chapter" id="003-architecture" aria-labelledby="h-003">
+      <p class="chap__num" aria-hidden="true">003</p>
+      <h2 id="h-003">Architecture</h2>
+      <p>
+        The system is a set of clearly separated, replaceable layers.
+        Proposed architecture below is a <strong>direction, not an implemented feature</strong>;
+        the desktop assembly and Ida Core are real, the rest is being worked toward.
+      </p>
+      <div class="diagram stack" role="img" aria-label="System stack: hardware, Linux foundation, system services, shared UI and application services, essential applications. Ida and compatible agents sit beside as optional API consumers.">
+        <div class="node">Hardware</div>
+        <div class="flow" aria-hidden="true">&#x2193;</div>
+        <div class="node">Linux foundation <span class="dim">kernel · drivers · hardware support</span></div>
+        <div class="flow" aria-hidden="true">&#x2193;</div>
+        <div class="node">System services <span class="dim">network · audio · graphics · updates</span></div>
+        <div class="flow" aria-hidden="true">&#x2193;</div>
+        <div class="node">Shared UI and application services <span class="dim">framework · settings · permissions</span></div>
+        <div class="flow" aria-hidden="true">&#x2193;</div>
+        <div class="node">Essential applications <span class="dim">documented, versioned APIs</span></div>
       </div>
+      <div class="diagram agents" role="img" aria-label="Agents are optional consumers: Ida and compatible agents use documented application APIs and permission-controlled capabilities, never bypassing security.">
+        <div class="node node--muted">Ida / compatible agents <span class="dim">optional · replaceable · removable</span></div>
+        <div class="flow" aria-hidden="true">&#x2193;</div>
+        <div class="node">Documented app APIs + permission-controlled capabilities</div>
+        <div class="flow" aria-hidden="true">&#x2193;</div>
+        <div class="node">System decides · agent proposes</div>
+      </div>
+      <h3 class="sub">What each layer covers</h3>
+      <ul class="points">
+        <li><strong>Linux and hardware support:</strong> chosen from proven components, not rewritten.</li>
+        <li><strong>Core system services and integration:</strong> configured to behave as one system.</li>
+        <li><strong>Shared interface framework:</strong> one visual language, one keyboard model, one set of conventions.</li>
+        <li><strong>Essential applications and APIs:</strong> human interfaces plus machine interfaces (see 005).</li>
+        <li><strong>Optional AI and agent layer:</strong> consumers of APIs, never the OS itself.</li>
+        <li><strong>Monitoring, permissions, security:</strong> inspectable, managed in Settings (see 006).</li>
+        <li><strong>Reproducible configuration and recovery:</strong> versioned config, rebuildable install (see 007).</li>
+      </ul>
+      <h3 class="sub">Why Rust, where it fits</h3>
+      <p>
+        Rust is preferred for suitable new system components for its memory safety,
+        concurrency guarantees, and strong performance potential. That does not mean Rust
+        automatically makes every application faster, smaller, or easier to build.
+        Existing applications in other languages remain valid when they are effective and
+        meet integration and security requirements. Minimum necessary complexity decides.
+      </p>
     </section>
 
-    <!-- ── Ida ──────────────────────────────────────────────────────── -->
-    <section class="block" aria-labelledby="ida">
-      <h2 id="ida">Ida evolves from a search bar into an agent</h2>
+    <!-- ── 004 ──────────────────────────────────────────────────────── -->
+    <section class="block chapter" id="004-experience" aria-labelledby="h-004">
+      <p class="chap__num" aria-hidden="true">004</p>
+      <h2 id="h-004">The experience: a machine that feels alive</h2>
       <p>
-        The defining interaction idea is
-        <strong>actualise intents as fast as you can type.</strong>
-        Ida should interpret partial input in real time, while never committing
-        a destructive action just because a partial phrase resembles one.
+        Interface design and physical hardware are one subject here. Window behaviour,
+        typography, spacing, controls, navigation, notifications, and accessibility
+        should share a coherent language, and the hardware should answer back.
       </p>
+      <ul class="points">
+        <li>A clear visual response when an operation completes.</li>
+        <li>Distinct, restrained sounds for important events: configurable, never chatty.</li>
+        <li>Hardware indicators with predictable meanings: power, charge, activity.</li>
+        <li>Consistent motion that communicates direction, hierarchy, or state.</li>
+        <li>Reduced-motion support and configurable sound and haptic feedback throughout.</li>
+      </ul>
+      <p>
+        The test is aliveness, not decoration: a breath of motion, a glance of light,
+        a frown when something is wrong. Microinteractions should improve understanding,
+        not create distraction. Chassis acoustics, key feel, and small status LEDs are
+        part of the interface.
+      </p>
+      <p>
+        The aspiration is a standardised interface framework with macOS-like consistency.
+        That framework is not implemented, and the goal is not to copy macOS conventions:
+        it is to give every Essential app the same calm starting canvas.
+      </p>
+      <p class="caption">No screenshots are shown because there is no finished desktop to screenshot honestly. The desktop assembly is in progress; mock-ups of nonexistent software are omitted deliberately.</p>
+    </section>
 
+    <!-- ── 005 ──────────────────────────────────────────────────────── -->
+    <section class="block chapter" id="005-applications" aria-labelledby="h-005">
+      <p class="chap__num" aria-hidden="true">005</p>
+      <h2 id="h-005">Essential applications</h2>
+      <p>
+        A curated suite of open-source applications should make the system useful from
+        the beginning: Files, Notes, Calendar, Photos, Music, Calculator, and other
+        utilities as they mature. These are <strong>directions, not shipped software</strong>;
+        do not read this list as a release manifest.
+      </p>
+      <p>Every Essential application has two complementary interfaces:</p>
+      <div class="split">
+        <div class="split__side">
+          <h4>Human interface</h4>
+          <ul>
+            <li>beautiful and consistent</li>
+            <li>understandable and accessible</li>
+            <li>easy to use without a manual</li>
+          </ul>
+        </div>
+        <div class="split__side">
+          <h4>Machine interface</h4>
+          <ul>
+            <li>documented and versioned APIs</li>
+            <li>permission-controlled access</li>
+            <li>usable without opening the app</li>
+          </ul>
+        </div>
+      </div>
+      <p>
+        An agent should retrieve calendar events, manage permitted reminders, or search
+        notes through a supported interface rather than screen-scraping pixels.
+        Applications share underlying services between both interfaces; reading data,
+        modifying it, and destructive actions carry progressively stronger permission
+        boundaries.
+      </p>
+      <p>AI compatibility is a platform design principle, not a chatbot bolted onto every window.</p>
+    </section>
+
+    <!-- ── 006 ──────────────────────────────────────────────────────── -->
+    <section class="block chapter" id="006-intelligence" aria-labelledby="h-006">
+      <p class="chap__num" aria-hidden="true">006</p>
+      <h2 id="h-006">Intelligence, safety and trust</h2>
+      <p>
+        <strong>Ida</strong> is the optional intelligent assistant.
+        The core principle: <strong>AI is the tool. The user is the architect and overseer.</strong>
+      </p>
+      <p>
+        AI helps with boring repetitive tasks, searching and organising information,
+        intelligent tools such as image and text embeddings, and making the system easier
+        to understand and maintain. Ida is replaceable: use another compatible agent,
+        a different model, or no AI at all without losing basic operating-system functionality.
+      </p>
+      <p>The defining interaction idea is <strong>actualise intents as fast as you can type</strong>:
+        preview aggressively, commit conservatively.</p>
       <div class="demo" id="demo" aria-live="polite">
         <div class="demo__line">
           <span class="demo__prompt" aria-hidden="true">&gt;</span>
@@ -108,96 +263,97 @@
         </div>
         <div class="demo__result" id="demo-result"></div>
       </div>
-
-      <p class="caption">
-        A preview of the intended interaction. This is a design target, not
-        shipped behaviour. Preview aggressively; commit conservatively.
-      </p>
+      <p class="caption">Design target, not shipped behaviour. Destructive actions never execute merely because a partial phrase resembles one.</p>
+      <h3 class="sub">An unobtrusive chaperone</h3>
+      <p>Security informs and assists rather than constantly interrupting. Intended capabilities include:</p>
+      <ul class="points">
+        <li>Flagging an email whose sender or links appear suspicious.</li>
+        <li>Explaining unexpected driver or configuration changes after an update.</li>
+        <li>Identifying unusual changes associated with newly connected USB storage.</li>
+        <li>Explaining system-health events and helping investigate unexpected behaviour.</li>
+      </ul>
+      <h3 class="sub">Trust model</h3>
+      <ul class="points">
+        <li>Deterministic checks establish observable facts; AI interprets and explains.</li>
+        <li>Uncertainty is communicated honestly, never smoothed over.</li>
+        <li>Destructive, privacy-sensitive, or system-wide changes require stronger authorisation.</li>
+        <li>Local processing is preferred where practical; external transmission is explicit.</li>
+        <li>Retained information and monitoring controls stay transparent.</li>
+        <li>Security activity is inspected and managed in Settings: no separate app sprawl.</li>
+      </ul>
+      <p class="caption">AI is not an infallible antivirus and not the security boundary itself. Most unexplained events are bugs or misconfiguration, not malware.</p>
     </section>
 
-    <!-- ── Architecture ─────────────────────────────────────────────── -->
-    <section class="block" aria-labelledby="architecture">
-      <h2 id="architecture">How it works, simply</h2>
+    <!-- ── 007 ──────────────────────────────────────────────────────── -->
+    <section class="block chapter" id="007-ownership" aria-labelledby="h-007">
+      <p class="chap__num" aria-hidden="true">007</p>
+      <h2 id="h-007">Ownership and recovery: experiment without fear</h2>
       <p>
-        The intelligence never controls the operating system directly. It
-        proposes; the system decides. That single boundary is what makes it safe
-        to hand a computer to an agent.
+        Modify the system, replace components, try new software, break things, and
+        recover without losing the machine. Ownership is a practical capability here,
+        not a slogan.
       </p>
-
-      <div class="diagram" role="img" aria-label="Request flow: user, input, interaction runtime, intent, context, plan, capability, native action, verification.">
-        <div class="node">User</div>
-        <div class="flow">&#x2193;</div>
-        <div class="node">Input &nbsp;<span class="dim">keyboard · voice</span></div>
-        <div class="flow">&#x2193;</div>
-        <div class="node node--muted">Ida Interaction Runtime</div>
-        <div class="flow">&#x2193;</div>
-        <div class="row">
-          <div class="node node--sm">Intent</div>
-          <div class="node node--sm">Context</div>
-          <div class="node node--sm">Plan</div>
-        </div>
-        <div class="flow">&#x2193;</div>
-        <div class="node">Capability <span class="dim">a typed, permitted operation</span></div>
-        <div class="flow">&#x2193;</div>
-        <div class="node">Native Action</div>
-        <div class="flow">&#x2193;</div>
-        <div class="node">Verification</div>
-      </div>
-
-      <h3 class="sub">Local versus external intelligence</h3>
+      <ul class="points">
+        <li>Replaceable desktop and interface components within supported boundaries.</li>
+        <li>Replaceable AI agents and model providers.</li>
+        <li>Open-source applications and clear, inspectable system configuration.</li>
+        <li>Version-controlled machine configuration.</li>
+        <li>Reproducible installation and rebuild procedures.</li>
+        <li>Tested recovery paths and appropriate backups.</li>
+      </ul>
       <p>
-        Ida runs locally whenever the local system can handle the task. It may
-        pass work outward when a task genuinely needs larger reasoning, current
-        information, or a specialised service, sharing only the minimum
-        necessary context. The objective is not "never use cloud AI." It is that
-        <strong>Ida decides where computation belongs.</strong>
+        The goal: regenerate the intended system from a single configuration entry point,
+        backed by version-controlled files and reproducible package sources. If an
+        experiment nukes the install, the software state can be reconstructed reliably
+        instead of pieced together by hand.
       </p>
-      <div class="split">
-        <div class="split__side">
-          <h4>Stays local</h4>
-          <ul>
-            <li>system control and native actions</li>
-            <li>personal files and private material</li>
-            <li>offline and latency-sensitive work</li>
-          </ul>
-        </div>
-        <div class="split__side">
-          <h4>May pass outward</h4>
-          <ul>
-            <li>tasks needing substantially larger reasoning</li>
-            <li>current web information</li>
-            <li>services genuinely better suited to the job</li>
-          </ul>
-        </div>
-      </div>
+      <p class="caption">Honestly: a configuration file reconstructs software, not your life. Personal documents, photos, credentials, and private data still need real backups.</p>
     </section>
 
-    <!-- ── SLATE ────────────────────────────────────────────────────── -->
-    <section class="block" aria-labelledby="slate">
-      <h2 id="slate">SLATE</h2>
+    <!-- ── 008 ──────────────────────────────────────────────────────── -->
+    <section class="block chapter" id="008-machine" aria-labelledby="h-008">
+      <p class="chap__num" aria-hidden="true">008</p>
+      <h2 id="h-008">The machine</h2>
       <p>
-        The eventual hardware expression of the project: an extremely light,
-        thin, modular personal computer, most likely based around a
-        Framework-style motherboard architecture.
+        <strong>SLATE</strong> is the planned hardware expression of this philosophy:
+        not a product, a direction. The longer-term goal is hardware and software that
+        complement each other, not a generic laptop carrying a custom desktop.
       </p>
       <div class="specs">
-        <div class="spec"><span class="spec__num">999&nbsp;g</span><span class="spec__label">target mass</span></div>
-        <div class="spec"><span class="spec__num">&#x2264;&nbsp;13&#8243;</span><span class="spec__label">display</span></div>
+        <div class="spec"><span class="spec__num">999&nbsp;g</span><span class="spec__label">target mass*</span></div>
+        <div class="spec"><span class="spec__num">&#x2264;&nbsp;13&#8243;</span><span class="spec__label">display target*</span></div>
         <div class="spec"><span class="spec__num">modular</span><span class="spec__label">repairable, upgradeable</span></div>
       </div>
+      <ul class="points">
+        <li>Thin and lightweight, carried everywhere.</li>
+        <li>Efficient for everyday work; substantially heavier workloads on demand.</li>
+        <li>Modular, repairable, upgradeable: a Framework-style approach.</li>
+        <li>Integrated physical feedback: key feel, acoustics, status LEDs.</li>
+        <li>Hardware-aware software: quiet at rest, serious when asked.</li>
+      </ul>
       <p class="pull">simple at rest. powerful on demand.</p>
-      <p class="tag tag--spec">SLATE is an eventual hardware target, not an existing product.</p>
+      <p class="caption">*Design targets, not finished specifications. SLATE is a hardware concept; nothing here is a product claim.</p>
     </section>
 
-    <!-- ── Roadmap ──────────────────────────────────────────────────── -->
-    <section class="block" aria-labelledby="roadmap">
-      <h2 id="roadmap">An intended trajectory</h2>
+    <!-- ── 009 ──────────────────────────────────────────────────────── -->
+    <section class="block chapter" id="009-roadmap" aria-labelledby="h-009">
+      <p class="chap__num" aria-hidden="true">009</p>
+      <h2 id="h-009">The roadmap: what is real</h2>
+      <p class="status__stamp">October 2026 · Early Stage</p>
+      <ul class="status__list">
+        <li><strong>Implemented</strong>: Ida Core (Rust, v0.0.1–v0.0.3): find / launch / ask panel, capability registry, trust path, ephemeral context, bounded planner, verification.</li>
+        <li><strong>Prototype</strong>: Essential Desktop assembly (Fedora + KDE Plasma); Ida interaction runtime; local action model (Ollama + FunctionGemma).</li>
+        <li><strong>Planned</strong>: Ida Pro / Max tiers (memory, integrations, multi-step planning); semantic index and entity layer; provider-agnostic model router.</li>
+        <li><strong>Research</strong>: Small action models, embeddings and retrieval, quantisation, local-vs-external split.</li>
+        <li><strong>Open question</strong>: Desktop base (GNOME vs KDE Plasma); diagnostic commands as capabilities; partial-input actualisation.</li>
+      </ul>
+      <h3 class="sub">Intended trajectory, not a promise</h3>
       <ol class="timeline">
         <li>
           <span class="timeline__year">2026</span>
           <div>
             <h3>Foundation</h3>
-            <p>Ida architecture, the capability system, local AI research, Essential OS research.</p>
+            <p>Ida architecture, capability system, local AI research, Essential OS research.</p>
           </div>
         </li>
         <li>
@@ -222,13 +378,19 @@
           </div>
         </li>
       </ol>
-      <p class="caption">This is an intended trajectory, not a promise. The project favours reality over preserving old plans.</p>
-    </section>
-
-    <!-- ── Challenges ───────────────────────────────────────────────── -->
-    <section class="block" aria-labelledby="challenges">
-      <h2 id="challenges">What remains difficult</h2>
-      <p>This is not straightforward, and pretending otherwise would be dishonest. The real challenges include:</p>
+      <h3 class="sub">Languages</h3>
+      <p>Target release languages, with more to follow:</p>
+      <ul class="langs">
+        <li>English</li>
+        <li>Mandarin Chinese</li>
+        <li>Spanish</li>
+        <li>French</li>
+        <li>Japanese</li>
+        <li>Portuguese</li>
+        <li>Russian</li>
+        <li>German</li>
+      </ul>
+      <h3 class="sub">Difficult on purpose</h3>
       <ul class="challenges">
         <li>real-time inference latency</li>
         <li>local model resource constraints</li>
@@ -242,42 +404,27 @@
         <li>keeping the system maintainable as it grows</li>
         <li>the enormous scope of an operating-system layer</li>
         <li>a good UX while the architecture becomes complex</li>
-        <li>knowing when local computation is sufficient</li>
-      </ul>
-    </section>
-
-    <!-- ── Where we are ─────────────────────────────────────────────── -->
-    <section class="block status" aria-labelledby="status">
-      <h2 id="status">Where we are</h2>
-      <p class="status__stamp">October 2026 · Early Stage</p>
-      <ul class="status__list">
-        <li>Ida has an existing prototype lineage and three released versions.</li>
-        <li>Ida 0.0.45 established a useful UI/UX baseline.</li>
-        <li>The project is moving from launcher toward interaction-runtime architecture.</li>
-        <li>Local AI infrastructure is being investigated and partly implemented.</li>
-        <li>Embedding and semantic retrieval have been explored, not adopted.</li>
-        <li>Essential OS is a vision and research project with a real desktop assembly in progress.</li>
-        <li>SLATE is a long-term hardware concept.</li>
-        <li>This repository is becoming the project's canonical documentation and experimentation space.</li>
       </ul>
     </section>
 
     <!-- ── Closing ──────────────────────────────────────────────────── -->
     <section class="closing" aria-labelledby="closing">
       <h2 id="closing" class="visually-hidden">Closing</h2>
-      <p class="closing__line">Build what you can own.</p>
-      <p class="closing__sub">The machine is the project. Ida is how it thinks.</p>
+      <p class="closing__line">Explore. Create. Play.</p>
+      <p class="closing__sub">Build what you can own. Inspect the record, try Ida Core, follow along.</p>
+      <p class="closing__links">
+        <a href="https://github.com/luishowin/essential-os">essential-os record</a>
+        <span aria-hidden="true"> · </span>
+        <a href="https://github.com/luishowin/ida">Ida implementation</a>
+      </p>
     </section>
   </main>
 
   <footer class="footer">
-    <p>
-      Essential OS · ESSENTIAL OS ·
-      Ida · SLATE
-    </p>
+    <p>Essential OS · ESSENTIAL OS · Ida · SLATE</p>
     <p class="footer__meta">MIT · an ongoing personal project · <span id="year"></span></p>
   </footer>
 
-  <script src="main.js"></script>
+  <script src="main.js?v=2"></script>
 </body>
 </html>

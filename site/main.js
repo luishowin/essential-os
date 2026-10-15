@@ -37,6 +37,78 @@
   var year = document.getElementById("year");
   if (year) year.textContent = String(new Date().getFullYear());
 
+  // ── Chapter pill ───────────────────────────────────────────────────
+  // Bottom pill expands upward; minimises on item select, outside click,
+  // or Escape. Pill label tracks the current chapter. No-JS falls back
+  // to the noscript static list.
+  (function () {
+    document.documentElement.classList.add("js");
+    var nav = document.getElementById("chapters");
+    if (!nav) return;
+    var btn = nav.querySelector(".chapters__toggle");
+    var curNum = nav.querySelector("[data-current-num]");
+    var curLabel = nav.querySelector("[data-current-label]");
+    var links = Array.prototype.slice.call(
+      nav.querySelectorAll("a[href^='#']")
+    );
+    if (!btn || !links.length) return;
+
+    function open() {
+      nav.classList.add("is-open");
+      btn.setAttribute("aria-expanded", "true");
+    }
+    function close(focusBtn) {
+      if (!nav.classList.contains("is-open")) return;
+      nav.classList.remove("is-open");
+      btn.setAttribute("aria-expanded", "false");
+      if (focusBtn) btn.focus();
+    }
+    function toggle() {
+      if (nav.classList.contains("is-open")) close(false);
+      else open();
+    }
+
+    btn.addEventListener("click", function (e) {
+      e.stopPropagation();
+      toggle();
+    });
+    links.forEach(function (a) {
+      a.addEventListener("click", function () { close(false); });
+    });
+    document.addEventListener("click", function (e) {
+      if (!nav.contains(e.target)) close(false);
+    });
+    document.addEventListener("keydown", function (e) {
+      if (e.key === "Escape") close(true);
+    });
+
+    // ── Active chapter + pill label ──────────────────────────────
+    var byId = {};
+    links.forEach(function (a) {
+      byId[a.getAttribute("href").slice(1)] = a;
+    });
+    var sections = Object.keys(byId)
+      .map(function (id) { return document.getElementById(id); })
+      .filter(Boolean);
+    if (!sections.length || !("IntersectionObserver" in window)) return;
+    function setCurrent(id) {
+      links.forEach(function (a) { a.removeAttribute("aria-current"); });
+      var a = byId[id];
+      if (!a) return;
+      a.setAttribute("aria-current", "true");
+      var num = a.querySelector(".ch__num");
+      var lab = a.querySelector(".ch__label");
+      if (num && curNum) curNum.textContent = num.textContent;
+      if (lab && curLabel) curLabel.textContent = lab.textContent;
+    }
+    var obs = new IntersectionObserver(function (entries) {
+      entries.forEach(function (entry) {
+        if (entry.isIntersecting) setCurrent(entry.target.id);
+      });
+    }, { rootMargin: "-40% 0px -55% 0px", threshold: 0 });
+    sections.forEach(function (s) { obs.observe(s); });
+  })();
+
   // ── The partial-input demo ─────────────────────────────────────────
   // "Actualise intents as fast as you can type." A design target, not a
   // claim about shipped behaviour. Speculation is shown; nothing commits.
