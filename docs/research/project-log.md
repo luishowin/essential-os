@@ -94,3 +94,46 @@ several. The record no longer depends on a desktop folder surviving.
 
 **Open.** Which parts of Pacific UI's token and drift model to adopt, and when.
 That is a design decision, not a restoration task.
+
+---
+
+## 2026-10-31 · The specification becomes a product and technical statement
+
+**What.** The specification moves to v0.2, is retitled *Product & Technical
+Specification*, and is renamed from `docs/essential-os-spec-brief.md` to
+[`docs/essential-os-specification.md`](../essential-os-specification.md). It is
+now linked from the repository map and from the operating-system layer page.
+Nothing else linked to the old path, so the rename breaks no pointer.
+
+v0.2 restates the system in five layers and adds commitments the brief did not
+carry: Fedora as the base with RPM/DNF; a `sudo dnf install essential-os`
+development path that coexists with GNOME and KDE sessions; eleven proposed
+package groups; Btrfs as a candidate default with snapshots and rollback; a
+curated application ecosystem including office, utilities, games and a
+photographic wallpaper collection; configuration restore in about a minute; an
+offline-capable install image at roughly 3.0 GB preferred and 5.00 GB maximum,
+installing in under five minutes; and five development milestones from desktop
+session to public preview.
+
+**The assistant question is now explicit.** Essential OS may ship a small,
+local, replaceable action assistant. It is not Ida. The specification says so,
+[`vision.md`](../vision.md) says so, and [`ida/README.md`](../ida/README.md)
+says so from Ida's side: the operating system must remain fully useful without
+Ida, and Ida's identity, memory and roadmap are not the system's.
+
+**Sources kept.** The v0.2 text drops the reference list. The citations it
+carried (ArtCraft, RAWmakase, Quickshell, Smithay, Fedora lifecycle, Ubuntu
+release cycle, bootc, Wayland architecture) are recorded in
+[`library.md`](library.md), so the claims stay traceable without re-opening the
+specification.
+
+**What it changes.** The specification is now the strongest public statement of
+what the product is and what it is aiming at. Where it is more specific than the
+rest of the record, it is a target, not a measurement. Two tensions are recorded
+rather than hidden: the specification names Fedora as the base while
+[`architecture.md`](../architecture.md) still holds base-distribution and
+atomic-versus-conventional delivery open; and the "approximately 20%" desktop-UI
+figure in §16 is an owner estimate, not a measured result.
+
+**Open.** Whether the base-distribution question becomes an ADR that confirms
+Fedora, and when each of the ten open architectural decisions in §15 is settled.

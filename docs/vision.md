@@ -26,6 +26,13 @@ interesting because it is designed around the idea that a machine can be simple
 at rest and powerful on demand, and around an agent that knows how to exploit
 that.
 
+Essential OS may also ship a small, local, replaceable action assistant for
+ordinary system tasks. **That assistant is not Ida.** It is a commodity part of
+the operating system: optional, generic and independently maintainable. Ida is
+the personal layer — identity, memory, context and work across machines — and
+the operating system must remain fully useful without it. The two may share the
+capability and policy model; they do not share a product identity.
+
 The target horizon is **2030**. That is deliberate. The project is not one
 feature that can be rushed into being "the next Copilot." It is several layers
 maturing at once, and the builder matures with them.

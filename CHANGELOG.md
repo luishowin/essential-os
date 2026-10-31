@@ -40,6 +40,15 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 - The repository is declared the canonical record. Upstream repositories,
   working copies and backups are mirrors to compare against it.
+- The product and technical specification is revised to v0.2 and renamed from
+  `docs/essential-os-spec-brief.md` to
+  `docs/essential-os-specification.md`. It now covers the Fedora/RPM/DNF
+  installation path, package groups, application ecosystem, configuration and
+  recovery, ISO size targets, five development milestones and the optional
+  bundled action assistant, which is explicitly separate from Ida.
+- The vision and Ida documents state the same separation: Essential OS may ship
+  a generic, replaceable action assistant; Ida is the personal layer and the OS
+  must work without it.
 - Pacific UI is recorded as the condensed GNOME predecessor in
   `docs/research/pacific-ui.md`; its originals stay archived on MX500.
 - Branding simplified: integrals removed everywhere (`ss` is `ss`, Ida is `Ida`); wordmark set in Geo at 21% tracking; EOS block-letter icon added as `docs/brand/eos-icon.svg` and `site/eos-icon.svg` and used as site favicon / header.

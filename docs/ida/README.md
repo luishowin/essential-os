@@ -21,6 +21,19 @@ The defining philosophy, in one line:
 >
 > *Not* user → LLM → 47 tools → hope nothing explodes.
 
+## Ida is not the bundled assistant
+
+Essential OS may ship a small action assistant for ordinary tasks: launching
+apps, finding files, toggling radios, changing settings. That assistant is an OS
+component — optional, replaceable and deliberately generic. Its name is still
+open.
+
+Ida is personal. Identity, memory, context and coordination across local and
+external compute are the point, not a feature bolted onto a system utility. The
+operating system must work without Ida, and Ida's roadmap is not the
+operating system's roadmap. Both can share the same capability registry and
+policy model; they are not the same product.
+
 ## The trust rule
 
 Ida's intelligence **never controls the operating system directly.** Parsers,

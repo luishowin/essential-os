@@ -32,7 +32,7 @@ public site. The code lives in dedicated repositories, linked below.
 |---|---|---|
 | **SLATE** | The eventual hardware: an extremely light, thin, modular ultrabook (999 g, ≤13″, Framework-style modularity). *Simple at rest, powerful on demand.* | **Speculative**, a hardware concept, not a product |
 | **Essential OS** | A Linux-based operating system assembled from excellent existing components (kernel, drivers, desktop, networking, audio, graphics, packaging, security), with our own UX and system services on top. | **Vision + research**, with a real desktop assembly in progress |
-| **Ida** | The intelligent system layer: a launcher that becomes an operating-system agent. Understands intent, resolves context, selects capabilities, executes native actions, verifies results, and routes work between local and external intelligence. | **Prototype → early architecture**, Core is real and released |
+| **Ida** | The personal intelligent layer: a launcher that becomes an operating-system agent. Understands intent, resolves context, selects capabilities, executes native actions, verifies results, and routes work between local and external intelligence. Distinct from the optional generic action assistant Essential OS may bundle. | **Prototype → early architecture**, Core is real and released |
 
 The relationship should feel like parts of one universe:
 
@@ -137,8 +137,14 @@ on the MX500 drive's `readme.txt`.
 
 ## Repository map
 
+The consolidated product and technical statement is
+[`docs/essential-os-specification.md`](docs/essential-os-specification.md)
+(v0.2). It describes the whole system in one place; the documents below hold the
+reasoning, the layer detail and the open questions.
+
 ```text
 docs/          the record: vision, architecture, decisions, research
+  essential-os-specification.md  the product and technical specification (v0.2)
   ida/           the intelligent layer (narrative; detail lives in the ida repo)
   essential-os/  the operating system layer
   slate/         the hardware layer

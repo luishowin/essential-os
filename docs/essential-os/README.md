@@ -4,6 +4,11 @@
 
 **Status:** Vision + research · **Date:** 2026-10-07
 
+**The full statement:** the consolidated product and technical specification is
+[`docs/essential-os-specification.md`](../essential-os-specification.md) (v0.2).
+This page is the layer's narrative; the specification is the whole system in one
+document.
+
 ---
 
 ## What it is

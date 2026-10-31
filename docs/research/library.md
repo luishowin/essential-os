@@ -1,6 +1,6 @@
 # Research library and reference sources
 
-**Status:** Living record · **Date:** 2026-10-27
+**Status:** Living record · **Date:** 2026-10-31
 
 Use primary sources first. For each meaningful source, store the exact page,
 date checked, useful section, a 2–5 sentence summary in your own words, and the
@@ -39,6 +39,19 @@ This is the reference shelf. The running record of what was learned lives in
 - [wlroots documentation](https://wlroots.pages.freedesktop.org/wlroots/) — one
   reference option if considering a wlroots-based Wayland compositor; evaluate
   maintenance and feature coverage before adopting it.
+- [Wayland architecture](https://wayland.freedesktop.org/architecture.html) —
+  background on the compositor as display server, input router and window
+  manager; read before deciding how much session ownership is appropriate.
+
+## Desktop shell and toolkits
+
+- [Quickshell — About](https://quickshell.org/about/) — a Qt Quick/QML toolkit
+  for building desktop-shell components, not a complete desktop environment.
+  Useful as a prototyping reference for a custom shell; carries a QML/Qt
+  dependency.
+- [Smithay](https://github.com/Smithay/smithay) — Rust building blocks for
+  Wayland compositors, not a drop-in compositor. Relevant only to the longer-term
+  research path, not the initial release.
 
 ## First-party development
 
@@ -49,11 +62,29 @@ This is the reference shelf. The running record of what was learned lives in
 - [GTK 4 API reference](https://docs.gtk.org/gtk4/) — API details; pair with the
   exact GTK version available in the target image.
 
+## Creative applications
+
+- [ArtCraft — the crafting apps](https://getartcraft.com/apps) — the official
+  app directory and current maturity labels. Statuses change; recheck before each
+  release and do not describe the suite as stable until the project's own gates
+  justify it.
+- [RAWmakase](https://github.com/pch/rawmakase) — non-destructive RAW developer
+  in Rust. The project is pre-1.0: rendering can change between versions and
+  backward compatibility is not guaranteed, so exports and update policy matter.
+
 ## Fedora, updates and reliability
 
 - [Fedora Spins Guidelines](https://fedoraproject.org/wiki/Spins_Guidelines) —
   expectations around tested, installable Fedora spins; a personal downstream
   project is not automatically an official Fedora Spin.
+- [Fedora release lifecycle](https://fedoraproject.org/wiki/Fedora_Release_Life_Cycle)
+  — release cadence and support window. Fedora is not an LTS base; each cycle
+  must be planned for.
+- [Ubuntu release cycle](https://ubuntu.com/about/release-cycle) — the LTS
+  alternative, with its own support and hardware-enablement trade-offs.
+- [bootc update service](https://bootc-dev.github.io/bootc/man/bootc-fetch-apply-updates.service.5.html)
+  — image-based update workflow concepts, relevant to evaluating an atomic
+  deployment model after the shell prototype.
 - [OSTree overview](https://ostreedev.github.io/ostree/introduction/) —
   architecture for deploying complete filesystem trees.
 - [OSTree atomic upgrades](https://ostreedev.github.io/ostree/atomic-upgrades/) —
