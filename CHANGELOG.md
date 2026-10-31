@@ -24,7 +24,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
   and design principles.
 - `docs/slate/`: the hardware layer: vision and requirements.
 - `docs/decisions/`: the ADR convention and the first nine decisions.
-- `docs/research/`: the project log, Ida's real history, and prior art.
+- `docs/research/`: the project log, Ida's real history, prior art, the
+  Pacific UI lineage note, and the reference library.
+- `docs/planning/`: roadmap, first-release scope, success measures, project
+  tracking, quality gates, website/support, AI workflow, first 30 days and the
+  seed backlog.
 - `docs/brand/`: the ESSENTIAL OS wordmark, the Ida name, and the SLATE
   relationship, with a real SVG wordmark and EOS icon.
 - `contract/`: language-neutral JSON Schemas for Intent, Capability and
@@ -34,6 +38,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ### Changed
 
+- The repository is declared the canonical record. Upstream repositories,
+  working copies and backups are mirrors to compare against it.
+- Pacific UI is recorded as the condensed GNOME predecessor in
+  `docs/research/pacific-ui.md`; its originals stay archived on MX500.
 - Branding simplified: integrals removed everywhere (`ss` is `ss`, Ida is `Ida`); wordmark set in Geo at 21% tracking; EOS block-letter icon added as `docs/brand/eos-icon.svg` and `site/eos-icon.svg` and used as site favicon / header.
 - Replaced em-dashes throughout with commas and colons, for a plainer
   typographic style.

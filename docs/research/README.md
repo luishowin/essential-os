@@ -31,6 +31,8 @@ thing is speculative, say so.
 | [project-log.md](project-log.md) | Dated entries: what happened, what was learned |
 | [ida-history.md](ida-history.md) | The real, dated history of Ida |
 | [prior-art.md](prior-art.md) | Systems worth learning from |
+| [pacific-ui.md](pacific-ui.md) | Pacific UI, the GNOME predecessor, condensed |
+| [library.md](library.md) | Reference sources, with the research entry rules |
 
 ## Open questions
 

@@ -49,6 +49,28 @@ Implementation detail for Ida belongs in Ida's own `ARCHITECTURE.md` and
 `DECISIONS.md`, not here. This repository links to it rather than copying it, so
 there is exactly one owner for every fact.
 
+## Working rules
+
+1. Work on one primary outcome at a time. Keep no more than **two tasks in
+   progress**, including research and coding.
+2. A design is not done because it looks good in a design tool; it needs
+   behaviour, empty/error/loading states, keyboard and accessibility
+   consideration, and an implementation path.
+3. A feature is not done until it is tested in the target environment and
+   documented where a future maintainer would look.
+4. Prefer established system APIs and services over custom replacements unless
+   the replacement materially improves the product.
+5. Every important technical decision gets a short record in
+   [`docs/decisions/`](docs/decisions/README.md).
+6. For AI-generated code: inspect the diff, run tests, check licences and
+   dependencies, test failure cases, and never accept security-sensitive code
+   without human review.
+7. No public promise of hardware support, update safety or security properties
+   until the claim has been tested.
+
+See [`docs/planning/`](docs/planning/README.md) for the roadmap, first-release
+scope, quality gates and weekly process.
+
 ## Commit style
 
 Commits describe the change and its reason, in the present tense, e.g.

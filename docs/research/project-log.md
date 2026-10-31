@@ -58,3 +58,39 @@ usual append-only convention.
 search, easy to break across fonts and encodings. Plain spelling plus one
 typeface plus one icon carries the identity with less machinery. Same logic as
 the platform: do more with less.
+
+---
+
+## 2026-10-31 · Pacific UI recorded as the predecessor; GitHub made canonical
+
+**What.** Pacific UI is documented as the GNOME-based predecessor of Essential
+OS in [`pacific-ui.md`](pacific-ui.md). Only a condensed note is kept: its
+principles and their failure tests, the hard constraints (especially
+reversibility and no unprompted AI), the durability tiers, the token pipeline,
+the panel/Pacific Control model, and the drift and release checks. The original
+`DESIGN.md`, `ASSETS.md`, `README.md` and Phase 0 code remain archived on MX500
+and are not copied here.
+
+The technical documents from the internal planning kit of 2026-10-27 are merged
+into [`docs/planning/`](../planning/README.md), the reference list into
+[`library.md`](library.md), the design-system workflow into
+[`docs/brand/README.md`](../brand/README.md), the architecture plan into
+[`docs/architecture.md`](../architecture.md), and the decision template into
+[`docs/decisions/README.md`](../decisions/README.md). The budget, risk register
+and weekly log stay local because they contain personal financial and
+operational detail.
+
+The two documents that existed only on the internal disk, the spec brief and the
+Product Vision Extension PDF, are now committed.
+
+**Why.** GitHub should be the complete canonical record. Any local or MX500 copy
+must be compared against it before being edited or trusted. The same rule is now
+written in the MX500 drive's `readme.txt`.
+
+**What it changes.** Pacific UI is lineage, not current direction: the desktop
+base remains open under [ADR 0009](../decisions/0009-desktop-base-open.md), and
+the current assembly is Plasma-based. Planning material has one home instead of
+several. The record no longer depends on a desktop folder surviving.
+
+**Open.** Which parts of Pacific UI's token and drift model to adopt, and when.
+That is a design decision, not a restoration task.

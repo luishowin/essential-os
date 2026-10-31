@@ -122,6 +122,19 @@ it says so. See the status legend in
 
 ---
 
+## How this repository is organised
+
+- **This repository** is the canonical engineering and design record.
+- **`luishowin/ida`** owns Ida's implementation and detailed specification.
+- **The design tool** owns visual exploration; decisions and token values are
+  recorded here.
+- **GitHub Issues** own work that needs doing.
+- **Local notes** are temporary; triage them into the record or delete them.
+
+Upstream repositories, working copies and backups are mirrors. Before editing or
+restoring one, fetch the GitHub repository and compare. The same rule is written
+on the MX500 drive's `readme.txt`.
+
 ## Repository map
 
 ```text
@@ -130,7 +143,8 @@ docs/          the record: vision, architecture, decisions, research
   essential-os/  the operating system layer
   slate/         the hardware layer
   decisions/     architecture decision records (ADRs)
-  research/      the project log, history and prior art
+  research/      the project log, history, prior art and source library
+  planning/      roadmap, first-release scope, quality gates and working process
   brand/         the visual language and wordmark
 contract/      language-neutral interface schemas and conformance fixtures
 site/          the one-page project site

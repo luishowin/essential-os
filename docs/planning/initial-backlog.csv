@@ -1,0 +1,27 @@
+ID,Title,Priority,Area,Phase,Acceptance criteria,Initial status
+EOS-001,Create repository and add project docs,P0,Project operations,Phase 0,A canonical source of truth exists; docs are version-controlled.,Ready
+EOS-002,Inventory current Figma pages and desktop notes,P0,Product/design,Phase 0,Existing artifacts are linked and classified; no source is deleted.,Ready
+EOS-003,Choose first user and 3–5 core tasks,P0,Product/research,Phase 0,Each task maps to a user problem and is testable.,Ready
+EOS-004,Set monthly AI/tools budget and usage log,P0,Operations,Phase 0,Provider caps and a spending review cadence exist.,Ready
+EOS-005,Create architecture decision records,P1,Architecture,Phase 0,"Base image, shell, toolkit, theming and privacy decisions are queued.",Backlog
+EOS-006,Define token names and export strategy,P1,Design system,Phase 1,"Color, type, spacing, radius, motion and state tokens are documented.",Backlog
+EOS-007,Define icon grid and pilot icon set,P2,Design system,Phase 1,Pilot icons remain legible at target sizes and have provenance.,Backlog
+EOS-008,Prototype core first-use and desktop flow,P1,Design/research,Phase 1,"Flow covers launch, window switching, system panel and settings.",Backlog
+EOS-009,Run five usability sessions on clickable prototype,P1,Research,Phase 1,Findings are recorded with severity and next action.,Backlog
+EOS-010,Build repeatable Fedora-based VM image,P0,Build/release,Phase 2,Clean build/boot succeeds using documented commands.,Backlog
+EOS-011,Prototype shell on candidate compositor,P0,Shell,Phase 2,"Input, focus, windows, popups and basic session behavior are demonstrated.",Backlog
+EOS-012,Prototype Rust + GTK 4 shared component,P1,First-party apps,Phase 2,One app renders core tokens and passes keyboard/focus checks.,Backlog
+EOS-013,Evaluate current system APIs for battery and storage,P1,System integration,Phase 2,Chosen APIs and failure/unknown states are documented.,Backlog
+EOS-014,"Test GTK, Qt, Electron and Flatpak appearance behavior",P1,Compatibility,Phase 2,"A matrix records app versions, install method and observed theme behavior.",Backlog
+EOS-015,Publish first architecture decision set,P0,Architecture,Phase 2,"ADRs have evidence, rationale, trade-offs and revisit triggers.",Backlog
+EOS-016,Implement app launcher and window switching slice,P1,Shell,Phase 3,Core launch and switching tasks work in VM.,Backlog
+EOS-017,Implement basic control surface and settings entry,P1,Shell/settings,Phase 3,"Panel states, keyboard behavior and errors are tested.",Backlog
+EOS-018,Build one live-data system utility,P1,Utilities,Phase 3,"Shows valid data, unavailable state, permissions and refresh behavior.",Backlog
+EOS-019,Add build and VM smoke-test instructions,P0,Quality,Phase 3,A clean checkout can reproduce build and test.,Backlog
+EOS-020,Define installation and recovery strategy,P0,Release,Phase 4,Install/update/rollback options are experimentally verified.,Backlog
+EOS-021,Add accessibility pass to core flows,P0,Quality/accessibility,Phase 4,"Keyboard-only, focus, text scale, contrast and reduced-motion checks recorded.",Backlog
+EOS-022,Create security and dependency inventory,P1,Security,Phase 4,"Shipped components, licences, update sources and report path are documented.",Backlog
+EOS-023,Create static website progress and docs pages,P2,Website,Phase 4,Site communicates project maturity accurately and links source/known issues.,Backlog
+EOS-024,Create beta tester guide and issue templates,P1,Support,Phase 5,"Testers know install risk, supported hardware, feedback and privacy expectations.",Backlog
+EOS-025,Establish release checklist and changelog,P1,Release,Phase 5,A preview release can pass documented gates and link to release notes.,Backlog
+EOS-026,"Benchmark boot, memory and battery on reference hardware",P2,Performance,Phase 5,Conditions and baseline are recorded and repeatable.,Backlog

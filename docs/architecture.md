@@ -111,6 +111,95 @@ These hold across all three layers and are recorded as ADRs:
 | Ida is a runtime, not merely a router | [0002](decisions/0002-ida-runtime-vs-router.md) |
 | The desktop base is an open question | [0009](decisions/0009-desktop-base-open.md) |
 
+## Technical architecture plan
+
+**Status:** Planned · **Date:** 2026-10-27
+
+### Architecture posture
+
+Build on mature Linux foundations. Essential's value is its experience,
+integration, defaults, first-party applications, update/recovery experience and
+quality, not the number of foundational components rewritten.
+
+### Target shape (subject to proof)
+
+```text
+Essential OS image / installable release
+├── Fedora-based userspace and repositories
+├── Linux kernel + upstream drivers
+├── system services: systemd, logind, NetworkManager, UPower, etc.
+├── Wayland session and compositor/window-management layer [decision required]
+├── Essential shell: panel, launcher, overview, notification/control surfaces
+├── Essential settings and shared component library
+├── first-party utilities and applications
+├── GTK / Qt / icon / cursor theme integration
+├── portals and sandbox integration
+└── update, recovery, logging and support documentation
+```
+
+The diagram is an intended boundary, not a claim that any component has already
+been implemented.
+
+### Decisions to make with evidence
+
+1. **Base distribution and image technology.** Compose repeatable Fedora images
+   and test in a VM. Compare a conventional package-based image with an
+   image-based / atomic approach before choosing the long-term release model.
+   Atomic deployments can make rollback and update behaviour more tractable, but
+   introduce constraints around system modifications, packaging and recovery. Do
+   not switch architectures without testing the actual user and developer
+   workflow.
+2. **Shell / compositor / window manager.** This is the most consequential
+   architecture choice. Compare a custom shell/panels atop an existing
+   desktop/compositor foundation, a separate session using an existing
+   compositing/window-management stack, and a custom Wayland compositor if the
+   first two cannot deliver key UX requirements. Test focus and keyboard
+   handling, windows and popups, screen lock, notifications, multiple monitors,
+   fractional scaling, GPU behaviour, screenshot APIs, accessibility and
+   developer maintenance. Use stable Wayland protocols rather than inventing
+   client interoperability rules. A custom compositor needs an explicit protocol
+   coverage plan, test matrix, security review and a much longer timeline.
+3. **App toolkit.** Prototype a Rust + GTK 4 app using the desired shared
+   components. Check text rendering, accessibility, file chooser portals,
+   appearance settings, packaging and maintenance. Keep a clear policy for
+   exceptions; use Qt or web technology where it materially fits better.
+4. **System integrations.** Use established services/APIs for power, networking,
+   disks, users, updates and permissions wherever feasible. Prefer typed APIs,
+   least privilege and clear errors over parsing shell command output. A
+   privileged operation must be explicit, auditable and limited to the minimum
+   necessary. Do not run routine desktop logic as root. Separate the shell UI
+   process from privileged system operations. Use existing
+   authentication/session-lock components during early releases.
+5. **Application compatibility.** Maintain a compatibility matrix with versions
+   and observed behaviour. Test at least one app each from GTK 3, GTK 4 /
+   libadwaita, Qt, Electron and Flatpak. The OS should communicate supported
+   appearance settings, but the project cannot guarantee every app obeys them.
+6. **Website and release artefacts.** Use a static website initially. Publish
+   source links, releases, install instructions, checksums, supported hardware,
+   known issues and policies. Do not build a user-account backend, telemetry
+   pipeline or download service before there is evidence they are needed.
+
+### Required early spikes
+
+1. Build and boot a repeatable VM image from a clean checkout.
+2. Launch a custom shell process with reliable input, windows, focus and session
+   integration.
+3. Implement one data-backed utility and observe actual power/storage APIs.
+4. Package one GTK 4 Rust app with tokens and settings integration.
+5. Test Flatpak theme and portal behaviour without broadening sandbox
+   permissions.
+
+### Security principles
+
+- Reuse existing login, screen-lock and privilege mechanisms in early versions.
+- Keep a software bill of materials or dependency inventory as releases mature.
+- Pin and review dependencies; monitor security advisories for shipped
+  components.
+- Never expose private keys, access tokens, signing material or user data to an
+  AI prompt.
+- Do not claim a system feature is secure merely because it is written in Rust.
+- Publish a clear vulnerability-reporting route before broad public adoption.
+
 ## What is decided, and what is not
 
 The project keeps a clear line between what is settled and what is open. The

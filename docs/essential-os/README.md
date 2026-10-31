@@ -51,6 +51,109 @@ Essential OS, and it is where the desktop layer is actually being tested.
 It is not yet a distributable operating system: it is a carefully assembled and
 documented desktop. **Status: Prototype.**
 
+## Product brief
+
+**Status:** Hypothesis · **Date:** 2026-10-27
+
+### Working description
+
+Essential OS is an open-source, Linux-based desktop operating system designed to
+make everyday computing feel coherent and approachable without hiding the
+flexibility of a real computer. Its experience emphasises **exploration,
+creation and play** through a consistent visual language, considered motion,
+dependable system utilities and first-party creative tools.
+
+This is a working statement, not a marketing claim. Validate it with users before
+polishing the website around it.
+
+### Problem to solve
+
+Linux offers capable software and a flexible foundation, but the experience can
+feel fragmented: applications use different design conventions, setup and system
+tasks vary in quality, and a user must assemble many independent parts to get a
+desktop that feels intentionally designed. Essential OS should reduce that
+fragmentation without trying to control every application or rebuilding mature
+infrastructure unnecessarily.
+
+### Initial audience hypothesis
+
+Start with one primary audience rather than "everyone who uses a computer."
+Suggested hypothesis: technically curious desktop users who value polish,
+control, open technology, creative work and repairability, but do not want
+everyday maintenance to become a hobby.
+
+Validate through short interviews and usability tests. Do not assume people want
+a Linux OS because they admire the aesthetic.
+
+### Product principles
+
+1. **Coherence:** one design language across shell, settings, utilities and
+   first-party apps.
+2. **Control without needless complexity:** advanced capability exists, but
+   ordinary tasks have clear defaults.
+3. **Local-first where sensible:** core desktop functions work without an
+   account or mandatory cloud service.
+4. **Recoverability:** system changes are understandable and, where practical,
+   reversible.
+5. **Open and maintainable:** prefer public standards, upstream fixes, auditable
+   code and reproducible build steps.
+6. **Accessible by design:** keyboard navigation, text scaling, contrast,
+   reduced motion and screen-reader labels are requirements, not polish.
+7. **Performance with evidence:** measure startup, memory, responsiveness and
+   battery on named reference hardware.
+
+### Product boundary
+
+Essential OS is initially a Fedora-based operating system and desktop experience.
+It reuses the Linux kernel, drivers, packaging/build infrastructure and mature
+system services. Essential may replace the shell and first-party applications
+over time, but will not rewrite the kernel, hardware drivers, package manager or
+every ecosystem application for the first release.
+
+### First-use promise (hypothesis)
+
+A user can install or boot a preview image, enter a clean desktop, launch and
+switch between applications, connect to a network, manage basic system
+preferences, inspect disk and battery status, install supported apps and recover
+from a failed update without needing to understand Linux internals.
+
+Only advertise this promise once the release candidate demonstrably meets it.
+
+### Differentiators to investigate
+
+- A distinctive but restrained visual identity and motion system.
+- A shared design system for shell and first-party apps.
+- High-quality storage, battery, device, network and task utilities.
+- A simple theming and icon workflow, potentially including an icon composer.
+- Creative tools such as Artcraft and Rawmakase, if still strategically
+  important after the core system is viable.
+- Defaults that respect privacy, avoid account lock-in and support offline use.
+
+Do not treat every idea here as a launch requirement. Select a single reason to
+try the first preview and prove it.
+
+### Success hypothesis
+
+People choose Essential OS because the desktop feels coherent and dependable,
+not only because screenshots look attractive. The first preview should prove that
+a small set of daily workflows is easier, clearer or more satisfying than the
+user's current setup.
+
+### Decisions required in Phase 0
+
+- First reference hardware and minimum target hardware.
+- The primary user and the first three to five jobs to be done.
+- Whether the first deliverable is a custom session on Fedora, an installable
+  image, or both in sequence.
+- Which existing compositor/window-management layer the first prototype uses.
+- Whether first-party apps use GTK 4 + Rust as the default, with explicit
+  exceptions when justified.
+- Initial package/app distribution approach: Fedora RPMs, Flatpak, or a
+  deliberate mix.
+- Licence strategy for code, icons, fonts, wallpapers and website assets.
+- What "local-first" means for the first release and what data, if any, leaves
+  the device.
+
 ## The open question
 
 Ida was built for Fedora / GNOME and is now being ported to KDE Plasma. The
