@@ -1,6 +1,6 @@
 # Ida
 
-**The intelligent system layer of Essential OS.**
+**The personal assistant of Essential OS.**
 
 **Status:** Prototype → early architecture · **Date:** 2026-10-07
 
@@ -8,9 +8,14 @@
 
 ## What Ida is
 
-Ida begins as a tiny launcher/search interface and evolves into a
-system-level agent. It is not a chatbot, and it is not "an LLM that can run
-shell commands." The interesting part is the operating-system intent system
+Ida is a voice-first, local-first personal AI assistant. She understands
+natural-language requests, controls the operating system through approved
+tools, holds conversations, reasons through problems, writes and explains,
+handles complex and multi-step tasks, interprets context and delegates work to
+more capable local or cloud models when needed.
+
+She is not a chatbot wrapper around a shell, and she is not "an LLM that can run
+commands." The interesting part is the operating-system intent system
 underneath; models are replaceable components sitting above it.
 
 The name is plain: Ida, no mark, no brackets.
@@ -21,18 +26,32 @@ The defining philosophy, in one line:
 >
 > *Not* user → LLM → 47 tools → hope nothing explodes.
 
-## Ida is not the bundled assistant
+Historically Ida began as a tiny launcher and search interface. That surface
+still exists as her command panel, but ownership of operating-system search has
+moved to **Sam** (see below). Ida's purpose is broader: she is the assistant, not
+the search engine.
 
-Essential OS may ship a small action assistant for ordinary tasks: launching
-apps, finding files, toggling radios, changing settings. That assistant is an OS
-component — optional, replaceable and deliberately generic. Its name is still
-open.
+## Ida and Sam are separate
 
-Ida is personal. Identity, memory, context and coordination across local and
-external compute are the point, not a feature bolted onto a system utility. The
-operating system must work without Ida, and Ida's roadmap is not the
-operating system's roadmap. Both can share the same capability registry and
-policy model; they are not the same product.
+Essential OS has two intelligent systems with different jobs:
+
+- **Sam** is the native search and retrieval service. It is deterministic and
+  non-generative, knows only the computer and its permitted local information,
+  keeps no memory, and returns structured results or a typed handoff.
+- **Ida** is the personal assistant described on this page.
+
+Sam is not a tier of Ida, an Ida backend or a renamed Ida subsystem. Ida may call
+Sam through a typed interface when she needs local information; Sam never calls
+Ida, Hermes or a model. Ida keeps her own action registry, privacy gate,
+executor and personality.
+
+The operating system works without Ida, and Ida does not depend on Sam to
+function. A file lookup that is part of an Ida command workflow may remain an
+Ida action; broad OS search belongs to Sam. Ownership is decided by function,
+not by keyword.
+
+→ Sam: <https://github.com/luishowin/sam>
+→ Decision: [ADR 0010](../decisions/0010-sam-separate-os-search-service.md)
 
 ## The trust rule
 
@@ -53,7 +72,7 @@ See [security-and-permissions.md](security-and-permissions.md) and ADR
 
 | Document | What it covers |
 |---|---|
-| [roadmap.md](roadmap.md) | Core / Pro / Max tiers, the 2026–2030 trajectory, version history |
+| [roadmap.md](roadmap.md) | Product tiers, processing tiers, the 2026–2030 trajectory, version history |
 | [architecture.md](architecture.md) | The pipeline: Input → Intent → Context → Plan → Action → Verify → Response |
 | [interaction-runtime.md](interaction-runtime.md) | Why Ida is a runtime, not merely a router |
 | [capability-registry.md](capability-registry.md) | Capabilities: the bridge between language and the OS |
@@ -85,9 +104,13 @@ The real Ida is a Rust workspace with four crates:
 | Crate | Role |
 |---|---|
 | `ida-core` | Intents, capability registry, policy, grammar, calculator, units, ranking, engine, context, planner, request/entity/result, model-provider trait. **Platform-free.** |
-| `ida-linux` | The OS adapter: apps, file search, launching, system actions, the executor, the network door, the voice door, Ollama. |
+| `ida-linux` | The OS adapter: apps, action-level file lookup, launching, system actions, the executor, the network door, the voice door, Ollama. |
 | `ida` | The binary: the panel (GTK4/libadwaita) and the headless CLI. |
 | `ida-voice` | The speech helper, alive only while listening. |
+
+These crates contain no Sam registry and no Sam runtime. Ida's file lookup is an
+action-level capability used inside command workflows; broad OS search is Sam's
+responsibility.
 
 **Status: Implemented** (released `v0.0.1`–`v0.0.3`; `0.0.4`/`0.0.6` in
 progress).

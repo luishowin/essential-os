@@ -15,23 +15,26 @@ This project is three layers maturing together, not one feature:
         SLATE            the hardware
           ↓
      Essential OS        the operating system
-          ↓
-      Ida           the intelligence
+       ├── Sam           the search and retrieval service
+       └── Ida           the personal assistant
 ```
 
-Each layer is only useful because of the others. Ida is interesting because it
+Each layer is only useful because of the others. Ida is interesting because she
 lives *inside* the system rather than inside an app. Essential OS is interesting
 because it has an intelligence layer that can act on it safely. SLATE is
 interesting because it is designed around the idea that a machine can be simple
 at rest and powerful on demand, and around an agent that knows how to exploit
 that.
 
-Essential OS may also ship a small, local, replaceable action assistant for
-ordinary system tasks. **That assistant is not Ida.** It is a commodity part of
-the operating system: optional, generic and independently maintainable. Ida is
-the personal layer — identity, memory, context and work across machines — and
-the operating system must remain fully useful without it. The two may share the
-capability and policy model; they do not share a product identity.
+Essential OS also has a native search and retrieval component, **Sam**. Sam is
+not Ida. It is a deterministic, non-generative service over a dense registry of
+domains, intents and predefined handlers: it knows the computer and its permitted
+local information, keeps no personal memory and makes no decisions about what to
+do next. Ida is the personal layer — identity, memory, context and work across
+machines — and she may call Sam for local information. The operating system must
+remain fully useful without Ida, and Sam must be useful without either. The two
+share low-level OS data services where that avoids duplicate indexes; they do not
+share registries, product identity or roadmaps.
 
 The target horizon is **2030**. That is deliberate. The project is not one
 feature that can be rushed into being "the next Copilot." It is several layers

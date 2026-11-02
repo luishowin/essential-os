@@ -52,8 +52,10 @@ with a decision, or a documented reason to stay open.
 4. **Local model quality**: a small local action model holds JSON shape but
    does not map paraphrase to capability ids reliably. How much interpretation
    can move local, and what stays remote?
-5. **Semantic indexing of personal information**: what should be indexed, how,
-   and with what privacy boundary? Not before ephemeral context works.
+5. **Semantic indexing of personal information**: which domains belong to Sam's
+   local search registry, what is indexed, how, and with what privacy boundary?
+   Sam owns the OS search index; Ida keeps only ephemeral context until Pro.
+   Sam is specified in <https://github.com/luishowin/sam>.
 6. **Persistent memory**: what is worth remembering, in what form, and how is
    it kept honest and inspectable?
 7. **Where computation belongs**: the policy by which Ida chooses local,
@@ -66,6 +68,9 @@ with a decision, or a documented reason to stay open.
     grows.
 11. **SLATE feasibility**: whether the 999 g / ≤13″ / modular targets can be
     met together, and by what route.
+12. **Sam interface**: which local IPC mechanism and versioned API Sam exposes,
+    which catalogue each shared source owns, and which result actions Sam may
+    offer directly. See <https://github.com/luishowin/sam>.
 
 ## How to add an entry
 

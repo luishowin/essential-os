@@ -67,6 +67,17 @@ Ida presents two interaction modes, but they are not two architectures:
 Both enter through the same runtime. A single keyboard shortcut summons Ida;
 Ida determines what kind of interaction is required.
 
+## Sam is not a stage
+
+The runtime does not contain the operating system's search engine. Broad local
+lookup — files, applications, settings, hardware, live system state and local
+documentation — is handled by **Sam**, a separate Essential OS service.
+
+The runtime may call Sam through a typed interface when a request needs local
+information. Sam returns structured data; the runtime decides how to present it
+or whether to continue with an action. Sam is not a tier, a stage or a backend of
+Ida, and the runtime never delegates intent interpretation to it.
+
 ## The one rule that shapes the runtime
 
 The runtime exists to make this true:

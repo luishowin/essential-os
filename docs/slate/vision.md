@@ -40,11 +40,16 @@ Because the machine is meant to be carried and used everywhere, and because a
 hard constraint forces honest engineering. 999 g is a design target that
 eliminates the lazy answer. It is not a measurement of anything that exists.
 
-## How Ida fits
+## How the intelligence fits
 
-Ida is the reason the hardware can be ambitious. If the intelligence layer can
+Ida is the reason the hardware can be ambitious. If the assistant layer can
 decide **where** work belongs (local burst, home server, or external compute),
 then a 999 g machine does not need to carry every ounce of compute itself. It
 can be the interface to a personal computing fabric.
+
+Sam, the native search service, has the opposite budget: it must stay light and
+fast on the same machine, so it never carries a language model. Both constraints
+push in the same direction: put heavy compute where it belongs, and keep the
+local machine responsive.
 
 That is the long-term, speculative version. Today it is a design direction.

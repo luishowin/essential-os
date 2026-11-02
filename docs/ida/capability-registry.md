@@ -53,6 +53,13 @@ validate, test and secure than handing a model a terminal.
 }
 ```
 
+A file capability in Ida's action registry is an **action-level** lookup used
+inside a command workflow (for example, "find the invoice and open it"). It is
+not the operating system's general search architecture. Broad file, application,
+settings and system-information search belongs to **Sam**, which Ida calls
+through a typed interface. See
+[ADR 0010](../decisions/0010-sam-separate-os-search-service.md).
+
 ```json
 {
   "id": "session.restart",

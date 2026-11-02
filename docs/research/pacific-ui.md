@@ -99,7 +99,8 @@ tested before feature work. Both ideas survive in
   [ADR 0009](../decisions/0009-desktop-base-open.md), but Pacific UI's
   GNOME-specific shell work is not the current path.
 - **Pacific UI as the product name and direction.** Essential OS is the
-  operating-system layer; Ida is the intelligence layer. Pacific UI is neither.
+  operating-system layer; Sam is the search and retrieval service and Ida is the
+  personal assistant. Pacific UI is none of them.
 - **Phase 0 code.** One GNOME Shell panel section, `install.sh` and a
   development shell. It was GNOME-specific and never committed. It is archived,
   not imported.

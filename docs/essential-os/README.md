@@ -34,14 +34,16 @@ project and produce something worse than what already exists. The realistic and
 more interesting move is to stand on that engineering and concentrate effort on
 the layer the user actually touches.
 
-Essential OS is the **substrate**. Ida is the **intelligence**. Each makes the
-other more valuable.
+Essential OS is the **substrate**. Sam and Ida are the **intelligence**, and they
+are separate systems: Sam is the native search and retrieval service; Ida is the
+personal assistant. Each makes the other more valuable without becoming the
+other.
 
 ## Documentation map
 
 | Document | What it covers |
 |---|---|
-| [architecture.md](architecture.md) | The five layers of the system, and the desktop-base question |
+| [architecture.md](architecture.md) | The five layers of the system, the intelligence boundary and the desktop-base question |
 | [components.md](components.md) | What we choose versus what we build |
 | [design-principles.md](design-principles.md) | The rules that keep it coherent |
 

@@ -36,23 +36,58 @@ own design work belongs.
 
 ### 5. Intelligence
 
-Ida, reaching the system only through structured capabilities. Ida is a
-layer *of* Essential OS, not an application running on top of it, which is what
-makes it a system-level agent rather than a chatbot in a window.
+Two separate systems, not one assistant:
+
+- **Sam** is the native search and retrieval service. It answers questions about
+  the computer itself — files, applications, settings, hardware, devices,
+  networking, processes and local documentation — from a versioned registry and
+  predefined read-only handlers. It is deterministic and non-generative, with no
+  language model, no reasoning and no personal memory.
+- **Ida** is the personal assistant. It understands natural-language requests,
+  resolves context, selects capabilities, executes approved native actions,
+  verifies results, converses and escalates complex work. It may call Sam for
+  local computer knowledge.
+
+Both reach the system only through structured capabilities. Ida is a layer *of*
+Essential OS, not an application running on top of it; Sam is a peer OS service
+that either the global search experience or Ida can call.
 
 ```text
-┌─────────────────────────────────────────────┐
-│ 5  Experience          our UX · app family  │
-├─────────────────────────────────────────────┤
-│ 4  Desktop infra       shell · session · WM │
-├─────────────────────────────────────────────┤
-│ 3  System services     net · audio · gfx    │
-├─────────────────────────────────────────────┤
-│ 2  Foundation          kernel · drivers     │
-├─────────────────────────────────────────────┤
-│ 5  Intelligence        Ida  (cross-cut) │
-└─────────────────────────────────────────────┘
+┌─────────────────────────────────────────────────────┐
+│ 5  Experience          our UX · app family          │
+├─────────────────────────────────────────────────────┤
+│ 4  Desktop infra       shell · session · WM         │
+├─────────────────────────────────────────────────────┤
+│ 3  System services     net · audio · gfx            │
+├─────────────────────────────────────────────────────┤
+│ 2  Foundation          kernel · drivers             │
+├─────────────────────────────────────────────────────┤
+│ 5  Intelligence        Sam (search) · Ida (assistant│
+│                        cross-cutting)               │
+└─────────────────────────────────────────────────────┘
 ```
+
+## The intelligence layer
+
+Sam and Ida are independent products with independent roadmaps and evaluation
+criteria.
+
+| Question or task | Owner |
+|---|---|
+| Find a file, application, setting, local document or device | Sam retrieves; Ida may request the same lookup |
+| Read live system state (RAM, disk, battery, network) | Sam, from approved sources |
+| Open a found file, launch an app, navigate to a setting | Sam may propose a constrained action; the caller performs it |
+| Change a setting, set volume, create a timer, move files, power off | Ida interprets and authorises; its executor performs it |
+| Explain, write, plan, research or reason | Ida Tier 2, or the caller's chosen external handler |
+| Multi-step agent work | Hermes, under Ida |
+
+Sam never chooses or invokes a web search, local model or cloud model. It returns
+a typed handoff and the calling layer decides. Sam must work without Ida; Ida
+must work without Sam. They may share read-only OS data services, but their
+registries and responsibilities stay separate.
+
+**Status:** Sam is specified only and has no implementation. Ida Core is
+implemented and released.
 
 ## The desktop-base question
 
@@ -69,12 +104,17 @@ energy/power story; the app-presentation model; and long-term maintainability
 for one person. Until then, **both are documented**, and ADR
 [0009](../decisions/0009-desktop-base-open.md) holds the decision open.
 
-## Relationship to Ida
+## Relationship to Ida and Sam
 
 Essential OS does not depend on Ida to function. Ida is a layer that, when
 present, makes the system easier to operate. The dependency runs the other way:
 Ida depends on the system exposing **structured capabilities**. The richer and
 more consistent that capability surface is, the more Ida can do, safely.
+
+Sam is the native search service and is expected to be part of Essential OS
+itself, usable from the global search experience without Ida installed. The same
+rule applies: Sam reads only through approved, read-only data services and never
+holds an execution path.
 
 ## Status
 
@@ -84,7 +124,8 @@ more consistent that capability surface is, the more Ida can do, safely.
 | System services | Configured · **Prototype** |
 | Desktop infrastructure | Assembled on Plasma · **Prototype** |
 | Experience | Designed and applied · **Prototype** |
-| Intelligence | Ida Core · **Implemented** (see [`../ida/`](../ida/README.md)) |
+| Intelligence — Ida | Ida Core · **Implemented** (see [`../ida/`](../ida/README.md)) |
+| Intelligence — Sam | Architecture specified · **Design stage**, no implementation (see [`luishowin/sam`](https://github.com/luishowin/sam)) |
 
 There is no installer, no image and no distribution. **Essential OS is a vision
 and a research project with a real desktop assembly, not a shipping OS.**

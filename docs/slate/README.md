@@ -47,6 +47,6 @@ computing fabric.
 SLATE            ← designed around "simple at rest, powerful on demand"
    ↓
 Essential OS     ← assembled, owned, local-first
-   ↓
-Ida          ← the intelligence that uses the machine well
+   ├── Sam       ← the OS search and retrieval service
+   └── Ida       ← the personal assistant that uses the machine well
 ```

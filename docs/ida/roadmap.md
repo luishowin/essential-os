@@ -2,12 +2,24 @@
 
 **Status:** Planned + Implemented · **Date:** 2026-10-07
 
-Ida is a family of tiers of one executable, unlocked by module rather than
+Ida is a family of product tiers of one executable, unlocked by module rather than
 shipped as three products. The underlying architecture stays the same; the
 model changes. The operating-system capability layer does not become a mess when
 a larger model arrives.
 
----
+There are two different uses of "tier" in the record. They are not the same
+axis:
+
+| Concept | Meaning | Current state |
+|---|---|---|
+| **Core / Pro / Max** | Product packaging: how much autonomy and capability an Ida installation offers | Core implemented; Pro and Max planned |
+| **Tier 0 / Tier 1 / Tier 2** | Runtime processing: deterministic handling, small action model, advanced intelligence | Specified in the tiered assistant spec; partial prototype |
+
+Core today resolves common requests deterministically and with a small local
+action model. Pro and Max add memory, integrations, planning and delegation.
+Tier 0, Tier 1 and Tier 2 describe *how one request is processed*, not which
+product was purchased. Sam is neither axis: it is a separate Essential OS
+service, not an Ida tier.
 
 ## The tiers
 
@@ -117,3 +129,7 @@ Each significant step is: explain the problem, document the solution, identify
 risks, implement, test, document what actually happened, update the status.
 Nothing is claimed as done until it has been tested on the machine it was built
 for.
+
+Sam's roadmap is independent and lives at
+<https://github.com/luishowin/sam/blob/main/ROADMAP.md>. A Sam milestone does not
+imply an Ida milestone, and neither system's release blocks the other.

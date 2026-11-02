@@ -137,3 +137,40 @@ figure in §16 is an owner estimate, not a measured result.
 
 **Open.** Whether the base-distribution question becomes an ADR that confirms
 Fedora, and when each of the ten open architectural decisions in §15 is settled.
+
+## 2026-11-03 · Sam becomes a separate search service
+
+**What.** The architecture splits into two products. **Sam** is Essential OS's
+native, deterministic search and retrieval service: a dense registry of domains,
+intents, phrasings and handlers over local indexes and OS interfaces, with no
+generative model, no reasoning and no personal memory. **Ida** remains the
+personal assistant: voice-first, local-first, Tier 0 / Tier 1 / Tier 2, with a
+privacy gate, a policy-enforcing executor and Hermes for multi-step work.
+
+The decision is recorded as [ADR 0010](../decisions/0010-sam-separate-os-search-service.md).
+Sam now has its own repository, <https://github.com/luishowin/sam>, which is
+documentation-led. There is no Sam implementation yet.
+
+**Why.** Search and assistance have different runtime requirements, trust
+boundaries and evaluation criteria. Local search needs determinism, coverage,
+sub-10 ms retrieval and a 4 GB memory target; it does not need a language model.
+Assistance needs interpretation, context, conversation and escalation. Treating
+them as one system made the search path heavier than necessary and made Ida
+responsible for a registry she should not own.
+
+**What changed in the record.** The umbrella README, architecture, Essential OS
+layer, components table, product specification, Ida narrative, interaction
+runtime, capability registry, roadmap and research questions now describe Sam and
+Ida separately. The product specification's section 8 is rewritten around the
+boundary: Sam is the native search component; Ida is the assistant; ownership is
+decided by function; the caller owns escalation. A new migration record lives in
+[`docs/migrations/2026-11-03-sam-ida-separation.md`](../migrations/2026-11-03-sam-ida-separation.md).
+
+**What did not change.** Ida's personality, voice, trust rule, executor,
+privacy gate and existing implementation. No code moved between repositories and
+no Ida capability was removed. Ida's action-level file lookup remains valid for
+command workflows.
+
+**Open.** Sam's licence, IPC mechanism, API versioning, catalogue ownership,
+default-enabled domains, choice of embedding encoder and minimum reference
+hardware. See the Sam roadmap.

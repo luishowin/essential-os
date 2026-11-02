@@ -9,6 +9,18 @@ Most rows are "choose". The "build" rows are where the project's effort belongs.
 > These are directions, not commitments. A component changes when an ADR records
 > why.
 
+Two separate intelligence products sit above these components:
+
+- **Sam** owns OS search and retrieval: its own registry, local indexes,
+  deterministic handlers and bounded cache. It uses no generative model and keeps
+  no personal memory.
+- **Ida** owns the assistant runtime: intent interpretation, context, approved
+  actions, conversation, privacy gate and model routing.
+
+They may share read-only catalogues (files, applications, settings, devices,
+documentation), but not registries, conversation state or decision policies.
+See [ADR 0010](../decisions/0010-sam-separate-os-search-service.md).
+
 | Layer | Concern | Direction | Candidate / note | Status |
 |---|---|---|---|---|
 | Foundation | Kernel | choose | Linux | Prototype |
@@ -32,9 +44,10 @@ Most rows are "choose". The "build" rows are where the project's effort belongs.
 | Desktop | Keyboard model | **build (config)** | global shortcuts, interaction model | Prototype |
 | Experience | App family | choose + configure | Files, Photos, Music, Notes, Terminal, Settings… | Prototype |
 | Experience | Design system | **build** | the ESSENTIAL OS language | Design |
-| Intelligence | Runtime | **build** | Ida | Implemented (Core) |
-| Intelligence | Capability layer | **build** | the registry and trust path | Implemented |
-| Intelligence | Model routing | **build** | provider-agnostic router | Prototype |
+| Intelligence | Assistant runtime | **build** | Ida: tiers, context, executor, routing | Implemented (Core) |
+| Intelligence | OS search & retrieval | **build** | Sam: registry, indexes, deterministic handlers, cache | Design |
+| Intelligence | Capability layer | **build** | Ida's registry and trust path | Implemented |
+| Intelligence | Model routing | **build** | provider-agnostic router (Ida) | Prototype |
 | Intelligence | Local models | choose | small action models, embeddings | Research |
 
 ## The rule for choosing a component

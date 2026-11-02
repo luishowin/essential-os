@@ -41,7 +41,8 @@ No angle brackets, no integral. Just `Ida`.
 
 ```text
 ESSENTIAL OS   the system
-Ida            the intelligence
+Sam            the search service
+Ida            the personal assistant
 SLATE          the hardware
 ```
 

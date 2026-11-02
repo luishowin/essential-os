@@ -84,7 +84,8 @@ REQUEST
  │
  ├── obvious deterministic command? ──► deterministic handler
  │
- ├── obvious search? ────────────────► search
+ ├── obvious lookup (file, app, setting, device, system info)?
+ │        └───────────────────────────► Sam typed lookup, or an Ida lookup action
  │
  ├── obvious calculation? ───────────► calculator
  │
@@ -97,17 +98,25 @@ The point is that `firefox`, `2.4 GB in MB` and `reboot` never touch a model,
 while *"find the screenshots I took yesterday and open the newest one"* does.
 That buys speed, reliability and a far smaller model requirement.
 
+The lookup branch is a boundary, not a duplication. Broad OS search — files,
+applications, settings, hardware, live system information and local
+documentation — belongs to **Sam**, Essential OS's native search service. Ida
+asks Sam through a typed interface and then decides what to say or do. A narrow
+lookup that is part of an Ida action workflow (`find_file`, `recent_files`) may
+stay in Ida's action registry; it must not grow into a second general search
+engine. See [ADR 0010](../decisions/0010-sam-separate-os-search-service.md).
+
 **Status:** deterministic layers Implemented and tested; the local-model
 fallback is Implemented but wired to the voice path first (see
-[model-routing.md](model-routing.md)).
+[model-routing.md](model-routing.md)). Sam is specified, not implemented.
 
 ## Intent → Plan → Action are three different things
 
 This separation becomes valuable later, so it is established now.
 
 - **Intent**: *what does the user want?* `open_file`
-- **Plan**: *what steps are necessary?* search → filter → sort → select → open
-- **Action**: *what actually happens?* `files.search(...)`, `desktop.open(...)`
+- **Plan**: *what steps are necessary?* lookup (Sam or Ida) → filter → sort → select → open
+- **Action**: *what actually happens?* `sam.lookup(...)`, `files.open(...)`, `desktop.open(...)`
 
 ```text
 Natural language

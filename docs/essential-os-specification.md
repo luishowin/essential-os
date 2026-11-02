@@ -106,7 +106,7 @@ It includes:
 - Control centre
 - System settings
 - Session management
-- Desktop search
+- Desktop search, powered by Sam
 - Workspace management
 - Lock screen integration
 - Desktop widgets where justified
@@ -124,6 +124,13 @@ Applications should be independently maintainable, modular and integrated throug
 Intelligent capabilities integrate through structured interfaces and explicit permissions.
 
 The intelligence layer must never receive unrestricted access to the operating system.
+
+Essential OS separates two systems with different responsibilities:
+
+- **Sam** is the native search and retrieval service. It answers questions about the computer and its permitted local information through a versioned registry, local indexes and deterministic handlers. It uses no generative model, performs no reasoning and keeps no personal memory.
+- **Ida** is the personal assistant. It understands requests, resolves context, uses approved tools, executes native actions, converses, reasons and escalates complex work to local or cloud models through a privacy gate.
+
+They are peers. Sam is not a tier of Ida, and Ida does not own the operating system's search architecture. Ida may call Sam through a typed interface.
 
 ## 5. Platform and development strategy
 
@@ -167,7 +174,7 @@ Proposed package groups:
 - `essential-creative`: creative software collection
 - `essential-office`: productivity software collection
 - `essential-games`: curated games
-- `essential-assistant`: optional lightweight action assistant
+- `essential-search`: Sam, the native search and retrieval service
 
 The exact package boundaries remain subject to implementation and dependency testing.
 
@@ -183,7 +190,7 @@ The desktop should feel intentional, responsive and consistent.
 - Top panel or equivalent system information surface
 - Dock or application access surface
 - Application launcher
-- Search
+- Search (Sam)
 - Window previews and switching
 - Notifications
 - Control centre
@@ -307,48 +314,64 @@ Additional wallpaper collections can be distributed separately.
 
 ## 8. Intelligent interaction
 
-Essential OS may include a small, local-first action assistant.
+Essential OS contains two separate intelligent systems. They may share read-only operating-system data services, but they do not share a registry, an interface or a decision policy.
 
-This is distinct from Ida.
+| Characteristic | Ida | Sam |
+|---|---|---|
+| Product role | Personal assistant | OS search assistant |
+| Primary purpose | Understand, assist and act | Retrieve and present OS information |
+| Generative model | Yes, through Tier 2 | No |
+| Reasoning | Yes, through Tier 2 | No |
+| Voice | Voice-first | Primarily search UI; integration as required |
+| Conversational memory | May maintain controlled context | None |
+| Cache | Where useful | Bounded performance cache |
+| Domain | General assistance and computer interaction | The computer itself |
+| Web search | Can request it | Never invokes it itself |
+| Multi-step work | Yes, through Hermes | No |
+| OS integration | Uses approved executors and tools | Uses registered local sources and handlers |
 
-The bundled assistant's purpose is to provide a convenient, system-level interaction interface for common tasks, similar to a traditional voice or command assistant rather than a general-purpose chatbot.
+### Sam: native search and retrieval
 
-### Intended capabilities
+Sam is the native search assistant embedded in Essential OS. Its knowledge boundary is the computer it runs on: the operating system, installed applications, settings, hardware, devices, services, local documentation, indexed files and other permitted local information.
 
-- Launch applications.
-- Find files.
-- Change common system settings.
-- Control Bluetooth and Wi-Fi.
-- Adjust power profiles.
-- Manage reminders.
-- Provide system information.
-- Trigger registered application actions.
+Sam is not a language model, chatbot, agent or general-purpose assistant. It recognises a supported intent, retrieves the matching registry entry, runs a predefined read-only handler and presents structured results. It does not reason, generate original explanations, hold a conversation or build a personal profile.
 
-### Technical direction
+**Knowledge domains:** filesystem and local content; applications; settings and OS navigation; hardware and devices; live system state; networking; media and codecs; local documentation; and Essential OS itself.
 
-- Keyboard-first interaction.
-- Optional voice input.
-- Deterministic command handling.
-- Small local intent or action model where useful.
-- Structured capability registry.
-- Explicit permission and policy checks.
-- Controlled execution and result verification.
+**Out of domain:** general knowledge, current affairs, external research, open-ended explanation, creative writing, planning, multi-step agent work and general conversation. Sam returns a typed handoff rather than guessing.
 
-The model must not execute arbitrary shell commands or bypass the operating system's permission model.
+**Technical direction:**
 
-The assistant should remain optional, replaceable and independently maintainable.
+- deterministic, non-generative runtime;
+- a versioned registry of domains, intents, phrasings, slots, handlers, templates and evaluation cases;
+- hybrid retrieval: exact and lexical matching first, optional compact embeddings when useful, deterministic ranking and calibrated confidence thresholds;
+- predefined, read-only handlers over approved local sources;
+- a bounded operational cache with TTL and dependency invalidation — never personal memory;
+- no network egress and no provider selection;
+- structured results with provenance, freshness and constrained result actions;
+- low resource cost, with 4 GB systems as the compatibility target.
 
-Its product name is TBD.
+**Status:** specified only; design stage, no implementation. See <https://github.com/luishowin/sam>.
 
-### Ida
+### Ida: personal assistant
 
-Ida remains Luis's personal assistant and an independent project.
+Ida is the personal assistant and an independent project. It is voice-first and local-first: it understands natural-language requests, resolves context, selects approved tools, controls the system through an executor, converses, reasons and delegates complex work to local or cloud models under a privacy gate.
 
-Ida can integrate deeply with Essential OS, use its structured capabilities and eventually coordinate work across local and external computing resources.
+Ida keeps its Tier 0 (deterministic commands), Tier 1 (small action model) and Tier 2 (advanced intelligence) architecture. Hermes remains the agent loop for multi-step work. Ida is the user-facing assistant and routing layer, not a competing agent framework.
 
-Essential OS must remain fully usable without Ida.
+Ida may use Sam as a specialised utility for OS search and information retrieval. Ida interprets Sam's results, explains them conversationally or decides that further reasoning is required.
 
-Ida's identity, memory, personal context and development roadmap should not be tied to the generic assistant bundled with the operating system.
+Essential OS must remain fully usable without Ida. Ida's identity, memory, personal context and roadmap are not tied to Sam. Its personality and voice are its own and are not part of Sam.
+
+**Status:** prototype to early architecture; Ida Core is implemented and released. See <https://github.com/luishowin/ida>.
+
+### The boundary
+
+- Sam proposes; the caller validates and acts. Sam has no execution path.
+- Sam never chooses or invokes a web search, local model or cloud model. It returns a typed handoff and the calling layer decides.
+- Ida's executor remains the single policy choke point for state-changing operations.
+- A shared file, application or device catalogue must have one owner and one versioned interface. Sharing an index does not mean sharing memory, registries or policies.
+- Sam and Ida have independent evaluation criteria and independent roadmaps.
 
 ## 9. Configuration, reproducibility and recovery
 
@@ -514,7 +537,7 @@ Deliverables:
 - Rawmakase.
 - Additional utilities.
 - Curated games.
-- Lightweight action assistant.
+- Sam, the native search and retrieval service.
 - Expanded application integration.
 
 Exit condition: The operating environment has a useful, cohesive application ecosystem.
@@ -577,7 +600,7 @@ The following require formal decisions and supporting prototypes:
 5. Default filesystem and rollback strategy.
 6. Installer and partitioning implementation.
 7. Exact default creative and office application selection.
-8. Action assistant implementation and model choice.
+8. Sam interface, IPC mechanism, catalogue ownership and default-enabled domains.
 9. Wallpaper distribution and licensing process.
 10. Final minimum hardware requirements.
 
@@ -594,13 +617,14 @@ Decisions should be documented in the architecture decision record system and sh
 | Canonical desktop base | Open question |
 | Ida Core | Implemented / released |
 | Ida capability and trust architecture | Implemented foundation |
+| Sam architecture and boundary | Specified |
+| Sam implementation | Not started |
 | Desktop UI discovery | In progress, approximately 20% by current owner estimate |
 | Design system | In progress |
 | First-party application ecosystem | Planned |
 | RPM packaging and DNF installation | Planned |
 | Configuration restoration pipeline | Planned |
 | Bootable ISO | Planned |
-| Lightweight bundled action assistant | Hypothesis |
 | SLATE hardware | Speculative |
 
 ---

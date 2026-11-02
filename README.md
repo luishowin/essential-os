@@ -9,8 +9,13 @@
 Essential OS is not an AI app and not a Linux distribution written from
 scratch. It is a long-term personal computing platform: a coherent operating
 system **assembled from proven open-source components**, with its own UX,
-orchestration and system-level software layered on top, and an intelligent
-system layer, **Ida**, that decides where computation belongs.
+orchestration and system-level software layered on top.
+
+Two separate systems provide its intelligence. **Sam** is the native,
+deterministic search and retrieval service: it answers questions about the
+computer itself. **Ida** is the personal assistant: it understands requests,
+acts through approved tools, converses, reasons and decides where computation
+belongs. They are peers, not one assistant with two names.
 
 This repository is the **canonical engineering and design record** for the
 project. It holds the vision, the decisions, the roadmap, the brand and the
@@ -24,25 +29,30 @@ public site. The code lives in dedicated repositories, linked below.
         SLATE
           ↓
      Essential OS
-          ↓
-      Ida
+      ├── Sam   (search and retrieval)
+      └── Ida   (personal assistant)
 ```
 
 | Layer | What it is | State |
 |---|---|---|
 | **SLATE** | The eventual hardware: an extremely light, thin, modular ultrabook (999 g, ≤13″, Framework-style modularity). *Simple at rest, powerful on demand.* | **Speculative**, a hardware concept, not a product |
 | **Essential OS** | A Linux-based operating system assembled from excellent existing components (kernel, drivers, desktop, networking, audio, graphics, packaging, security), with our own UX and system services on top. | **Vision + research**, with a real desktop assembly in progress |
-| **Ida** | The personal intelligent layer: a launcher that becomes an operating-system agent. Understands intent, resolves context, selects capabilities, executes native actions, verifies results, and routes work between local and external intelligence. Distinct from the optional generic action assistant Essential OS may bundle. | **Prototype → early architecture**, Core is real and released |
+| **Sam** | The native search and retrieval service. A deterministic, non-generative engine over a dense registry of domains, intents, retrieval rules and predefined handlers. It knows the computer and its permitted local information, not the outside world. | **Specified only**, design stage |
+| **Ida** | The personal assistant. Voice-first and local-first: understands intent, resolves context, uses approved tools, executes native actions, converses and escalates complex work to local or cloud models. Uses Sam for local lookup. | **Prototype → early architecture**, Core is real and released |
 
 The relationship should feel like parts of one universe:
 
 ```text
 ESSENTIAL OS
-
-Ida
+  ├── Sam
+  └── Ida
 
 SLATE
 ```
+
+Sam and Ida are independent systems with independent roadmaps. Sam is not a tier
+of Ida, and Ida is not a conversational wrapper around Sam. See
+[ADR 0010](docs/decisions/0010-sam-separate-os-search-service.md).
 
 ---
 
@@ -94,6 +104,9 @@ unless it is.
 
 ### Being explored
 
+- **Sam**, the native search and retrieval engine: specified in
+  `Essential_OS_Sam_and_Ida_Specification_v1.1` and established as an
+  independent project, with no implementation yet. → [`luishowin/sam`](https://github.com/luishowin/sam)
 - Local AI infrastructure: small action models, embeddings and semantic
   retrieval, model quantisation, and the split between local and external
   inference.
@@ -106,7 +119,6 @@ unless it is.
 
 - Ida Pro and Ida Max tiers: memory, context, integrations, multi-step
   planning, goals and verification.
-- A semantic index and structured entity layer over personal information.
 - A provider-agnostic model router that decides where computation belongs.
 
 ### Speculative
@@ -126,6 +138,7 @@ it says so. See the status legend in
 
 - **This repository** is the canonical engineering and design record.
 - **`luishowin/ida`** owns Ida's implementation and detailed specification.
+- **`luishowin/sam`** owns Sam's architecture, registry design and roadmap.
 - **The design tool** owns visual exploration; decisions and token values are
   recorded here.
 - **GitHub Issues** own work that needs doing.
@@ -142,13 +155,19 @@ The consolidated product and technical statement is
 (v0.2). It describes the whole system in one place; the documents below hold the
 reasoning, the layer detail and the open questions.
 
+The authoritative Sam/Ida architecture is
+[`docs/specifications/Essential_OS_Sam_and_Ida_Specification_v1.1.pdf`](docs/specifications/Essential_OS_Sam_and_Ida_Specification_v1.1.pdf)
+(3 November 2026). It supersedes the v1.0 tiered assistant specification.
+
 ```text
 docs/          the record: vision, architecture, decisions, research
   essential-os-specification.md  the product and technical specification (v0.2)
-  ida/           the intelligent layer (narrative; detail lives in the ida repo)
+  specifications/  authoritative standalone specifications
+  ida/           the personal assistant (narrative; detail lives in the ida repo)
   essential-os/  the operating system layer
   slate/         the hardware layer
   decisions/     architecture decision records (ADRs)
+  migrations/    dated records of architectural changes
   research/      the project log, history, prior art and source library
   planning/      roadmap, first-release scope, quality gates and working process
   brand/         the visual language and wordmark
@@ -162,6 +181,7 @@ src/           why there is no implementation here
 
 - Ida: <https://github.com/luishowin/ida> (Rust: `ida-core`, `ida-linux`,
   `ida`, `ida-voice`)
+- Sam: <https://github.com/luishowin/sam> (documentation-led; no implementation yet)
 - Essential Desktop: the Fedora/Plasma assembly (working tree, private)
 - Early intent-router experiments: `Labs/jev-routing-test` (TypeScript)
 

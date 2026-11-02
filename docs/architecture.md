@@ -2,11 +2,12 @@
 
 **Status:** Vision + architecture · **Date:** 2026-10-07
 
-This document describes how the three layers connect. It is deliberately
+This document describes how the layers connect. It is deliberately
 high-level. Detail lives in the layer documents:
 
-- Ida → [`ida/architecture.md`](ida/architecture.md) (and the implementation
-  spec in [`luishowin/ida`](https://github.com/luishowin/ida))
+- Ida, the personal assistant → [`ida/architecture.md`](ida/architecture.md) (and
+  the implementation spec in [`luishowin/ida`](https://github.com/luishowin/ida))
+- Sam, the OS search and retrieval service → [`luishowin/sam`](https://github.com/luishowin/sam)
 - Essential OS → [`essential-os/architecture.md`](essential-os/architecture.md)
 - SLATE → [`slate/hardware-requirements.md`](slate/hardware-requirements.md)
 
@@ -21,18 +22,23 @@ high-level. Detail lives in the layer documents:
 └───────────────────────────┬──────────────────────────────┘
                             ↓
 ┌──────────────────────────────────────────────────────────┐
-│  Ida        the intelligence layer                  │
+│  Ida        the personal assistant                       │
 │  understand → resolve context → plan → capabilities →    │
-│  execute native actions → verify                         │
+│  execute native actions → verify → converse              │
 │  local-first · provider-agnostic · preview-first         │
-└───────────────────────────┬──────────────────────────────┘
-                            ↓  structured capabilities only
-┌──────────────────────────────────────────────────────────┐
-│  Essential OS      the substrate                         │
-│  Linux kernel · drivers · desktop · networking · audio · │
-│  graphics · packaging · security · our UX & services     │
-└───────────────────────────┬──────────────────────────────┘
-                            ↓
+└──────────────┬────────────────────────────┬──────────────┘
+               │ typed lookup               │ structured
+               ↓                            ↓ capabilities only
+┌──────────────────────────────┐  ┌───────────────────────┐
+│  Sam   OS search & retrieval │  │  Essential OS         │
+│  registry · indexes ·        │  │  the substrate        │
+│  deterministic handlers      │  │  Linux kernel ·       │
+│  no model · no memory        │  │  drivers · desktop ·  │
+└──────────────┬───────────────┘  │  networking · audio · │
+               │ read-only        │  graphics · packaging │
+               └─────────────────►│  security · our UX    │
+                                  └───────────┬───────────┘
+                                              ↓
 ┌──────────────────────────────────────────────────────────┐
 │  SLATE             the hardware                          │
 │  999 g · ≤13″ · modular · simple at rest, powerful on    │
@@ -41,12 +47,31 @@ high-level. Detail lives in the layer documents:
 ```
 
 The arrows are one-way on purpose. Ida issues **structured capabilities**;
-Essential OS decides what is permitted and executes. The intelligence never
+Essential OS decides what is permitted and executes. Sam reads approved local
+sources and returns structured results; it never acts. The intelligence never
 holds an unrestricted handle on the machine. That boundary is the single most
 important structural idea in the project, and it is the reason the layers can
 grow independently.
 
-## The three layers
+## Sam and Ida are peers
+
+Sam is a native Essential OS service. Ida is a separate personal assistant. Both
+are clients of the same read-only OS data services, and Ida may call Sam through
+a typed local API when it needs information about the computer.
+
+- Sam is **not** a tier of Ida, an Ida backend or a renamed Ida subsystem.
+- Sam uses no generative model, performs no reasoning and keeps no personal
+  memory.
+- Ida keeps its Tier 0 / Tier 1 / Tier 2 architecture, privacy gate, executor
+  and Hermes agent loop.
+- Sam never chooses or invokes a web search, local model or cloud model. The
+  calling layer owns escalation.
+- Essential OS must work without either system.
+
+See [ADR 0010](decisions/0010-sam-separate-os-search-service.md) and the
+[boundary document](essential-os/architecture.md#the-intelligence-layer).
+
+## The layers
 
 ### SLATE: the hardware
 
@@ -65,12 +90,23 @@ come from the open-source ecosystem. Differentiation lives in the UX,
 orchestration and system services layered on top. **Status: vision + research,
 with a real desktop assembly in progress.**
 
-### Ida: the intelligence
+### Sam: the OS search and retrieval service
 
-The system-level agent. It begins as a tiny launcher/search interface and
-evolves into a layer that understands natural-language intent, resolves context
-and entities, selects capabilities, executes native OS and app actions, verifies
-results, and knows when to use local intelligence versus passing a task outward.
+The native search component. Sam answers questions about the computer it runs
+on — files, applications, settings, hardware, devices, networking, processes and
+local documentation — through a versioned registry of domains, intents,
+retrieval rules and predefined handlers. It is deterministic and
+non-generative: no language model, no reasoning, no conversational memory. It
+returns structured results or a typed handoff. **Status: specified only,
+design stage**; no implementation exists.
+
+### Ida: the personal assistant
+
+The voice-first, local-first assistant. Ida understands natural-language
+requests, resolves context, selects approved tools, executes native OS and app
+actions, verifies results, converses and reasons, and knows when to use local
+intelligence versus passing a task outward. It uses Sam for local computer
+knowledge rather than rebuilding an OS-wide search stack.
 **Status: prototype → early architecture; Core is real and released.**
 
 ## The computing fabric (long-term)
@@ -98,11 +134,12 @@ implementation.**
 
 ## Cross-cutting principles
 
-These hold across all three layers and are recorded as ADRs:
+These hold across all layers and are recorded as ADRs:
 
 | Principle | ADR |
 |---|---|
 | The intelligence never controls the OS directly | [0005](decisions/0005-no-unrestricted-shell.md) |
+| Sam is a separate search service, not an Ida tier | [0010](decisions/0010-sam-separate-os-search-service.md) |
 | The LLM is a translator and planner, not the executor | [0008](decisions/0008-llm-is-translator-not-executor.md) |
 | Intent, Plan and Action are separate concepts | [0006](decisions/0006-intent-plan-action-separation.md) |
 | The capability registry is the primary abstraction | [0004](decisions/0004-capability-registry-as-primary-abstraction.md) |

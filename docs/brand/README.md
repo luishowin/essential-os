@@ -11,7 +11,8 @@ whitespace and precision, not gradients and glow.
 
 ```text
 ESSENTIAL OS      the operating system
-Ida               the intelligence layer
+Sam               the search and retrieval service
+Ida               the personal assistant
 SLATE             the hardware
 ```
 
