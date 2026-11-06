@@ -198,6 +198,26 @@
         That framework is not implemented, and the goal is not to copy macOS conventions:
         it is to give every Essential app the same calm starting canvas.
       </p>
+      <p>
+        Finding things is part of the experience too. Sam is the native search and
+        retrieval service: ask about the computer itself (find a file, locate an app or
+        a setting, see what is using memory, check whether Wi-Fi is on) and get an answer
+        as fast as you can type. Sam is deterministic. No generative model runs inside
+        it; a registry of intents and fixed handlers does the work, every result names
+        its source and how fresh it is, and anything outside the computer’s own domain
+        is handed off instead of guessed.
+      </p>
+      <p>
+        Sam is separate from Ida. Ida is the optional assistant that understands,
+        converses, and acts; Sam is a specialised utility Ida can call for local
+        lookups, and it works with no Ida present.
+      </p>
+      <p class="caption">
+        Status: Sam is a Fedora prototype (deterministic core, GTK4 panel, quick actions,
+        local speech input) running on a single workstation. Essential OS integration,
+        semantic embeddings, and measured 4 GB targets do not exist yet.
+        <a href="https://github.com/luishowin/sam">Sam repository</a>.
+      </p>
       <p class="caption">No screenshots are shown because there is no finished desktop to screenshot honestly. The desktop assembly is in progress; mock-ups of nonexistent software are omitted deliberately.</p>
     </section>
 
