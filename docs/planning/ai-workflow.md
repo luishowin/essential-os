@@ -59,6 +59,29 @@ the same files concurrently.
 - For long tasks, create a checkpoint commit before starting and inspect the
   working tree afterwards.
 
+## Observed tooling: Claude Sonnet 5.5 at medium effort
+
+The November 2026 interface prototype sprint used **Claude Sonnet 5.5 at medium
+effort** together with the included **Essential OS app skill for Claude**
+([`skills/essential-os-app/`](../../skills/essential-os-app/)).
+
+The results were very good and consistent. Fifteen application mockups, a
+desktop shell study and the SLATE keyboard study came out of the same pattern:
+shared tokens, the same window chrome, container-based responsive tiers, the
+same menu and command-pill behaviour, and a test pass before delivery. The skill
+did most of the consistency work by encoding the pattern once instead of
+re-explaining it in every prompt.
+
+This is an observation about prototype production, not a general claim:
+
+- It applies to single-file HTML mockups, not shipped Rust or system code.
+- Medium effort was enough for bounded UI work with a written pattern. Larger
+  architectural or security changes still justify stronger models and more
+  human review.
+- Consistency came from the skill and the review loop, not from the model alone.
+- Every result was inspected in the browser; generated volume was never accepted
+  as evidence.
+
 ## AI usage log template
 
 The actual log is held locally with the budget record.

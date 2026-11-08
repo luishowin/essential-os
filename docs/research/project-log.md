@@ -174,3 +174,43 @@ command workflows.
 **Open.** Sam's licence, IPC mechanism, API versioning, catalogue ownership,
 default-enabled domains, choice of embedding encoder and minimum reference
 hardware. See the Sam roadmap.
+
+## 2026-11-09 · The interface prototype sprint
+
+**What.** Seventeen single-file HTML prototypes enter the record: fifteen
+applications (Calculator, Calendar, Clock, Color Picker, Docs, Files, Fonts,
+Glyphs, IDE, Notes, Photos, Settings, Sheets, Software, Task Manager), a desktop
+shell study and the SLATE keyboard layout study. Kept iterations live beside
+each current direction. The Claude plugin that encodes the app pattern is now
+published in [`skills/essential-os-app/`](../../skills/essential-os-app/), and
+[`docs/status.md`](../status.md) tracks what exists.
+
+The sprint also brought two operating documents into the record as drafts for
+adoption: [`agent-workflow.md`](../planning/agent-workflow.md) and
+[`release-and-support-policy.md`](../planning/release-and-support-policy.md).
+
+**Why.** The prototypes are the first substantial visual evidence for the
+Essential OS application layer. Keeping them outside the record made the
+project look less built than it is and left the shared pattern undocumented.
+Moving them into `prototypes/` gives one canonical copy, keeps the history
+reviewable and lets the public site link to the live mockups.
+
+**How.** The work used **Claude Sonnet 5.5 at medium effort** with the included
+**Essential OS app skill for Claude**. Results were very good and consistent:
+the skill carried the tokens, window shell, responsive tiers, menu engine and
+test checklist, so each app started from the same pattern instead of a blank
+page. This is a prototype-production observation, not a claim that generated
+code ships without review.
+
+**What changed in the record.** The README status section, the prototype index,
+a new build tracker, the AI workflow note, the changelog and a new chapter on
+the project site. The duplicate specification PDF at the repository root was
+removed; the authoritative copy remains in `docs/specifications/`.
+
+**What did not change.** No application was implemented. The prototypes mock
+data and system integration, and the desktop shell remains an HTML study rather
+than the Fedora/Plasma assembly.
+
+**Open.** Which prototypes become real applications first, how the shared
+pattern moves from inline HTML into a maintained toolkit, and what usability
+testing reveals once the mockups are put in front of people.

@@ -39,7 +39,15 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 - `contract/`: language-neutral JSON Schemas for Intent, Capability and
   ExecutionResult, plus conformance fixtures and a zero-dependency validator.
 - `site/`: the one-page project site.
-- `prototypes/` and `src/`: pointers explaining where the real work lives.
+- `prototypes/`: seventeen single-file UI mockups (fifteen applications, a
+  desktop shell and the SLATE keyboard study), with kept iterations.
+- `skills/essential-os-app/`: the Claude plugin and skill that encode the
+  Essential OS app pattern.
+- `docs/status.md`: the build tracker, listing every prototype with its status,
+  date and link.
+- `docs/planning/agent-workflow.md` and
+  `docs/planning/release-and-support-policy.md`: the agent workflow and
+  release/support policy documents.
 
 ### Changed
 
@@ -66,3 +74,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
   typographic style.
 - The one-page site is deployed to GitHub Pages at
   <https://luishowin.github.io/essential-os/>.
+- The README status and repository map now record the UI prototypes and link the
+  build tracker.
+- The AI workflow records the November 2026 prototype sprint: Claude Sonnet 5.5
+  at medium effort, used with the Essential OS app skill for Claude, produced
+  very good and consistent prototype results.
+- The site adds chapter 010, "Built so far", and the Pages workflow publishes
+  the prototype files so the tracker links resolve.
+- The duplicate specification PDF at the repository root was removed; the
+  authoritative copy remains in `docs/specifications/`.
