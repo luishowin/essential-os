@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Keyboard prototype</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E⌨️%3C/text%3E%3C/svg%3E">
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600&family=Roboto+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+@property --g{syntax:'<number>';inherits:false;initial-value:1}
+:root{--bg:#eceae6;--pn:#fff;--ink:#1c1d20;--mu:#6b6d73;--ln:#d6d4cf;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media(prefers-color-scheme:dark){:root:not([data-theme=light]){--bg:#0d0e10;--pn:#16171a;--ink:#e8e9ec;--mu:#8b8d94;--ln:#26282c}}
+:root[data-theme=dark]{--bg:#0d0e10;--pn:#16171a;--ink:#e8e9ec;--mu:#8b8d94;--ln:#26282c}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:14px/1.45 Manrope,system-ui,sans-serif}
+main{max-width:1180px;margin:0 auto;padding:24px 16px 48px}
+h1{font-size:20px;margin:0 0 2px;font-weight:600}h2{font-size:14px;margin:0 0 10px;font-weight:600}
+.sub{color:var(--mu);margin:0 0 16px}
+.bar{display:flex;flex-wrap:wrap;gap:10px;justify-content:space-between;align-items:center;margin-bottom:14px}
+.seg{display:inline-flex;border:1px solid var(--ln);border-radius:10px;overflow:hidden;background:var(--pn)}
+.seg button{font:inherit;color:var(--mu);background:none;border:0;padding:7px 13px;cursor:pointer}
+.seg button.on{background:var(--ink);color:var(--bg)}
+.chips{display:flex;gap:6px;flex-wrap:wrap;color:var(--mu);font-size:12px}
+.chips span{border:1px solid var(--ln);border-radius:20px;padding:3px 10px;background:var(--pn)}
+.chips .ok::before{content:"";display:inline-block;width:6px;height:6px;border-radius:50%;background:#3fcf7a;margin-right:6px}
+.kbs{overflow-x:auto;padding:4px 0 18px}
+.kbw{container-type:inline-size;min-width:760px}
+.kb{position:relative;padding:1.04cqw;border-radius:1.5cqw;background:#141517;display:flex;flex-direction:column;gap:1.04cqw;transition:all .3s;--bl:.7;--c:#7cf0ff}
+.row{display:flex;gap:1.04cqw;height:5.7cqw}.row.r0{height:2.75cqw}
+.stack{flex:1;display:flex;flex-direction:column;gap:1.04cqw}
+.key{--k:#2b2d31;--gl:calc(var(--bl)*var(--g));--halo:0 0 0 0 transparent;position:relative;flex:1 1 0;min-width:0;display:flex;flex-direction:column;align-items:center;justify-content:space-evenly;border-radius:.55cqw;background:var(--k);font:1.25cqw/1 'Roboto Mono',ui-monospace,monospace;color:color-mix(in srgb,var(--c) calc(var(--gl)*100%),#a3a6ad);text-shadow:0 0 .7cqw color-mix(in srgb,var(--c) calc(var(--gl)*100%),transparent);box-shadow:0 .25cqw 0 #0f1012,var(--halo);cursor:pointer;user-select:none;-webkit-user-select:none;touch-action:manipulation;transition:transform .06s}
+.key>span{display:flex;align-items:center;gap:.4cqw}
+.key.down{transform:translateY(.22cqw);box-shadow:0 .03cqw 0 #0f1012,var(--halo)}
+.l,.r{justify-content:flex-end;font-size:1.05cqw}.l{align-items:flex-start;padding:0 0 .8cqw 1cqw}.r{align-items:flex-end;padding:0 1cqw .8cqw 0}
+.f{align-items:stretch;justify-content:space-between;padding:.35cqw .55cqw;font-size:.75cqw}
+.ft{display:flex;justify-content:space-between;align-items:center;min-height:1cqw}
+.fb{text-align:left;white-space:nowrap}.d .fb{text-align:right}
+.i{width:1.15cqw;height:1.15cqw;fill:none;stroke:currentColor;stroke-width:1.4;stroke-linecap:round;stroke-linejoin:round;flex:none}
+.key>span .i{width:1.4cqw;height:1.4cqw}
+.led{position:absolute;top:.8cqw;right:.9cqw;width:.45cqw;height:.45cqw;border-radius:50%;background:#55575d}
+.f .led{top:auto;bottom:.35cqw;right:.5cqw;width:.35cqw;height:.35cqw}
+.led.on{background:var(--lc,#7dffb0);box-shadow:0 0 .8cqw .2cqw var(--lc,#7dffb0)}
+.bump{position:absolute;bottom:.8cqw;left:50%;width:1cqw;height:.25cqw;margin-left:-.5cqw;border-radius:1cqw;background:#6b6e75}
+.key.on{--k:#3b3e45}
+.key.lit{--g:1;transition:none}.key{transition:transform .06s,--g .8s}
+.reactive .key{--g:.1}.reactive .key.lit{--g:1}
+@keyframes br{0%,100%{--g:.2}50%{--g:1}}@keyframes wv{0%,100%{--g:.1}35%{--g:1}}
+.breathe .key{animation:br 3.4s ease-in-out infinite}.wave .key{animation:wv 2.6s linear infinite;animation-delay:var(--d,0s)}
+.key::after{content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;opacity:0;background:radial-gradient(circle,color-mix(in srgb,var(--c) 75%,transparent),transparent 70%)}
+.key::before{content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;opacity:0}
+.key.arm::before{box-shadow:inset 0 0 0 .15cqw var(--c);animation:arm var(--dur) linear forwards}
+@keyframes arm{to{opacity:1}}@keyframes tap{0%{opacity:.9;transform:scale(.3)}100%{opacity:0;transform:scale(1.3)}}
+/* profiles */
+.laptop{background:linear-gradient(#17181b,#101113);box-shadow:0 1cqw 3cqw -1cqw #000}
+.wireless{padding:1.7cqw;border-radius:2.2cqw;background:linear-gradient(160deg,#34363b,#1b1c1f 60%);border:1px solid #44464c;box-shadow:0 2cqw 3cqw -1cqw #000;transform:perspective(1500px) rotateX(7deg);transform-origin:50% 100%}
+.wireless .key{background:linear-gradient(#35373c,#2a2c30);border-radius:.8cqw;box-shadow:0 .5cqw 0 #0e0f11,var(--halo)}
+.wireless .key.down{transform:translateY(.4cqw);box-shadow:0 .1cqw 0 #0e0f11,var(--halo)}
+.touch{background:#0b0c0e;border:1px solid #25272b;border-radius:1.3cqw;overflow:hidden}
+.touch::before{content:"";position:absolute;inset:0;pointer-events:none;background:linear-gradient(115deg,rgba(255,255,255,.06),transparent 35%);z-index:3}
+.touch .key{background:#15161a;box-shadow:inset 0 0 0 1px #26282d,var(--halo)}
+.touch .key:hover{background:color-mix(in srgb,var(--c) calc(var(--sens,.6)*16%),#15161a)}
+.touch .key.down{background:#24272d;transform:none}
+.touch .key.lit::after{animation:tap .6s}
+.mot{display:none;position:absolute;top:50%;width:7cqw;height:7cqw;margin:-3.5cqw;border-radius:50%;border:1px dashed #ffffff22;pointer-events:none}
+.mot.L{left:7%}.mot.R{left:93%}.touch .mot{display:block}
+@keyframes mot{0%{background:color-mix(in srgb,var(--c) calc(var(--a)*70%),transparent);transform:scale(1)}100%{background:transparent;transform:scale(1.6)}}
+.mot.p{animation:mot .4s ease-out}
+.sleep{--bl:0!important}
+@media(prefers-reduced-motion:reduce){.breathe .key,.wave .key{animation:none}}
+/* panels */
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(290px,1fr));gap:14px}
+.pn{background:var(--pn);border:1px solid var(--ln);border-radius:14px;padding:16px}
+.scr{position:relative;height:210px;border-radius:10px;background:#101a2b;color:#dfe8f7;padding:12px;font:13px/1.5 'Roboto Mono',monospace;white-space:pre-wrap;word-break:break-all;overflow:hidden;filter:brightness(var(--br,.8));transition:filter .2s}
+.scr.off{background:#000;color:#000}
+.scr .ph{opacity:.45}.cur{display:inline-block;width:7px;height:14px;background:#7cf0ff;vertical-align:-2px;animation:bl 1s steps(1) infinite}@keyframes bl{50%{opacity:0}}
+.hud{position:absolute;left:50%;bottom:14px;transform:translate(-50%,10px);opacity:0;transition:.2s;display:flex;align-items:center;gap:8px;background:#000c;padding:7px 12px;border-radius:20px;white-space:nowrap;font-family:Manrope,sans-serif}
+.hud.on{opacity:1;transform:translate(-50%,0)}.hud .i{width:16px;height:16px}
+.hud s{width:80px;height:4px;border-radius:4px;background:#fff3;display:block}.hud b{display:block;height:100%;background:#fff;border-radius:4px}
+.flash{position:absolute;inset:0;background:#fff;opacity:0;pointer-events:none}.flash.on{animation:fl .25s}@keyframes fl{from{opacity:.9}to{opacity:0}}
+.ai{position:absolute;inset:14px 14px auto;background:#1d2940;border:1px solid #3a5380;border-radius:12px;padding:12px;font-family:Manrope,sans-serif;transform:translateY(-130%);transition:.3s;white-space:normal}
+.ai.on{transform:none}.ai .i{width:16px;height:16px;vertical-align:-3px;stroke:#7cf0ff}.ai small{display:block;opacity:.65;margin-top:3px}
+.st{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px;font-size:12px;color:var(--mu)}.st span{border:1px solid var(--ln);border-radius:8px;padding:2px 8px}
+label{display:flex;justify-content:space-between;align-items:center;gap:10px;margin:10px 0 2px;color:var(--mu);font-size:13px}
+input[type=range]{width:100%;accent-color:var(--ink)}
+.sw{display:flex;gap:8px;align-items:center;margin:6px 0}.sw button{width:24px;height:24px;border-radius:50%;border:2px solid var(--ln);cursor:pointer}.sw button.on{border-color:var(--ink)}
+.sw input{width:30px;height:26px;border:0;background:none;padding:0}
+.tonly{display:none}[data-p=touch] .tonly{display:block}
+select{font:inherit;width:100%;padding:7px;border-radius:8px;border:1px solid var(--ln);background:var(--bg);color:var(--ink)}
+pre{margin:10px 0 0;height:122px;overflow:hidden;font:11.5px/1.5 'Roboto Mono',monospace;color:var(--mu);white-space:pre}
+button:focus-visible,select:focus-visible,input:focus-visible{outline:2px solid #4c8dff;outline-offset:2px}
+</style></head><body data-p="laptop"><main>
+<svg width="0" height="0" style="position:absolute"><defs>
+<symbol id="sun-" viewBox="0 0 16 16"><circle cx="8" cy="8" r="2"/><path d="M8 2.5V4M8 12v1.5M2.5 8H4M12 8h1.5"/></symbol>
+<symbol id="sun+" viewBox="0 0 16 16"><circle cx="8" cy="8" r="3"/><path d="M8 1.5V3M8 13v1.5M1.5 8H3M13 8h1.5M3.4 3.4l1 1M11.6 11.6l1 1M3.4 12.6l1-1M11.6 4.4l1-1"/></symbol>
+<symbol id="kbd" viewBox="0 0 16 16"><rect x="1.5" y="4" width="13" height="8" rx="1.5"/><path d="M4.5 7h.01M7 7h.01M9.5 7h.01M12 7h.01M5 9.7h6"/></symbol>
+<symbol id="mute" viewBox="0 0 16 16"><path d="M2 6h3l3-2.5v9L5 10H2z"/><path d="M10.5 6l4 4M14.5 6l-4 4"/></symbol>
+<symbol id="vol-" viewBox="0 0 16 16"><path d="M2 6h3l3-2.5v9L5 10H2z"/><path d="M10.5 8h4"/></symbol>
+<symbol id="vol+" viewBox="0 0 16 16"><path d="M2 6h3l3-2.5v9L5 10H2z"/><path d="M10.5 8h4M12.5 6v4"/></symbol>
+<symbol id="mic" viewBox="0 0 16 16"><rect x="6" y="2" width="4" height="7" rx="2"/><path d="M3.8 8a4.2 4.2 0 008.4 0M8 12.2v2.3"/></symbol>
+<symbol id="prt" viewBox="0 0 16 16"><path d="M2 5.5V2h3.5M10.5 2H14v3.5M14 10.5V14h-3.5M5.5 14H2v-3.5"/><circle cx="8" cy="8" r="1.6"/></symbol>
+<symbol id="pwr" viewBox="0 0 16 16"><path d="M8 2v5.5M4.7 4.3a5 5 0 106.6 0"/></symbol>
+<symbol id="ai" viewBox="0 0 16 16"><path d="M8 1.5l1.4 4.1 4.1 1.4-4.1 1.4L8 12.5 6.6 8.4 2.5 7l4.1-1.4z"/></symbol>
+<symbol id="al" viewBox="0 0 16 16"><path d="M10 3.5L5.5 8l4.5 4.5"/></symbol><symbol id="ar" viewBox="0 0 16 16"><path d="M6 3.5L10.5 8 6 12.5"/></symbol>
+<symbol id="au" viewBox="0 0 16 16"><path d="M3.5 10L8 5.5l4.5 4.5"/></symbol><symbol id="ad" viewBox="0 0 16 16"><path d="M3.5 6L8 10.5 12.5 6"/></symbol>
+</defs></svg>
+<h1>Keyboard prototype</h1>
+<p class="sub">Type on your real keyboard or click the keys. Press the Menu key (or click AI) for the AI hotkey.</p>
+<div class="bar"><div class="seg" id="prof"><button data-v="laptop">Flat-pack laptop</button><button data-v="wireless">Wireless external</button><button data-v="touch">Touch</button></div>
+<div class="chips"><span class="ok">USB‑C · HID connected</span><span>Firmware 0.9.2</span><span id="bat" hidden>Battery 82%</span><span id="dsc"></span></div></div>
+<div class="kbs"><div class="kbw"><div class="kb" id="kb"><i class="mot L"></i><i class="mot R"></i></div></div></div>
+<div class="grid">
+<section class="pn"><h2>Host computer</h2>
+<div class="scr" id="scr"><span id="txt"></span><div class="flash" id="fl"></div><div class="hud" id="hud"></div>
+<div class="ai" id="ai"><svg class="i"><use href="#ai"/></svg> <b id="aiN">Claude</b> is opening<small>Hotkey received over USB. Works with any assistant you assign.</small></div></div>
+<div class="st" id="st"></div></section>
+<section class="pn"><h2>Backlight</h2>
+<label>Brightness <output id="blo"></output></label><input type="range" id="bl" min="0" max="100">
+<div class="sw" id="sw"></div>
+<div class="seg" id="fx"><button data-v="static">Static</button><button data-v="breathe">Breathe</button><button data-v="wave">Wave</button><button data-v="reactive">Reactive</button></div>
+<div class="tonly"><h2 style="margin-top:16px">Touch tuning</h2>
+<label>Sensitivity <output id="so"></output></label><input type="range" id="sn" min="0" max="100" value="60">
+<label>Touch delay <output id="do"></output></label><input type="range" id="dl" min="0" max="300" value="120">
+<label>Haptic strength <output id="ho"></output></label><input type="range" id="hp" min="0" max="100" value="70"></div></section>
+<section class="pn"><h2>AI key</h2>
+<select id="prv" aria-label="AI assistant"><option>Claude</option><option>ChatGPT</option><option>Gemini</option><option>Copilot</option><option>Perplexity</option><option>Custom app</option></select>
+<h2 style="margin-top:16px">Firmware log</h2><pre id="log"></pre></section>
+</div></main>
+<script>
+const $=s=>document.querySelector(s),kb=$('#kb'),K={},S={prof:'laptop',bl:.7,col:'#7cf0ff',fx:'static',caps:0,sh:0,psh:0,fnl:0,mic:1,mute:0,vol:40,br:75,off:0,sens:.6,delay:120,hap:.7,lg:[]};
+const kk=(c,b,t='',w=1,cl='',ic)=>[c,t,b,w,cl,ic],ltr=[...'QWERTYUIOP'],home=[...'ASDFGHJKL'],bot=[...'ZXCVBNM'];
+const R=[[kk('Escape','','Esc',1,'f'),kk('F1','','F1',1,'f'),kk('F2','scrn -','F2',1,'f','sun-'),kk('F3','scrn +','F3',1,'f','sun+'),kk('F4','back light','F4',1,'f','kbd'),kk('F5','mute','F5',1,'f','mute'),kk('F6','vol -','F6',1,'f','vol-'),kk('F7','vol +','F7',1,'f','vol+'),kk('F8','mic on/off','F8',1,'f','mic'),kk('F9','prt scr','F9',1,'f','prt'),kk('F10','','F10',1,'f'),kk('F11','','F11',1,'f'),kk('F12','','F12',1,'f'),kk('Pwr','','Pwr btn',1,'f','pwr'),kk('Delete','delete','',1,'f d')],
+[kk('Backquote','`','~'),...[...'1234567890'].map((n,i)=>kk('Digit'+n,n,')!@#$%^&*('[i]||')')),kk('Minus','-','_'),kk('Equal','=','+'),kk('Backspace','backspace','',1.78,'r')],
+[kk('Tab','tab','',1.5,'l'),...ltr.map(x=>kk('Key'+x,x)),kk('BracketLeft','[','{'),kk('BracketRight',']','}'),kk('Backslash','\\','|',1.25)],
+[kk('CapsLock','caps lock','',1.71,'l'),...home.map(x=>kk('Key'+x,x)),kk('Semicolon',';',':'),kk('Quote',"'",'"'),kk('Enter','enter','',2,'r')],
+[kk('ShiftLeft','shift','',2.33,'l'),...bot.map(x=>kk('Key'+x,x)),kk('Comma',',','<'),kk('Period','.','>'),kk('Slash','/','?'),kk('ShiftRight','shift','',2.4,'r')],
+[kk('ControlLeft','ctrl','',1,'l'),kk('Fn','fn','',1,'l'),kk('MetaLeft','cmd','',1,'l'),kk('AltLeft','alt','',1,'l'),kk('Space','','',6.77),kk('AI','AI','',1,'','ai'),kk('ArrowLeft','','',1,'','al'),['stack',[kk('ArrowUp','','',1,'','au'),kk('ArrowDown','','',1,'','ad')]],kk('ArrowRight','','',1,'','ar')]];
+const I=n=>`<svg class="i"><use href="#${n}"/></svg>`;
+function mk([c,t,b,w,cl,ic]){const e=document.createElement('div');e.className='key '+cl;e.dataset.c=c;e.style.flex=w;
+e.innerHTML=cl.includes('f')?`<div class="ft"><span>${b}</span>${ic?I(ic):''}</div><div class="fb">${t}</div>`:(t?`<span>${t}</span>`:'')+`<span>${b||''}${ic?I(ic):''}</span>`;
+if(cl.includes('f')&&!b&&c!='Delete'&&c!='Escape'&&/^F\d+$/.test(c)===false)e.querySelector('.ft span').textContent=t;
+if(c=='Delete'){e.querySelector('.ft span').textContent='';e.querySelector('.fb').textContent='delete'}
+if(c=='Pwr'){e.querySelector('.ft span').textContent='Pwr btn'}
+if(c=='CapsLock')e.insertAdjacentHTML('beforeend','<u class="led" id="ledC"></u>');
+if(c=='F5')e.insertAdjacentHTML('beforeend','<u class="led" id="ledM" style="--lc:#ffb347"></u>');
+if(c=='F8')e.insertAdjacentHTML('beforeend','<u class="led" id="ledK" style="--lc:#ff5a5a"></u>');
+if(c=='KeyF'||c=='KeyJ')e.insertAdjacentHTML('beforeend','<em class="bump"></em>');
+K[c]={el:e,t:t,b:b};return e}
+R.forEach((row,ri)=>{const r=document.createElement('div');r.className='row'+(ri?'':' r0');
+row.forEach(k=>{if(k[0]=='stack'){const s=document.createElement('div');s.className='stack';k[1].forEach(x=>s.append(mk(x)));r.append(s)}else r.append(mk(k))});kb.append(r)});
+/* wave delays */
+{const b=kb.getBoundingClientRect();Object.values(K).forEach(k=>{const r=k.el.getBoundingClientRect();k.el.style.setProperty('--d',((r.left-b.left)/b.width*2.6).toFixed(2)+'s')})}
+/* helpers */
+const esc=s=>s.replace(/[&<]/g,c=>c=='&'?'&amp;':'&lt;'),hud=$('#hud');
+function say(ic,txt,p){hud.innerHTML=`${I(ic)}<span>${txt}</span>${p==null?'':`<s><b style="width:${p}%"></b></s>`}`;hud.classList.add('on');clearTimeout(hud._t);hud._t=setTimeout(()=>hud.classList.remove('on'),1400)}
+function log(s,t){S.lg.push(`${(performance.now()/1000).toFixed(2).padStart(7)}s  ${s}  ${t}`);S.lg=S.lg.slice(-7);$('#log').textContent=S.lg.join('\n')}
+const clamp=(v,a=0,b=100)=>Math.min(b,Math.max(a,v));
+function upd(){const sh=S.sh||S.psh;kb.className='kb '+S.prof+' '+S.fx+(S.off?' sleep':'');kb.style.setProperty('--bl',S.bl);kb.style.setProperty('--c',S.col);kb.style.setProperty('--sens',S.sens);
+document.body.dataset.p=S.prof;$('#ledC').classList.toggle('on',!!S.caps);$('#ledM').classList.toggle('on',!!S.mute);$('#ledK').classList.toggle('on',!S.mic);
+K.ShiftLeft.el.classList.toggle('on',!!S.sh);K.ShiftRight.el.classList.toggle('on',!!S.sh);K.Fn.el.classList.toggle('on',!!S.fnl);
+$('#scr').style.setProperty('--br',.3+S.br/100*.7);$('#scr').classList.toggle('off',!!S.off);
+$('#st').innerHTML=`<span>Volume ${S.mute?'muted':S.vol+'%'}</span><span>Screen ${S.br}%</span><span>Mic ${S.mic?'live':'off'}</span><span>Caps ${S.caps?'on':'off'}</span>${S.fnl?'<span>fn lock</span>':''}`;
+$('#bl').value=S.bl*100;$('#blo').textContent=Math.round(S.bl*100)+'%';$('#so').textContent=Math.round(S.sens*100)+'%';$('#do').textContent=S.delay+' ms';$('#ho').textContent=Math.round(S.hap*100)+'%';
+document.querySelectorAll('#prof button').forEach(b=>b.classList.toggle('on',b.dataset.v==S.prof));document.querySelectorAll('#fx button').forEach(b=>b.classList.toggle('on',b.dataset.v==S.fx));
+document.querySelectorAll('#sw button').forEach(b=>b.classList.toggle('on',b.dataset.v==S.col));
+$('#bat').hidden=S.prof!='wireless';$('#dsc').textContent={laptop:'Flat-pack, low-profile keys',wireless:'Bespoke external, tilted case',touch:'Capacitive single PCB · 2 haptic motors'}[S.prof];
+const t=esc(S.text);$('#txt').innerHTML=t?t+'<i class="cur"></i>':'<span class="ph">Type here…</span><i class="cur"></i>'}
+/* actions */
+const steps=[0,.33,.66,1];
+const FN={F2:()=>{S.br=clamp(S.br-10);say('sun-','Screen '+S.br+'%',S.br)},F3:()=>{S.br=clamp(S.br+10);say('sun+','Screen '+S.br+'%',S.br)},
+F4:()=>{S.bl=steps.find(x=>x>S.bl+.01)??0;say('kbd','Backlight '+Math.round(S.bl*100)+'%',S.bl*100)},
+F5:()=>{S.mute^=1;say('mute',S.mute?'Muted':'Unmuted')},F6:()=>{S.vol=clamp(S.vol-5);S.mute=0;say('vol-','Volume '+S.vol+'%',S.vol)},F7:()=>{S.vol=clamp(S.vol+5);S.mute=0;say('vol+','Volume '+S.vol+'%',S.vol)},
+F8:()=>{S.mic^=1;say('mic',S.mic?'Microphone live':'Microphone off')},F9:()=>{const f=$('#fl');f.classList.remove('on');void f.offsetWidth;f.classList.add('on');say('prt','Screenshot saved')}};
+let aiT;function ai(){$('#aiN').textContent=$('#prv').value;$('#ai').classList.add('on');clearTimeout(aiT);aiT=setTimeout(()=>$('#ai').classList.remove('on'),4000);log('★','AI hotkey → '+$('#prv').value)}
+const CH=/^(Key|Digit|Minus|Equal|Bracket|Backslash|Semicolon|Quote|Comma|Period|Slash|Backquote)/;
+function act(c,phys){const m=K[c];
+if(/^F\d+$/.test(c)&&!S.fnl&&FN[c]){FN[c]();log('◆',m.t||c+' (consumer)');return}
+if(c=='Pwr'){S.off^=1;log('◆','sleep '+(S.off?'on':'off'));return}
+if(c=='Fn'){S.fnl^=1;say('kbd','fn lock '+(S.fnl?'on: F1–F12':'off: media keys'));return}
+if(c=='AI'){ai();return}
+if(c=='CapsLock'){if(!phys)S.caps^=1;return}
+if(c[0]=='S'&&c[1]=='h'){if(!phys)S.sh^=1;return}
+if(c=='Backspace'){S.text=S.text.slice(0,-1);return}
+if(c=='Enter'){S.text+='\n';return}if(c=='Space'){S.text+=' ';return}if(c=='Tab'){S.text+='  ';return}
+if(CH.test(c)){const s=S.sh||S.psh;let ch;if(c.startsWith('Key'))ch=(s!=!!S.caps)?m.b:m.b.toLowerCase();else ch=s?m.t:m.b;S.text=(S.text+ch).slice(-600);S.sh=0}}
+function lit(el){el.classList.remove('lit');void el.offsetWidth;el.classList.add('lit');clearTimeout(el._t);el._t=setTimeout(()=>el.classList.remove('lit'),600)}
+function haptic(el){if(S.prof!='touch')return;const b=kb.getBoundingClientRect(),r=el.getBoundingClientRect(),x=(r.left+r.width/2-b.left)/b.width;
+[['L',1-x*.8],['R',.2+x*.8]].forEach(([s,a])=>{const m=kb.querySelector('.mot.'+s);m.style.setProperty('--a',a*S.hap);m.classList.remove('p');void m.offsetWidth;m.classList.add('p')});navigator.vibrate&&navigator.vibrate(Math.round(S.hap*12))}
+function down(c,phys){const m=K[c];if(!m)return;m.el.classList.add('down');lit(m.el);haptic(m.el);act(c,phys);upd()}
+const up=c=>K[c]&&K[c].el.classList.remove('down');
+/* pointer */
+let P=null;
+kb.addEventListener('pointerdown',e=>{const el=e.target.closest('.key');if(!el)return;e.preventDefault();const c=el.dataset.c;
+log('↓',c+(S.prof=='touch'?' (cap-touch)':''));
+if(S.prof=='touch'&&S.delay>0){el.style.setProperty('--dur',S.delay+'ms');el.classList.add('arm');const p=P={c,on:0};p.t=setTimeout(()=>{el.classList.remove('arm');p.on=1;down(c)},S.delay)}else{P={c,on:1};down(c)}});
+['pointerup','pointercancel'].forEach(ev=>addEventListener(ev,()=>{if(!P)return;clearTimeout(P.t);const el=K[P.c].el;el.classList.remove('arm');if(P.on)up(P.c);else log('✕',P.c+' rejected, held < '+S.delay+' ms');P=null}));
+/* physical */
+addEventListener('keydown',e=>{if(e.target.matches('input,select'))return;const c=e.code=='ContextMenu'?'AI':e.code;if(!K[c])return;if(!(e.ctrlKey||e.metaKey))e.preventDefault();
+S.psh=e.shiftKey;if(e.repeat&&/^(AI|Pwr|CapsLock|Fn)$/.test(c))return;if(c=='CapsLock')S.caps=+e.getModifierState('CapsLock');if(!e.repeat)log('↓',c);down(c,1)});
+addEventListener('keyup',e=>{const c=e.code=='ContextMenu'?'AI':e.code;S.psh=e.shiftKey;if(c=='CapsLock')S.caps=+e.getModifierState('CapsLock');up(c);upd()});
+addEventListener('blur',()=>document.querySelectorAll('.down').forEach(e=>e.classList.remove('down')));
+/* controls */
+$('#prof').onclick=e=>{if(e.target.dataset.v){S.prof=e.target.dataset.v;log('◆','profile → '+S.prof);upd()}};
+$('#fx').onclick=e=>{if(e.target.dataset.v){S.fx=e.target.dataset.v;upd()}};
+$('#bl').oninput=e=>{S.bl=e.target.value/100;upd()};$('#sn').oninput=e=>{S.sens=e.target.value/100;upd()};$('#dl').oninput=e=>{S.delay=+e.target.value;upd()};$('#hp').oninput=e=>{S.hap=e.target.value/100;upd()};
+document.querySelectorAll('input[type=range],select').forEach(x=>x.addEventListener('change',()=>x.blur()));
+$('#prv').onchange=()=>log('◆','AI key → '+$('#prv').value);
+['#7cf0ff','#ff5fa8','#8dff7a','#ffb347','#b490ff','#ffffff'].forEach(c=>{const b=document.createElement('button');b.dataset.v=c;b.style.background=c;b.setAttribute('aria-label','Backlight colour '+c);b.onclick=()=>{S.col=c;upd()};$('#sw').append(b)});
+const ci=document.createElement('input');ci.type='color';ci.value='#7cf0ff';ci.oninput=()=>{S.col=ci.value;upd()};ci.setAttribute('aria-label','Custom colour');$('#sw').append(ci);
+log('◆','USB enumerated · HID 1000 Hz');upd();
+</script></body></html>

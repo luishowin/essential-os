@@ -1,0 +1,573 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Color Picker</title>
+<style>
+:root{--bg:#f4f4f6;--fg:#1d1d1f;--mut:#6e6e73;--line:rgba(0,0,0,.1);--card:#fff;--glass:rgba(255,255,255,.72);--acc:#fa2d48;--shadow:0 8px 30px rgba(0,0,0,.14);--wall:#c9ccd3;--grid:rgba(0,0,0,.06);--tb:rgba(250,250,252,.88);--chk:conic-gradient(#c4c4c4 25%,#fff 0 50%,#c4c4c4 0 75%,#fff 0) 0 0/12px 12px}
+html[data-theme=dark]{--bg:#1c1c1e;--fg:#f5f5f7;--mut:#98989d;--line:rgba(255,255,255,.12);--card:#2a2a2d;--glass:rgba(44,44,48,.7);--shadow:0 8px 30px rgba(0,0,0,.5);--wall:#0f1013;--grid:rgba(255,255,255,.05);--tb:rgba(28,28,30,.88);--chk:conic-gradient(#555 25%,#777 0 50%,#555 0 75%,#777 0) 0 0/12px 12px;color-scheme:dark}
+*{box-sizing:border-box}html,body{height:100%;margin:0}
+body{font:14px/1.4 Inter,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;color:var(--fg);background:var(--wall);overflow:hidden}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer;padding:0}
+svg.i{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.desktop{position:fixed;inset:0 0 44px 0;overflow:hidden;background-image:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);background-size:32px 32px}
+body.fs .desktop{bottom:0}body.fs .taskbar{display:none}
+.window{position:absolute;border-radius:12px;background:var(--bg);box-shadow:var(--shadow),0 0 0 1px var(--line);overflow:hidden}
+.window.max{inset:0;width:auto;height:auto;border-radius:0}.window.max .rz{display:none}.window.hide{display:none}
+.rz{position:absolute;z-index:30}
+.rz[data-d=n]{top:0;left:10px;right:10px;height:5px;cursor:ns-resize}.rz[data-d=s]{bottom:0;left:10px;right:10px;height:5px;cursor:ns-resize}
+.rz[data-d=e]{right:0;top:10px;bottom:10px;width:5px;cursor:ew-resize}.rz[data-d=w]{left:0;top:10px;bottom:10px;width:5px;cursor:ew-resize}
+.rz[data-d=ne]{top:0;right:0;width:12px;height:12px;cursor:nesw-resize}.rz[data-d=sw]{bottom:0;left:0;width:12px;height:12px;cursor:nesw-resize}
+.rz[data-d=nw]{top:0;left:0;width:12px;height:12px;cursor:nwse-resize}.rz[data-d=se]{bottom:0;right:0;width:12px;height:12px;cursor:nwse-resize}
+.app{position:absolute;inset:0;container:app/inline-size}
+.top{position:absolute;top:0;left:0;right:0;height:40px;z-index:20;display:flex;align-items:center;padding:0 8px;gap:2px;user-select:none}
+.menus{display:flex;gap:2px}.mb,.wc,.burger,.pb{height:28px;min-width:28px;padding:0 10px;border-radius:7px;display:inline-grid;place-items:center;color:var(--fg)}
+.mb:hover,.mb[aria-expanded=true],.wc:hover,.burger:hover,.pb:hover{background:var(--line)}
+.burger{display:none;padding:0}.spacer{flex:1;height:100%}.wc{width:34px;min-width:34px;padding:0;color:var(--mut)}.wc:hover{background:none;color:var(--fg)}.wc svg.i{width:14px;height:14px;stroke-width:1.5}.wc:last-child{margin-right:6px}
+.topfade,.botfade{position:absolute;left:0;right:0;z-index:10;pointer-events:none}
+.topfade{top:0;height:64px;background:linear-gradient(var(--bg) 40%,transparent)}.botfade{bottom:0;height:96px;background:linear-gradient(to top,var(--bg) 35%,transparent)}
+.scroll{position:absolute;inset:0;overflow:auto;--pad:22px;padding:54px var(--pad) 100px}
+.grid{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);gap:22px;max-width:960px;margin:0 auto}
+.col{display:flex;flex-direction:column;gap:14px;min-width:0}
+.sv{position:relative;aspect-ratio:4/3;border-radius:14px;cursor:crosshair;touch-action:none;box-shadow:inset 0 0 0 1px var(--line);background:linear-gradient(to top,#000,transparent),linear-gradient(to right,#fff,hsl(var(--hue) 100% 50%))}
+.sv b{position:absolute;width:20px;height:20px;margin:-10px 0 0 -10px;border-radius:50%;border:3px solid #fff;box-shadow:0 0 0 1px rgba(0,0,0,.35),0 2px 6px rgba(0,0,0,.4);background:var(--c);pointer-events:none}
+.sl{position:relative;height:18px;border-radius:9px;cursor:pointer;touch-action:none;box-shadow:inset 0 0 0 1px var(--line)}
+.sl.hue{background:linear-gradient(to right,#f00,#ff0,#0f0,#0ff,#00f,#f0f,#f00)}
+.sl.alp{background:linear-gradient(to right,transparent,var(--c)),var(--chk)}
+.sl b{position:absolute;top:50%;width:22px;height:22px;margin:-11px 0 0 -11px;border-radius:50%;border:3px solid #fff;box-shadow:0 0 0 1px rgba(0,0,0,.35),0 2px 6px rgba(0,0,0,.35);pointer-events:none}
+.prev{height:96px;border-radius:14px;background:var(--chk);box-shadow:inset 0 0 0 1px var(--line);overflow:hidden}
+.prev div{height:100%;display:grid;place-items:center;font-size:30px;font-weight:700;background:var(--ca)}
+.card{background:var(--card);border-radius:14px;padding:12px 14px;box-shadow:0 0 0 1px var(--line)}
+.card h4{margin:0 0 8px;font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--mut);font-weight:600}
+.fld{display:grid;grid-template-columns:44px minmax(0,1fr);align-items:center;gap:8px;margin-bottom:6px}.fld:last-child{margin:0}
+.fld label{font-size:12px;color:var(--mut);font-weight:600}
+.fld input{width:100%;height:32px;border-radius:8px;border:1px solid var(--line);background:var(--bg);color:var(--fg);padding:0 10px;font:13px ui-monospace,SFMono-Regular,Menlo,monospace;outline:0}
+.fld input:focus{border-color:var(--acc)}.fld input.bad{border-color:#e5484d}
+.ct{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.ct div{border-radius:10px;padding:8px 10px;background:var(--c);display:flex;justify-content:space-between;align-items:center;font-size:12px;box-shadow:inset 0 0 0 1px var(--line)}
+.ct strong{font-size:18px}
+.sws{display:flex;flex-wrap:wrap;gap:8px}
+.sw2{width:34px;height:34px;border-radius:9px;background:var(--chk);position:relative;box-shadow:0 0 0 1px var(--line);overflow:hidden;flex:none}
+.sw2 i{position:absolute;inset:0;background:var(--s)}.sw2:hover{transform:scale(1.08)}
+.hs{display:flex;flex-direction:column;gap:2px;align-items:center;font-size:10px;color:var(--mut)}
+.hrow{display:flex;gap:14px;flex-wrap:wrap}.empty{color:var(--mut);font-size:12px}
+.pill{position:absolute;bottom:14px;left:0;right:0;margin:0 auto;width:min(100% - 28px,820px);height:50px;border-radius:24px;display:grid;grid-template-columns:auto minmax(0,1fr) auto;align-items:center;gap:10px;padding:0 8px;background:var(--glass);-webkit-backdrop-filter:blur(28px) saturate(1.8);backdrop-filter:blur(28px) saturate(1.8);box-shadow:var(--shadow),inset 0 0 0 1px var(--line);z-index:20}
+.pill .cs{width:34px;height:34px;border-radius:50%;background:var(--chk);overflow:hidden;position:relative;box-shadow:0 0 0 1px var(--line)}.pill .cs i{position:absolute;inset:0;background:var(--ca)}
+.rd{font:600 14px ui-monospace,SFMono-Regular,Menlo,monospace;text-align:left;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;padding:6px 4px}
+.pb{width:36px;height:36px;padding:0;border-radius:50%}.pb.acc{background:var(--acc);color:#fff}
+.pbs{display:flex;gap:2px;align-items:center}
+.toast{position:absolute;left:50%;bottom:80px;transform:translateX(-50%) translateY(8px);background:#1d1d1f;color:#fff;padding:7px 14px;border-radius:999px;font-size:13px;opacity:0;pointer-events:none;transition:.2s;z-index:40;white-space:nowrap;max-width:90%;overflow:hidden;text-overflow:ellipsis}
+.toast.on{opacity:1;transform:translateX(-50%)}
+#scroll>.v{display:none;max-width:960px;margin:0 auto}
+#scroll[data-tab=pick]>#vPick{display:grid}
+#scroll[data-tab=pal]>#vPal,#scroll[data-tab=prev]>#vPrev,#scroll[data-tab=img]>#vImg{display:block}
+.tabs{display:flex;gap:2px;background:var(--line);border-radius:18px;padding:3px;justify-self:center;min-width:0}
+.tabs button{height:30px;padding:0 11px;border-radius:15px;font-size:12px;font-weight:600;color:var(--mut)}
+.tabs button.on{background:var(--card);color:var(--fg);box-shadow:0 1px 4px rgba(0,0,0,.15)}
+.bar{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:12px}
+.btn{height:30px;padding:0 12px;border-radius:8px;background:var(--line);font-size:12px;font-weight:600;color:var(--fg);display:inline-flex;align-items:center;cursor:pointer;border:0}.btn:hover{background:var(--acc);color:#fff}
+.strip{display:flex;height:120px;border-radius:14px;overflow:hidden;box-shadow:0 0 0 1px var(--line);margin-bottom:12px}
+.strip button{flex:1;display:flex;align-items:flex-end;justify-content:center;padding:8px 2px;font:600 11px ui-monospace,Menlo,monospace;min-width:0;background:var(--c)}
+.strip button.on{flex:1.6;box-shadow:inset 0 -5px 0 currentColor}
+.card+.card{margin-top:14px}.hs small{font-size:10px;color:var(--mut);white-space:nowrap}
+.tbl{width:100%;border-collapse:collapse;font-size:12px}.tbl td,.tbl th{padding:6px 8px;text-align:left;border-bottom:1px solid var(--line);white-space:nowrap}
+.dot{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:4px;box-shadow:0 0 0 1px var(--line)}
+.pv{--pb:#fff;--ps:#eee;--pp:#07f;--pa:#f80;--pt:#111;--pn:#fff;--pan:#000;display:grid;grid-template-columns:130px minmax(0,1fr);min-height:300px;border-radius:14px;overflow:hidden;box-shadow:0 0 0 1px var(--line);background:var(--pb);color:var(--pt);margin-bottom:14px}
+.pv aside{background:var(--ps);padding:14px;display:flex;flex-direction:column;gap:6px}
+.pv aside span{padding:5px 8px;border-radius:7px;font-size:13px}.pv aside .on{background:var(--pp);color:var(--pn)}
+.pm{padding:18px;min-width:0}.pm h2{margin:0 0 6px;font-size:20px}.pm p{margin:0 0 10px;font-size:13px}.pm a{color:var(--pp);text-decoration:underline;font-weight:600}
+.pr{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:14px}
+.pb1,.pb2{height:32px;padding:0 14px;border-radius:8px;font-weight:600;font-size:13px}.pb1{background:var(--pp);color:var(--pn)}.pb2{border:2px solid var(--pa);color:var(--pa)}
+.bd{background:var(--pa);color:var(--pan);padding:2px 9px;border-radius:99px;font-size:12px;font-weight:700}
+.pc{display:grid;grid-template-columns:1fr 1fr;gap:10px}.cd{background:var(--ps);border-radius:10px;padding:10px 12px}.cd small{opacity:.7}.cd strong{display:block;font-size:22px}
+.ch{display:flex;align-items:flex-end;gap:5px;height:40px}.ch i{flex:1;background:var(--pp);border-radius:3px 3px 0 0}.ch i:nth-child(even){background:var(--pa)}
+.row{display:grid;grid-template-columns:34px minmax(0,1fr) auto;gap:10px;align-items:center;width:100%;text-align:left;padding:5px 0}.row small{color:var(--mut);font-size:11px}
+.guide{max-width:960px;margin:18px auto 0;font-size:12px;color:var(--mut)}.guide summary{cursor:pointer;font-weight:600;color:var(--fg)}.guide ul{margin:8px 0 0;padding-left:18px}.guide li{margin:4px 0}
+@container app (max-width:700px){.pv{grid-template-columns:1fr}.pv aside{display:none}}
+@container app (max-width:420px){.tabs button{padding:0 7px}}
+.scroll{scrollbar-width:none}.scroll::-webkit-scrollbar{display:none}
+.sbar{position:absolute;right:3px;top:50px;bottom:50px;width:10px;z-index:25}.sbar.off{display:none}
+.sbar i{position:absolute;left:2px;right:2px;border-radius:4px;background:var(--mut);opacity:.4;cursor:grab;touch-action:none}.sbar:hover i,.sbar.drag i{opacity:.8}
+@container app (max-width:980px){.grid{max-width:760px}}
+@container app (max-width:700px){.grid{grid-template-columns:1fr}.sec{display:none!important}}
+@container app (max-width:560px){.menus{display:none}.burger{display:inline-grid}}
+@container app (max-width:520px){.scroll{--pad:12px}.rd{font-size:12px}}
+@container app (max-width:420px){.hs span{display:none}}
+.taskbar{position:fixed;left:0;right:0;bottom:0;height:44px;display:flex;align-items:center;gap:10px;padding:0 10px;background:var(--tb);backdrop-filter:blur(20px);box-shadow:0 -1px 0 var(--line);z-index:50;font-size:12px}
+.chip{height:30px;padding:0 12px;border-radius:8px;display:flex;align-items:center;gap:8px;background:var(--line)}.chip.on{box-shadow:inset 0 -2px 0 var(--acc)}
+.chip i{width:12px;height:12px;border-radius:50%;background:var(--c,var(--acc))}
+.hud{margin-left:auto;color:var(--mut);font:11px ui-monospace,Menlo,monospace;white-space:nowrap;overflow:hidden}
+.tp{height:26px;padding:0 9px;border-radius:7px;background:var(--line)}.tp:hover{background:var(--acc);color:#fff}
+@media(max-width:640px){.tps{display:none}}
+.cp-menu{position:fixed;z-index:1000;min-width:210px;padding:5px;border-radius:12px;overflow:auto;background:var(--glass);-webkit-backdrop-filter:blur(28px) saturate(1.8);backdrop-filter:blur(28px) saturate(1.8);box-shadow:var(--shadow),0 0 0 1px var(--line);color:var(--fg);font:13px Inter,system-ui,sans-serif;animation:cpin .12s ease-out}
+.cp-menu.up{animation-name:cpup}
+@keyframes cpin{from{opacity:0;transform:translateY(-4px)}}@keyframes cpup{from{opacity:0;transform:translateY(6px)}}
+.cp-mi{display:grid;grid-template-columns:18px 1fr auto;gap:6px;width:100%;text-align:left;padding:6px 8px;border-radius:7px;align-items:center}
+.cp-mi:hover:not(:disabled),.cp-mi:focus-visible{background:var(--acc);color:#fff;outline:0}.cp-mi:disabled{opacity:.45;cursor:default}.cp-mi.hd{font-size:11px;text-transform:uppercase;letter-spacing:.05em;opacity:.6}
+.cp-mi kbd{font:11px inherit;opacity:.6}.cp-sep{border:0;border-top:1px solid var(--line);margin:4px 6px}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute"><defs>
+<symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+<symbol id="i-dice" viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="4"/><circle cx="9" cy="9" r="1"/><circle cx="15" cy="15" r="1"/><circle cx="15" cy="9" r="1"/><circle cx="9" cy="15" r="1"/></symbol>
+<symbol id="i-drop" viewBox="0 0 24 24"><path d="M15 4l5 5-3 3-5-5zM12 7l-8 8v5h5l8-8"/></symbol>
+<symbol id="i-copy" viewBox="0 0 24 24"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V6a2 2 0 012-2h9"/></symbol>
+<symbol id="i-menu" viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16"/></symbol>
+<symbol id="i-min" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></symbol>
+<symbol id="i-max" viewBox="0 0 24 24"><path d="M6 15l6-6 6 6"/></symbol>
+<symbol id="i-x" viewBox="0 0 24 24"><path d="M7 7l10 10M17 7L7 17"/></symbol>
+<symbol id="i-full" viewBox="0 0 24 24"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></symbol>
+</defs></svg>
+
+<div class="desktop" id="desk">
+<div class="window" id="win">
+<div class="app" id="app">
+  <div class="top" id="top">
+    <button class="burger" id="burger" aria-haspopup="true" aria-expanded="false" aria-label="Menu"><svg class="i"><use href="#i-menu"/></svg></button>
+    <div class="menus" id="menus">
+      <button class="mb" data-m="file" aria-haspopup="true" aria-expanded="false">File</button>
+      <button class="mb" data-m="edit" aria-haspopup="true" aria-expanded="false">Edit</button>
+      <button class="mb" data-m="view" aria-haspopup="true" aria-expanded="false">View</button>
+    </div>
+    <div class="spacer" id="drag"></div>
+    <button class="wc" id="wMin" aria-label="Minimize"><svg class="i"><use href="#i-min"/></svg></button>
+    <button class="wc" id="wMax" aria-label="Maximize"><svg class="i"><use href="#i-max"/></svg></button>
+    <button class="wc x" id="wX" aria-label="Close"><svg class="i"><use href="#i-x"/></svg></button>
+  </div>
+  <main class="scroll" id="scroll" data-tab="pick"><div class="grid v" id="vPick">
+    <section class="col">
+      <div class="sv" id="sv"><b id="svh"></b></div>
+      <div class="sl hue" id="hue"><b id="hueh"></b></div>
+      <div class="sl alp" id="alp"><b id="alph"></b></div>
+      <div class="card"><h4>Saved</h4><div class="sws" id="saved"></div></div>
+    </section>
+    <section class="col">
+      <div class="prev"><div id="prevt">Aa</div></div>
+      <div class="card">
+        <div class="fld"><label for="fHex">HEX</label><input id="fHex" spellcheck="false" autocomplete="off"></div>
+        <div class="fld"><label for="fRgb">RGB</label><input id="fRgb" spellcheck="false" autocomplete="off"></div>
+        <div class="fld"><label for="fHsl">HSL</label><input id="fHsl" spellcheck="false" autocomplete="off"></div>
+      </div>
+      <div class="card" id="cCon"><h4>Contrast</h4><div class="ct" id="ct"></div></div>
+      <div class="card" id="cHar"><h4>Harmony</h4><div class="hrow" id="harm"></div></div>
+    </section>
+  </div>
+  <div class="v" id="vPal">
+    <div class="bar"><button class="btn" id="paAdd">+ Add current</button><button class="btn" id="paSet">Replace selected</button><button class="btn" id="paDel">Remove</button>
+      <select class="btn" id="paGen" aria-label="Generate palette"><option value="">Generate from current…</option><option value="comp">Complementary</option><option value="ana">Analogous</option><option value="tri">Triad</option><option value="split">Split-complement</option><option value="mono">Monochrome</option></select>
+      <button class="btn" id="paCss">Copy CSS</button></div>
+    <div class="strip" id="strip"></div>
+    <div class="card"><h4>Roles (auto-assigned for Preview)</h4><div class="hrow" id="roles"></div></div>
+  </div>
+  <div class="v" id="vPrev">
+    <div class="bar"><button class="btn" id="pvMode"></button><span class="empty">Roles are picked from your palette by lightness and saturation.</span></div>
+    <div class="pv" id="pv"><aside><b>Acme</b><span class="on">Overview</span><span>Reports</span><span>Team</span><span>Settings</span></aside>
+      <div class="pm"><h2>Quarterly overview</h2><p>Body text sits on the background. Good palettes keep it comfortable to read for long stretches.</p><p><a>Read the full report</a></p>
+        <div class="pr"><button class="pb1">Primary action</button><button class="pb2">Secondary</button><span class="bd">New</span></div>
+        <div class="pc"><div class="cd"><small>Revenue</small><strong>$48.2k</strong><div class="ch"><i style="height:40%"></i><i style="height:65%"></i><i style="height:50%"></i><i style="height:90%"></i><i style="height:70%"></i></div></div>
+        <div class="cd"><small>Visitors</small><strong>12,480</strong><p>Up 8% on last week</p></div></div></div></div>
+    <div class="card" style="overflow-x:auto"><h4>Contrast check</h4><table class="tbl" id="cTbl"></table>
+      <p class="empty">Web uses WCAG ratios. Print is measured in greyscale, as on a mono printer. On paper there is no backlight and ink spreads, so aim for 7:1 or more on small text.</p></div>
+    <div class="card"><h4>Ink load (naive CMYK %, total ink)</h4><div class="hrow" id="ink"></div></div>
+  </div>
+  <div class="v" id="vImg">
+    <div class="bar"><label class="btn" for="imF">Choose image</label><input id="imF" type="file" accept="image/*" hidden>
+      <select class="btn" id="imK" aria-label="Color count"><option>4</option><option selected>6</option><option>8</option><option>10</option></select>
+      <select class="btn" id="imU" aria-label="Use case"><option value="web">Use: Web</option><option value="print">Use: Print</option><option value="grade">Use: Color grading</option><option value="paint">Use: Painting a house</option></select>
+      <button class="btn" id="imPal">Use as palette</button></div>
+    <div class="grid"><div class="col"><div class="card" id="imDrop"><canvas id="imC" width="320" height="200" style="width:100%;border-radius:10px;cursor:crosshair"></canvas><p class="empty" id="imHint">Drop, paste or choose an image. Click it to pick any pixel.</p></div></div>
+      <div class="col"><div class="card"><h4>Extracted colors</h4><div id="imS"></div></div><div class="card" id="imX"></div></div></div>
+  </div>
+  <details class="card guide" open><summary>Color guide</summary><ul>
+    <li><b>Time of day.</b> Daylight is cooler at noon and warmer at dawn and dusk, and indoor bulbs (about 2700 K warm to 5000 K cool) shift everything again. Judge colors in the light they will live in.</li>
+    <li><b>Your display.</b> Screens differ in gamut (sRGB vs P3), brightness and calibration. An uncalibrated panel can be visibly off; only a calibrator or a physical proof tells you the truth.</li>
+    <li><b>Night mode.</b> Night Shift, True Tone, f.lux and blue-light filters tint the whole screen. Turn them off when judging color or grading.</li>
+    <li><b>Print and paint.</b> CMYK cannot reproduce every screen color, paper and sheen change the result, and paint looks different wet, dry and beside other colors. Always test a physical sample.</li>
+    <li><b>Contrast.</b> WCAG asks for 4.5:1 on body text and 3:1 on large text and UI parts. 7:1 is AAA.</li></ul></details>
+</main>
+  <div class="sbar off" id="sbar" aria-hidden="true"><i id="sthumb"></i></div>
+  <div class="topfade"></div><div class="botfade"></div>
+  <div class="pill">
+    <button class="cs" id="pCs" aria-label="Copy color"><i></i></button>
+    <div class="tabs" id="tabs"></div><span id="pRd" hidden></span>
+    <div class="pbs">
+      <button class="pb sec" id="pEye" aria-label="Pick from screen"><svg class="i"><use href="#i-drop"/></svg></button>
+      <button class="pb sec" id="pRnd" aria-label="Random color"><svg class="i"><use href="#i-dice"/></svg></button>
+      <button class="pb sec" id="pCpy" aria-label="Copy"><svg class="i"><use href="#i-copy"/></svg></button>
+      <button class="pb acc" id="pSave" aria-label="Save swatch"><svg class="i"><use href="#i-plus"/></svg></button>
+    </div>
+  </div>
+  <div class="toast" id="toast"></div>
+</div>
+<i class="rz" data-d="n"></i><i class="rz" data-d="s"></i><i class="rz" data-d="e"></i><i class="rz" data-d="w"></i><i class="rz" data-d="ne"></i><i class="rz" data-d="nw"></i><i class="rz" data-d="se"></i><i class="rz" data-d="sw"></i>
+</div>
+</div>
+
+<div class="taskbar">
+  <button class="chip on" id="chip"><i></i>Color Picker</button>
+  <span class="tps"><button class="tp" data-p="min">Min</button> <button class="tp" data-p="compact">Compact</button> <button class="tp" data-p="def">Default</button> <button class="tp" data-p="fill">Fill</button></span>
+  <span class="hud" id="hud"></span>
+</div>
+
+<script>
+(() => {'use strict';
+const $ = s => document.querySelector(s), NS = 'colorpicker.';
+const ls = {
+  get(k, d) { try { const v = localStorage.getItem(NS + k); return v == null ? d : JSON.parse(v); } catch (e) { return d; } },
+  set(k, v) { try { localStorage.setItem(NS + k, JSON.stringify(v)); } catch (e) {} }
+};
+const clamp = (n, a, b) => Math.min(b, Math.max(a, n));
+const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+
+/* ---------- colour maths ---------- */
+const hsv2rgb = (h, s, v) => { s /= 100; v /= 100; const f = n => { const k = (n + h / 60) % 6; return v - v * s * Math.max(0, Math.min(k, 4 - k, 1)); }; return [f(5), f(3), f(1)].map(x => Math.round(x * 255)); };
+const rgb2hsv = (r, g, b) => { r /= 255; g /= 255; b /= 255; const mx = Math.max(r, g, b), d = mx - Math.min(r, g, b); let h = 0;
+  if (d) h = mx === r ? ((g - b) / d + 6) % 6 : mx === g ? (b - r) / d + 2 : (r - g) / d + 4;
+  return [h * 60, mx ? d / mx * 100 : 0, mx * 100]; };
+const rgb2hsl = (r, g, b) => { const [h, , v] = rgb2hsv(r, g, b); r /= 255; g /= 255; b /= 255; const mx = Math.max(r, g, b), mn = Math.min(r, g, b), l = (mx + mn) / 2, d = mx - mn;
+  return [Math.round(h), Math.round(d ? d / (1 - Math.abs(2 * l - 1)) * 100 : 0), Math.round(l * 100)]; };
+const hsl2rgb = (h, s, l) => { s /= 100; l /= 100; const v = l + s * Math.min(l, 1 - l); return hsv2rgb(h, v ? 2 * (1 - l / v) * 100 : 0, v * 100); };
+const hx = n => n.toString(16).padStart(2, '0');
+const toHex = (r, g, b, a = 1) => '#' + hx(r) + hx(g) + hx(b) + (a < 1 ? hx(Math.round(a * 255)) : '');
+const lum = (r, g, b) => { const c = [r, g, b].map(x => { x /= 255; return x <= .03928 ? x / 12.92 : Math.pow((x + .055) / 1.055, 2.4); }); return .2126 * c[0] + .7152 * c[1] + .0722 * c[2]; };
+const al = a => { const t = a.toString().endsWith('%') ? parseFloat(a) / 100 : parseFloat(a); return isNaN(t) ? 1 : clamp(t, 0, 1); };
+function parseColor(str) {
+  str = str.trim(); let m;
+  if ((m = /^#?([0-9a-f]{3,8})$/i.exec(str)) && [3, 4, 6, 8].includes(m[1].length)) {
+    let h = m[1]; if (h.length < 6) h = h.split('').map(c => c + c).join('');
+    return { r: parseInt(h.slice(0, 2), 16), g: parseInt(h.slice(2, 4), 16), b: parseInt(h.slice(4, 6), 16), a: h.length === 8 ? Math.round(parseInt(h.slice(6), 16) / 255 * 100) / 100 : 1 };
+  }
+  if ((m = /^rgba?\(\s*([\d.]+)[,\s]+([\d.]+)[,\s]+([\d.]+)(?:[,\/\s]+([\d.]+%?))?\s*\)$/i.exec(str)))
+    return { r: clamp(+m[1], 0, 255) | 0, g: clamp(+m[2], 0, 255) | 0, b: clamp(+m[3], 0, 255) | 0, a: m[4] ? al(m[4]) : 1 };
+  if ((m = /^hsla?\(\s*([\d.]+)(?:deg)?[,\s]+([\d.]+)%[,\s]+([\d.]+)%(?:[,\/\s]+([\d.]+%?))?\s*\)$/i.exec(str))) {
+    const [r, g, b] = hsl2rgb(+m[1] % 360, clamp(+m[2], 0, 100), clamp(+m[3], 0, 100)); return { r, g, b, a: m[4] ? al(m[4]) : 1 };
+  }
+  return null;
+}
+
+/* ---------- state ---------- */
+let st = Object.assign({ h: 350, s: 82, v: 98, a: 1 }, ls.get('color', {}));
+let saved = ls.get('saved', ['#fa2d48', '#ff9f0a', '#30d158', '#0a84ff', '#bf5af2']);
+let fmt = ls.get('fmt', 'hex'), showHarm = ls.get('harm', true), showCon = ls.get('con', true), theme = ls.get('theme', 'system');
+let cur = { r: 0, g: 0, b: 0, a: 1 };
+const app = $('#app');
+const strs = () => { const { r, g, b, a } = cur, [h, s, l] = rgb2hsl(r, g, b), A = +a.toFixed(2);
+  return { hex: toHex(r, g, b, a), rgb: a < 1 ? `rgba(${r}, ${g}, ${b}, ${A})` : `rgb(${r}, ${g}, ${b})`, hsl: a < 1 ? `hsla(${h}, ${s}%, ${l}%, ${A})` : `hsl(${h}, ${s}%, ${l}%)` }; };
+function setRGB(r, g, b, a = st.a) { const [h, s, v] = rgb2hsv(r, g, b); if (s > 0 && v > 0) st.h = h; if (v > 0) st.s = s; st.v = v; st.a = a; render(); }
+const setHex = hex => { const c = parseColor(hex); if (c) setRGB(c.r, c.g, c.b, c.a); };
+
+/* ---------- render ---------- */
+function render() {
+  const [r, g, b] = hsv2rgb(st.h, st.s, st.v); cur = { r, g, b, a: st.a };
+  const S = strs(), solid = `rgb(${r} ${g} ${b})`;
+  app.style.setProperty('--hue', st.h.toFixed(1)); app.style.setProperty('--c', solid); app.style.setProperty('--ca', `rgb(${r} ${g} ${b} / ${st.a})`);
+  const sv = $('#svh'); sv.style.left = st.s + '%'; sv.style.top = (100 - st.v) + '%';
+  $('#hueh').style.left = (st.h / 360 * 100) + '%'; $('#alph').style.left = (st.a * 100) + '%';
+  for (const [id, k] of [['#fHex', 'hex'], ['#fRgb', 'rgb'], ['#fHsl', 'hsl']]) { const el = $(id); if (document.activeElement !== el) { el.value = S[k]; el.classList.remove('bad'); } }
+  const L = lum(r, g, b), cw = 1.05 / (L + .05), cb = (L + .05) / .05;
+  $('#prevt').style.color = cw > cb ? '#fff' : '#000';
+  const grade = c => c >= 7 ? 'AAA' : c >= 4.5 ? 'AA' : c >= 3 ? 'AA Large' : 'Fail';
+  $('#ct').innerHTML = [['#fff', cw], ['#000', cb]].map(([t, c]) => `<div style="color:${t}"><strong>Aa</strong><span>${c.toFixed(2)} · ${grade(c)}</span></div>`).join('');
+  const hm = (name, offs) => `<div class="hs"><div class="sws">${offs.map(o => { const hex = toHex(...hsv2rgb((st.h + o + 360) % 360, st.s, st.v)); return `<button class="sw2" data-hex="${hex}" title="${hex}" aria-label="${hex}"><i style="--s:${hex}"></i></button>`; }).join('')}</div><span>${name}</span></div>`;
+  $('#harm').innerHTML = hm('Complement', [180]) + hm('Analogous', [-30, 30]) + hm('Triad', [120, 240]);
+  $('#cCon').style.display = showCon ? '' : 'none'; $('#cHar').style.display = showHarm ? '' : 'none';
+  $('#saved').innerHTML = saved.length ? saved.map((h, i) => `<button class="sw2" data-i="${i}" data-hex="${h}" title="${h}" aria-label="${h}"><i style="--s:${h}"></i></button>`).join('') : '<span class="empty">Nothing saved yet. Hit + to keep a color.</span>';
+  $('#pRd').textContent = S[fmt]; document.querySelector('.chip i').style.setProperty('--c', solid); drawTabs();
+  ls.set('color', st);
+}
+
+/* ---------- interaction ---------- */
+const rel = (e, el) => { const r = el.getBoundingClientRect(); return [clamp((e.clientX - r.left) / r.width, 0, 1), clamp((e.clientY - r.top) / r.height, 0, 1)]; };
+function track(el, fn) {
+  el.addEventListener('pointerdown', e => {
+    el.setPointerCapture(e.pointerId); fn(...rel(e, el)); e.preventDefault();
+    const mv = ev => fn(...rel(ev, el)), up = () => { el.removeEventListener('pointermove', mv); el.removeEventListener('pointerup', up); };
+    el.addEventListener('pointermove', mv); el.addEventListener('pointerup', up);
+  });
+}
+track($('#sv'), (x, y) => { st.s = x * 100; st.v = (1 - y) * 100; render(); });
+track($('#hue'), x => { st.h = Math.min(x * 360, 359.9); render(); });
+track($('#alp'), x => { st.a = Math.round(x * 100) / 100; render(); });
+for (const [id, k] of [['#fHex', 'hex'], ['#fRgb', 'rgb'], ['#fHsl', 'hsl']]) {
+  const el = $(id);
+  el.addEventListener('input', () => { const c = parseColor(el.value); el.classList.toggle('bad', !c); if (c) setRGB(c.r, c.g, c.b, c.a); });
+  el.addEventListener('blur', render);
+}
+const toastEl = $('#toast'); let tt;
+function toast(t) { toastEl.textContent = t; toastEl.classList.add('on'); clearTimeout(tt); tt = setTimeout(() => toastEl.classList.remove('on'), 1600); }
+async function copy(t) {
+  try { await navigator.clipboard.writeText(t); toast('Copied ' + t); }
+  catch (e) { try { const ta = document.createElement('textarea'); ta.value = t; document.body.append(ta); ta.select(); document.execCommand('copy'); ta.remove(); toast('Copied ' + t); } catch (e2) { toast('Copy blocked by the browser'); } }
+}
+const copyCur = k => copy(strs()[k || fmt]);
+function save() { if (tab === 'pal') return addPal(); const h = strs().hex; if (saved.includes(h)) return toast('Already saved'); saved.unshift(h); saved = saved.slice(0, 24); ls.set('saved', saved); render(); toast('Saved ' + h); }
+function rnd() { st.h = Math.random() * 360; st.s = 40 + Math.random() * 60; st.v = 50 + Math.random() * 50; render(); }
+const hasEye = 'EyeDropper' in window;
+async function eye() { if (!hasEye) return toast('Screen picking needs Chrome or Edge'); try { const r = await new EyeDropper().open(); setHex(r.sRGBHex); } catch (e) {} }
+$('#pCs').onclick = $('#pRd').onclick = $('#pCpy').onclick = () => copyCur();
+$('#pSave').onclick = save; $('#pRnd').onclick = rnd; $('#pEye').onclick = eye; if (!hasEye) $('#pEye').style.opacity = .4;
+$('#harm').addEventListener('click', e => { const b = e.target.closest('[data-hex]'); if (b) setHex(b.dataset.hex); });
+$('#saved').addEventListener('click', e => { const b = e.target.closest('[data-hex]'); if (b) setHex(b.dataset.hex); });
+$('#saved').addEventListener('contextmenu', e => { const b = e.target.closest('[data-i]'); if (!b) return; e.preventDefault();
+  openMenu({ x: e.clientX, y: e.clientY }, [{ label: 'Use ' + b.dataset.hex, run: () => setHex(b.dataset.hex) }, { label: 'Remove', run: () => { saved.splice(+b.dataset.i, 1); ls.set('saved', saved); render(); } }]); });
+
+/* ---------- theme ---------- */
+const mq = matchMedia('(prefers-color-scheme: dark)');
+function applyTheme() { document.documentElement.dataset.theme = theme === 'dark' || (theme === 'system' && mq.matches) ? 'dark' : 'light'; }
+mq.addEventListener && mq.addEventListener('change', applyTheme);
+
+/* ---------- menu engine ---------- */
+let menus = [];
+function closeMenu(d = 0) { while (menus.length > d) menus.pop().remove(); if (!menus.length) document.querySelectorAll('[aria-expanded=true]').forEach(b => b.setAttribute('aria-expanded', 'false')); }
+function openMenu(anchor, items, o = {}, depth = 0) {
+  closeMenu(depth);
+  const el = document.createElement('div'); el.className = 'cp-menu' + (o.up ? ' up' : ''); el.setAttribute('role', 'menu');
+  items.forEach(it => {
+    if (it === '-') { const hr = document.createElement('hr'); hr.className = 'cp-sep'; return el.append(hr); }
+    const b = document.createElement('button'); b.className = 'cp-mi' + (it.header ? ' hd' : ''); b.disabled = !!(it.disabled || it.header); b.setAttribute('role', 'menuitem');
+    b.innerHTML = `<i style="font-style:normal">${it.checked ? '✓' : ''}</i><span>${esc(it.label)}</span><kbd>${it.sub ? '›' : esc(it.kbd || '')}</kbd>`;
+    if (it.sub) { let t; b.onmouseenter = () => { t = setTimeout(() => openMenu(b, it.sub, { side: true }, depth + 1), 80); }; b.onmouseleave = () => clearTimeout(t); b.onclick = () => openMenu(b, it.sub, { side: true }, depth + 1); }
+    else { b.onmouseenter = () => closeMenu(depth + 1); b.onclick = () => { closeMenu(); it.run && it.run(); }; }
+    el.append(b);
+  });
+  document.body.append(el);
+  const r = anchor.getBoundingClientRect ? anchor.getBoundingClientRect() : { left: anchor.x, right: anchor.x, top: anchor.y, bottom: anchor.y, width: 0 };
+  const gap = o.gap ?? 6, vw = innerWidth, vh = innerHeight;
+  el.style.maxHeight = (o.side ? vh - 16 : o.up ? r.top - gap - 8 : vh - r.bottom - gap - 8) + 'px';
+  const w = el.offsetWidth, h = el.offsetHeight; let left, top;
+  if (o.side) { left = r.right - 4; if (left + w > vw - 8) left = r.left - w + 4; top = r.top - 6; }
+  else { left = o.center ? r.left + r.width / 2 - w / 2 : o.right ? r.right - w : r.left; top = o.up ? r.top - gap - h : r.bottom + gap; }
+  el.style.left = clamp(left, 8, Math.max(8, vw - w - 8)) + 'px'; el.style.top = clamp(top, 8, Math.max(8, vh - h - 8)) + 'px';
+  menus.push(el); return el;
+}
+const isFs = () => document.body.classList.contains('fs');
+const M = {
+  file: () => [
+    { label: 'Copy HEX', kbd: 'C', run: () => copyCur('hex') }, { label: 'Copy RGB', run: () => copyCur('rgb') }, { label: 'Copy HSL', run: () => copyCur('hsl') }, '-',
+    { label: 'Clear saved swatches', disabled: !saved.length, run: () => { saved = []; ls.set('saved', saved); render(); } }, '-',
+    { label: 'Close window', run: () => hideWin(true) }],
+  edit: () => [
+    { label: 'Save swatch', kbd: 'S', run: save }, { label: 'Random color', kbd: 'R', run: rnd },
+    { label: hasEye ? 'Pick from screen' : 'Pick from screen (Chrome/Edge)', kbd: 'E', disabled: !hasEye, run: eye }, '-',
+    { label: 'Readout format', sub: ['hex', 'rgb', 'hsl'].map(k => ({ label: k.toUpperCase(), checked: fmt === k, run: () => { fmt = k; ls.set('fmt', k); render(); } })) },
+    { label: 'Jump to complement', run: () => { st.h = (st.h + 180) % 360; render(); } }],
+  view: () => [
+    ...TABS.map(([k, l]) => ({ label: l + ' tab', checked: tab === k, run: () => setTab(k) })), '-',
+    { label: 'Appearance', sub: [['light', 'Light'], ['dark', 'Dark'], ['system', 'Match system']].map(([k, l]) => ({ label: l, checked: theme === k, run: () => { theme = k; ls.set('theme', k); applyTheme(); } })) }, '-',
+    { label: 'Contrast checker', checked: showCon, run: () => { showCon = !showCon; ls.set('con', showCon); render(); } },
+    { label: 'Harmony', checked: showHarm, run: () => { showHarm = !showHarm; ls.set('harm', showHarm); render(); } }, '-',
+    { label: isFs() ? 'Exit full screen' : 'Full screen', kbd: 'F11', run: toggleFs }, { label: 'Reset window', run: () => preset('def') }]
+};
+const burgerItems = () => [{ label: 'File', sub: M.file() }, { label: 'Edit', sub: M.edit() }, { label: 'View', sub: M.view() }];
+const mbs = [...document.querySelectorAll('.mb')];
+function openMb(b) { openMenu(b, M[b.dataset.m](), {}); b.setAttribute('aria-expanded', 'true'); }
+mbs.forEach(b => {
+  b.onclick = () => { const was = b.getAttribute('aria-expanded') === 'true'; closeMenu(); if (!was) openMb(b); };
+  b.onmouseenter = () => { if (menus.length && b.getAttribute('aria-expanded') !== 'true') { closeMenu(); openMb(b); } };
+});
+$('#burger').onclick = e => { const b = e.currentTarget, was = b.getAttribute('aria-expanded') === 'true'; closeMenu(); if (!was) { openMenu(b, burgerItems(), {}); b.setAttribute('aria-expanded', 'true'); } };
+document.addEventListener('mousedown', e => { if (menus.length && !e.target.closest('.cp-menu,[aria-haspopup]')) closeMenu(); });
+
+/* ---------- window manager ---------- */
+const desk = $('#desk'), win = $('#win'), dw = () => desk.clientWidth, dh = () => desk.clientHeight;
+const defRect = () => { const w = Math.min(1100, dw() - 48), h = Math.min(700, dh() - 48); return { x: Math.round((dw() - w) / 2), y: Math.round((dh() - h) / 2), w, h, max: false }; };
+let R = ls.get('rect', null), prevMax = false;
+if (!R || typeof R.w !== 'number') R = defRect();
+function paint(save = true) {
+  const mw = Math.min(360, dw()), mh = Math.min(300, dh());
+  R.w = clamp(R.w, mw, dw()); R.h = clamp(R.h, mh, dh()); R.x = clamp(R.x, 120 - R.w, dw() - 120); R.y = clamp(R.y, 0, dh() - 40);
+  win.classList.toggle('max', !!R.max);
+  if (R.max) { win.style.left = win.style.top = win.style.width = win.style.height = ''; }
+  else { win.style.left = R.x + 'px'; win.style.top = R.y + 'px'; win.style.width = R.w + 'px'; win.style.height = R.h + 'px'; }
+  $('#hud').textContent = `${win.offsetWidth} × ${win.offsetHeight} · x ${R.max ? 0 : R.x} · y ${R.max ? 0 : R.y}`;
+  if (save) ls.set('rect', R);
+}
+function preset(p) {
+  if (isFs()) leaveFs();
+  const d = defRect();
+  if (p === 'fill') R.max = true;
+  else { R = p === 'min' ? { ...d, w: Math.min(360, dw()), h: Math.min(300, dh()), max: false } : p === 'compact' ? { ...d, w: Math.min(640, dw()), h: Math.min(440, dh()), max: false } : d;
+    R.x = Math.round((dw() - R.w) / 2); R.y = Math.round((dh() - R.h) / 2); }
+  showWin(); paint();
+}
+document.querySelectorAll('[data-p]').forEach(b => b.onclick = () => preset(b.dataset.p));
+const toggleMax = () => { if (isFs()) return; R.max = !R.max; paint(); };
+function hideWin(h) { win.classList.toggle('hide', h); $('#chip').classList.toggle('on', !h); }
+const showWin = () => hideWin(false);
+$('#chip').onclick = () => hideWin(!win.classList.contains('hide'));
+$('#wMin').onclick = () => hideWin(true); $('#wX').onclick = () => hideWin(true); $('#wMax').onclick = toggleMax;
+$('#drag').addEventListener('dblclick', toggleMax);
+function toggleFs() { isFs() ? leaveFs() : enterFs(); }
+function enterFs() { prevMax = R.max; R.max = true; document.body.classList.add('fs'); paint(false); }
+function leaveFs() { document.body.classList.remove('fs'); R.max = prevMax; paint(false); }
+
+let drag = null, rs = null;
+$('#top').addEventListener('pointerdown', e => { if (e.button || e.target.closest('button,input') || isFs()) return; drag = { sx: e.clientX, sy: e.clientY, on: false }; e.preventDefault(); });
+document.querySelectorAll('.rz').forEach(h => h.addEventListener('pointerdown', e => { rs = { d: h.dataset.d, sx: e.clientX, sy: e.clientY, r: { ...R } }; e.preventDefault(); e.stopPropagation(); }));
+addEventListener('pointermove', e => {
+  if (drag) {
+    if (!drag.on && Math.hypot(e.clientX - drag.sx, e.clientY - drag.sy) > 4) {
+      drag.on = true;
+      if (R.max) { const ratio = e.clientX / dw(); R.max = false; R.x = Math.round(e.clientX - R.w * ratio); R.y = 0; }
+      drag.ox = R.x; drag.oy = R.y; drag.sx = e.clientX; drag.sy = e.clientY;
+    }
+    if (drag.on) { R.x = drag.ox + e.clientX - drag.sx; R.y = drag.oy + e.clientY - drag.sy; paint(false); }
+  } else if (rs) {
+    const dx = e.clientX - rs.sx, dy = e.clientY - rs.sy, o = rs.r, mw = Math.min(360, dw()), mh = Math.min(300, dh()), d = rs.d;
+    if (d.includes('e')) R.w = Math.max(mw, o.w + dx);
+    if (d.includes('s')) R.h = Math.max(mh, o.h + dy);
+    if (d.includes('w')) { R.w = Math.max(mw, o.w - dx); R.x = o.x + o.w - R.w; }
+    if (d.includes('n')) { R.h = Math.max(mh, o.h - dy); R.y = o.y + o.h - R.h; }
+    paint(false);
+  }
+});
+addEventListener('pointerup', () => { if (drag || rs) { drag = rs = null; paint(); } });
+addEventListener('resize', () => paint());
+
+/* ---------- keyboard ---------- */
+addEventListener('keydown', e => {
+  if (e.key === 'Escape') { if (menus.length) return closeMenu(); if (isFs()) leaveFs(); return; }
+  if (e.key === 'F11') { e.preventDefault(); return toggleFs(); }
+  if (menus.length) {
+    const last = menus[menus.length - 1], items = [...last.querySelectorAll('.cp-mi:not(:disabled)')], i = items.indexOf(document.activeElement);
+    if (e.key === 'ArrowDown') { e.preventDefault(); (items[i + 1] || items[0]).focus(); }
+    else if (e.key === 'ArrowUp') { e.preventDefault(); (items[i - 1] || items[items.length - 1]).focus(); }
+    else if (e.key === 'ArrowRight' && document.activeElement.textContent.includes('›')) { e.preventDefault(); document.activeElement.click(); setTimeout(() => { const f = menus[menus.length - 1].querySelector('.cp-mi:not(:disabled)'); f && f.focus(); }); }
+    else if (e.key === 'ArrowLeft' || e.key === 'ArrowRight') {
+      const open = mbs.find(b => b.getAttribute('aria-expanded') === 'true');
+      if (e.key === 'ArrowLeft' && menus.length > 1) { closeMenu(menus.length - 1); }
+      else if (open && menus.length === 1 && getComputedStyle($('#menus')).display !== 'none') { const n = mbs[(mbs.indexOf(open) + (e.key === 'ArrowRight' ? 1 : mbs.length - 1)) % mbs.length]; closeMenu(); openMb(n); }
+    }
+    return;
+  }
+  if (e.target.closest('input') || e.ctrlKey || e.metaKey || e.altKey) return;
+  const k = e.key.toLowerCase();
+  if (k === 'c') copyCur(); else if (k === 's') save(); else if (k === 'r') rnd(); else if (k === 'e') eye();
+});
+$('#scroll').addEventListener('scroll', () => closeMenu());
+$('#top').addEventListener('wheel', e => { $('#scroll').scrollTop += e.deltaY; }, { passive: true });
+
+/* ---------- tabs, palette, preview, image ---------- */
+const TABS = [['pick', 'Pick'], ['pal', 'Palette'], ['prev', 'Preview'], ['img', 'Image']];
+let tab = ls.get('tab', 'pick'), pal = ls.get('pal', ['#fa2d48', '#fff4f1', '#2b2d42', '#ffb703', '#ffffff']), sel = 0, pvDark = false, imCols = [];
+if (!TABS.some(t => t[0] === tab)) tab = 'pick';
+if (!Array.isArray(pal) || !pal.length) pal = ['#fa2d48'];
+const rgbOf = h => { const c = parseColor(h) || { r: 0, g: 0, b: 0 }; return [c.r, c.g, c.b]; };
+const lh = h => lum(...rgbOf(h)), crt = (a, b) => { const x = lh(a), y = lh(b); return (Math.max(x, y) + .05) / (Math.min(x, y) + .05); };
+const gradeW = c => c >= 7 ? 'AAA' : c >= 4.5 ? 'AA' : c >= 3 ? 'AA Large' : 'Fail';
+const onC = h => crt('#000000', h) > crt('#ffffff', h) ? '#000000' : '#ffffff';
+const gray = h => { const [r, g, b] = rgbOf(h), y = Math.round(.299 * r + .587 * g + .114 * b); return toHex(y, y, y); };
+const cmyk = h => { const [r, g, b] = rgbOf(h).map(x => x / 255), k = 1 - Math.max(r, g, b); if (k >= 1) return [0, 0, 0, 100]; return [(1 - r - k) / (1 - k), (1 - g - k) / (1 - k), (1 - b - k) / (1 - k), k].map(x => Math.round(x * 100)); };
+const savePal = () => ls.set('pal', pal), hex6 = () => toHex(cur.r, cur.g, cur.b);
+function setTab(t) {
+  tab = t; ls.set('tab', t); $('#scroll').dataset.tab = t;
+  document.querySelectorAll('#tabs button').forEach(b => b.classList.toggle('on', b.dataset.t === t));
+  drawTabs(); $('#scroll').scrollTop = 0;
+}
+function drawTabs() { if (tab === 'pal') drawPal(); else if (tab === 'prev') drawPrev(); else if (tab === 'img') drawImg(); }
+$('#tabs').innerHTML = TABS.map(([k, l]) => `<button data-t="${k}">${l}</button>`).join('');
+$('#tabs').onclick = e => { const b = e.target.closest('[data-t]'); if (b) setTab(b.dataset.t); };
+function roles() {
+  const sat = h => rgb2hsv(...rgbOf(h))[1], byL = [...pal].sort((a, b) => lh(b) - lh(a)); if (pvDark) byL.reverse();
+  const bg = byL[0], surface = byL[1] || bg;
+  let text = [...pal].sort((a, b) => crt(b, bg) - crt(a, bg))[0]; if (crt(text, bg) < 4.5) text = onC(bg);
+  const rest = pal.filter(h => h !== bg && h !== surface && h !== text).sort((a, b) => sat(b) - sat(a));
+  const primary = rest[0] || '#0a84ff', accent = rest[1] || rest[0] || '#ff9f0a';
+  return { bg, surface, text, primary, accent, onp: onC(primary), ona: onC(accent) };
+}
+function drawPal() {
+  sel = clamp(sel, 0, pal.length - 1);
+  $('#strip').innerHTML = pal.map((h, i) => `<button data-i="${i}" class="${i === sel ? 'on' : ''}" style="--c:${h};color:${onC(h)}">${h}</button>`).join('');
+  const r = roles();
+  $('#roles').innerHTML = [['Background', 'bg'], ['Surface', 'surface'], ['Text', 'text'], ['Primary', 'primary'], ['Accent', 'accent']].map(([n, k]) => `<div class="hs"><button class="sw2" data-hex="${r[k]}" title="${r[k]}"><i style="--s:${r[k]}"></i></button><small>${n}</small></div>`).join('');
+}
+function drawPrev() {
+  const r = roles();
+  $('#pv').style.cssText = `--pb:${r.bg};--ps:${r.surface};--pp:${r.primary};--pa:${r.accent};--pt:${r.text};--pn:${r.onp};--pan:${r.ona}`;
+  $('#pvMode').textContent = pvDark ? 'Dark preview' : 'Light preview';
+  const rows = [['Text on background', r.text, r.bg], ['Text on surface', r.text, r.surface], ['Button label on primary', r.onp, r.primary], ['Link (primary) on background', r.primary, r.bg], ['Accent on background', r.accent, r.bg], ['Badge label on accent', r.ona, r.accent]];
+  $('#cTbl').innerHTML = '<tr><th>Pair</th><th>Web (WCAG)</th><th>Print (B/W copy)</th></tr>' + rows.map(([n, f, b]) => { const w = crt(f, b), g = crt(gray(f), gray(b)); return `<tr><td><span class="dot" style="background:${f}"></span><span class="dot" style="background:${b}"></span>${n}</td><td>${w.toFixed(2)} · ${gradeW(w)}</td><td>${g.toFixed(2)} · ${g >= 4.5 ? 'OK' : g >= 3 ? 'Large only' : 'Weak'}</td></tr>`; }).join('');
+  $('#ink').innerHTML = pal.map(h => { const c = cmyk(h), t = c[0] + c[1] + c[2] + c[3]; return `<div class="hs"><div class="sw2"><i style="--s:${h}"></i></div><small>${c.join(' ')}</small><small>${t}%${t > 300 ? ' heavy' : ''}</small></div>`; }).join('');
+}
+function addPal() { if (pal.length >= 8) return toast('Palette is full (8 colors)'); pal.push(hex6()); sel = pal.length - 1; savePal(); drawTabs(); }
+$('#paAdd').onclick = addPal;
+$('#paSet').onclick = () => { pal[sel] = hex6(); savePal(); drawTabs(); };
+$('#paDel').onclick = () => { if (pal.length > 1) { pal.splice(sel, 1); sel = Math.max(0, sel - 1); savePal(); drawTabs(); } };
+$('#paGen').onchange = e => {
+  const t = e.target.value, h = st.h, s = st.s, v = st.v, mk = (dh, ds = s, dv = v) => toHex(...hsv2rgb((h + dh + 360) % 360, clamp(ds, 0, 100), clamp(dv, 0, 100)));
+  const g = { comp: [mk(0), mk(180), mk(0, s * .2, 100), mk(180, s * .8, v * .6), mk(0, 15, 25)], ana: [mk(-30), mk(0), mk(30), mk(0, s * .2, 98), mk(0, 30, 22)], tri: [mk(0), mk(120), mk(240), mk(0, 10, 98), mk(0, 25, 20)], split: [mk(0), mk(150), mk(210), mk(0, 10, 98), mk(0, 25, 20)], mono: [mk(0), mk(0, s * .7, v * .8), mk(0, s * .4, v * .6), mk(0, s * .12, 100), mk(0, s, v * .25)] }[t];
+  e.target.value = ''; if (g) { pal = g; sel = 0; savePal(); drawTabs(); }
+};
+$('#paCss').onclick = () => { const r = roles(); copy(`:root{--bg:${r.bg};--surface:${r.surface};--text:${r.text};--primary:${r.primary};--accent:${r.accent}}`); };
+$('#strip').onclick = e => { const b = e.target.closest('[data-i]'); if (b) { sel = +b.dataset.i; setHex(pal[sel]); } };
+$('#roles').onclick = e => { const b = e.target.closest('[data-hex]'); if (b) setHex(b.dataset.hex); };
+$('#pvMode').onclick = () => { pvDark = !pvDark; drawPrev(); };
+
+const cv = $('#imC'), cx = cv.getContext('2d', { willReadFrequently: true }); let px = null;
+function loadImg(f) {
+  if (!f || !f.type.startsWith('image/')) return;
+  const u = URL.createObjectURL(f), im = new Image();
+  im.onload = () => { const k = Math.min(1, 480 / Math.max(im.width, im.height)); cv.width = Math.max(1, Math.round(im.width * k)); cv.height = Math.max(1, Math.round(im.height * k)); cx.drawImage(im, 0, 0, cv.width, cv.height); URL.revokeObjectURL(u); px = cx.getImageData(0, 0, cv.width, cv.height).data; $('#imHint').hidden = true; analyse(); };
+  im.onerror = () => toast('Could not read that image'); im.src = u;
+}
+function analyse() {
+  if (!px) return; const k = +$('#imK').value, pts = [];
+  for (let i = 0; i < px.length; i += 16) if (px[i + 3] > 125) pts.push([px[i], px[i + 1], px[i + 2]]);
+  const n = pts.length || 1; let bx = [pts];
+  while (bx.length < k) {
+    let bi = -1, bs = 0, bc = 0;
+    bx.forEach((b, i) => { if (b.length < 2) return; for (let c = 0; c < 3; c++) { let mn = 255, mx = 0; for (const p of b) { if (p[c] < mn) mn = p[c]; if (p[c] > mx) mx = p[c]; } const sc = (mx - mn) * Math.sqrt(b.length); if (sc > bs) { bs = sc; bi = i; bc = c; } } });
+    if (bi < 0) break; const b = bx[bi].sort((a, c) => a[bc] - c[bc]), m = b.length >> 1; bx.splice(bi, 1, b.slice(0, m), b.slice(m));
+  }
+  imCols = bx.filter(b => b.length).map(b => ({ hex: toHex(...[0, 1, 2].map(c => Math.round(b.reduce((s, p) => s + p[c], 0) / b.length))), share: b.length / n })).sort((a, b) => b.share - a.share);
+  drawImg();
+}
+function drawImg() {
+  const u = $('#imU').value;
+  const info = h => { const [r, g, b] = rgbOf(h), y = Math.round(lh(h) * 100); return u === 'print' ? 'CMYK ' + cmyk(h).join(' ') : u === 'grade' ? `lum ${y}% · hue ${Math.round(rgb2hsv(r, g, b)[0])}°` : u === 'paint' ? `LRV ≈ ${y} · rgb ${r} ${g} ${b}` : `rgb(${r}, ${g}, ${b})`; };
+  $('#imS').innerHTML = imCols.length ? imCols.map(c => `<button class="row" data-hex="${c.hex}"><span class="sw2"><i style="--s:${c.hex}"></i></span><span><b>${c.hex}</b><br><small>${info(c.hex)}</small></span><small>${Math.round(c.share * 100)}%</small></button>`).join('') : '<span class="empty">No image yet.</span>';
+  const notes = { web: 'Check text pairs in the Preview tab before committing. Three to five colors is plenty.', print: 'CMYK here is a naive conversion. Vivid screen colors fall outside print gamut, so proof on the real paper and use your printer’s ICC profile.', grade: 'Histogram of brightness, shadows on the left.', paint: 'LRV is light reflectance: 0 is black, 100 is white, and most walls sit around 40 to 85. Paint dries differently from wet. Test a 1 m² sample on two walls, view it morning and evening, then match against a physical swatch.' };
+  let h = `<h4>${{ web: 'For web', print: 'For print', grade: 'For grading', paint: 'For painting' }[u]}</h4><p class="empty">${notes[u]}</p>`;
+  if (u === 'grade' && px) {
+    const bins = new Array(16).fill(0); let sh = 0, hi = 0, n = 0, R = 0, B = 0;
+    for (let i = 0; i < px.length; i += 16) { if (px[i + 3] < 126) continue; const y = (.2126 * px[i] + .7152 * px[i + 1] + .0722 * px[i + 2]) / 255; bins[Math.min(15, y * 16 | 0)]++; if (y < .25) sh++; else if (y > .75) hi++; n++; R += px[i]; B += px[i + 2]; }
+    n = n || 1; const mx = Math.max(...bins, 1), bias = (R - B) / n;
+    h += `<div class="ch" style="height:60px;gap:2px">${bins.map(v => `<i style="height:${v / mx * 100}%;background:var(--fg);opacity:.6"></i>`).join('')}</div><p class="empty">Shadows ${Math.round(sh / n * 100)}% · Mids ${Math.round((n - sh - hi) / n * 100)}% · Highlights ${Math.round(hi / n * 100)}% · ${bias > 10 ? 'Warm' : bias < -10 ? 'Cool' : 'Neutral'} cast. Grade on a calibrated display with night mode off.</p>`;
+  }
+  $('#imX').innerHTML = h;
+}
+$('#imF').onchange = e => loadImg(e.target.files[0]);
+$('#imK').onchange = analyse; $('#imU').onchange = drawImg;
+$('#imS').onclick = e => { const b = e.target.closest('[data-hex]'); if (b) setHex(b.dataset.hex); };
+$('#imPal').onclick = () => { if (!imCols.length) return toast('Load an image first'); pal = imCols.slice(0, 8).map(c => c.hex); sel = 0; savePal(); setTab('pal'); toast('Palette set from image'); };
+cv.onclick = e => { if (!px) return; const r = cv.getBoundingClientRect(), x = clamp(Math.floor((e.clientX - r.left) / r.width * cv.width), 0, cv.width - 1), y = clamp(Math.floor((e.clientY - r.top) / r.height * cv.height), 0, cv.height - 1), d = cx.getImageData(x, y, 1, 1).data; setRGB(d[0], d[1], d[2], 1); toast('Picked ' + toHex(d[0], d[1], d[2])); };
+addEventListener('paste', e => { const f = [...(e.clipboardData ? e.clipboardData.files : [])].find(f => f.type.startsWith('image/')); if (f) { setTab('img'); loadImg(f); } });
+const dz = $('#imDrop'); dz.ondragover = e => e.preventDefault(); dz.ondrop = e => { e.preventDefault(); loadImg(e.dataTransfer.files[0]); };
+setTab(tab);
+
+/* custom scrollbar: track runs 50 px in from the top and bottom edges */
+const sc = $('#scroll'), sbar = $('#sbar'), sth = $('#sthumb');
+function sbUpdate() {
+  const max = sc.scrollHeight - sc.clientHeight, th = sbar.clientHeight;
+  sbar.classList.toggle('off', max <= 1); if (max <= 1) return;
+  const h = Math.max(32, th * sc.clientHeight / sc.scrollHeight);
+  sth.style.height = h + 'px'; sth.style.top = (sc.scrollTop / max * (th - h)) + 'px';
+}
+sc.addEventListener('scroll', sbUpdate); addEventListener('resize', sbUpdate);
+if (window.ResizeObserver) { const ro = new ResizeObserver(sbUpdate); ro.observe(sc); [...sc.children].forEach(c => ro.observe(c)); }
+sth.addEventListener('pointerdown', e => {
+  e.preventDefault(); sth.setPointerCapture(e.pointerId); sbar.classList.add('drag');
+  const y0 = e.clientY, s0 = sc.scrollTop, mv = ev => { const room = sbar.clientHeight - sth.offsetHeight; if (room > 0) sc.scrollTop = s0 + (ev.clientY - y0) * (sc.scrollHeight - sc.clientHeight) / room; };
+  const up = () => { sbar.classList.remove('drag'); sth.removeEventListener('pointermove', mv); sth.removeEventListener('pointerup', up); };
+  sth.addEventListener('pointermove', mv); sth.addEventListener('pointerup', up);
+});
+sbar.addEventListener('pointerdown', e => { if (e.target === sth) return; const r = sbar.getBoundingClientRect(); sc.scrollTop = (e.clientY - r.top) / r.height * (sc.scrollHeight - sc.clientHeight) - sc.clientHeight / 2 * 0; });
+
+applyTheme(); render(); paint(); sbUpdate();
+})();
+</script>
+</body>
+</html>

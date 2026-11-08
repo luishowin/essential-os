@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Glyphs</title>
+<style>
+:root{--bg:#f6f6f7;--fg:#1b1b1d;--dim:#6b6b72;--line:#d9d9de;--hover:#0000000f;--sel:#0000001a;--glass:#ffffffcc;--accent:#fa2d48;--wall:#c9cad1;--grid:#00000012;--task:#e4e4e8;--shadow:0 20px 60px #0004;--pillh:50px;color-scheme:light}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#1d1d1f;--fg:#f2f2f4;--dim:#9a9aa2;--line:#3a3a3d;--hover:#ffffff12;--sel:#ffffff1f;--glass:#2c2c2ecc;--wall:#0f0f11;--grid:#ffffff0d;--task:#1a1a1c;--shadow:0 20px 60px #000a;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#1d1d1f;--fg:#f2f2f4;--dim:#9a9aa2;--line:#3a3a3d;--hover:#ffffff12;--sel:#ffffff1f;--glass:#2c2c2ecc;--wall:#0f0f11;--grid:#ffffff0d;--task:#1a1a1c;--shadow:0 20px 60px #000a;color-scheme:dark}
+*{box-sizing:border-box}
+html,body{height:100%;margin:0;overflow:hidden;font-family:Inter,system-ui,-apple-system,"Segoe UI",sans-serif;color:var(--fg);background:var(--wall)}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+svg.i{width:16px;height:16px;flex:none}
+.desktop{position:fixed;inset:0 0 44px 0;background-color:var(--wall);background-image:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);background-size:32px 32px;overflow:hidden}
+body.fs .desktop{bottom:0}body.fs .task{display:none}
+.window{position:absolute;border-radius:12px;background:var(--bg);box-shadow:var(--shadow),0 0 0 1px var(--line);overflow:hidden}
+.window.max{border-radius:0}.window.hide{display:none}
+.rz{position:absolute;z-index:30}
+.rz[data-d=n],.rz[data-d=s]{left:10px;right:10px;height:6px;cursor:ns-resize}.rz[data-d=n]{top:-3px}.rz[data-d=s]{bottom:-3px}
+.rz[data-d=e],.rz[data-d=w]{top:10px;bottom:10px;width:6px;cursor:ew-resize}.rz[data-d=e]{right:-3px}.rz[data-d=w]{left:-3px}
+.rz[data-d=ne],.rz[data-d=nw],.rz[data-d=se],.rz[data-d=sw]{width:14px;height:14px}
+.rz[data-d=ne]{top:-4px;right:-4px;cursor:nesw-resize}.rz[data-d=sw]{bottom:-4px;left:-4px;cursor:nesw-resize}
+.rz[data-d=nw]{top:-4px;left:-4px;cursor:nwse-resize}.rz[data-d=se]{bottom:-4px;right:-4px;cursor:nwse-resize}
+.window.max .rz{display:none}
+
+/* app: one continuous canvas */
+.app{container:app/inline-size;position:absolute;inset:0;background:var(--bg);overflow:hidden}
+.scroll{--pad:22px;--cell:76px;position:absolute;inset:0;overflow:auto;padding:calc(40px + 14px) var(--pad) calc(var(--pillh) + 14px + 40px)}
+.scroll.s{--cell:56px}.scroll.l{--cell:100px}
+.hd{display:flex;align-items:baseline;gap:10px;margin:0 0 10px}
+.hd h1{margin:0;font-size:22px;letter-spacing:-.01em}.hd span{color:var(--dim);font-size:13px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(var(--cell),1fr))}
+.g{height:var(--cell);font-size:calc(var(--cell)*.5);display:grid;place-items:center;border-bottom:1px solid var(--line);font-family:"Noto Sans","Segoe UI Symbol","Segoe UI Emoji","Apple Color Emoji",system-ui,sans-serif;line-height:1;overflow:hidden}
+.g:hover{background:var(--hover)}.g:focus-visible{outline:2px solid var(--accent);outline-offset:-2px}
+.g.sel{background:var(--sel);box-shadow:inset 0 -2px var(--accent)}
+.empty{grid-column:1/-1;padding:60px 0;text-align:center;color:var(--dim)}
+.topfade,.botfade{position:absolute;left:0;right:0;pointer-events:none;z-index:3}
+.topfade{top:0;height:72px;background:linear-gradient(var(--bg) 35%,transparent)}
+.botfade{bottom:0;height:calc(var(--pillh) + 56px);background:linear-gradient(transparent,var(--bg) 70%)}
+.scroll::-webkit-scrollbar{width:10px}.scroll::-webkit-scrollbar-thumb{background:var(--sel);border-radius:5px;border:3px solid transparent;background-clip:content-box}
+
+/* top bar */
+.top{position:absolute;top:0;left:0;right:0;height:40px;z-index:6;display:flex;align-items:center;padding:0 6px;user-select:none}
+.mb{height:28px;padding:0 11px;border-radius:7px;font-size:13px}
+.mb:hover,.mb[aria-expanded=true]{background:var(--sel)}
+.hb{display:none;width:32px;height:28px;align-items:center;justify-content:center;border-radius:7px}
+.hb:hover,.hb[aria-expanded=true]{background:var(--sel)}
+.fill{flex:1;height:100%}
+.wc{display:flex;gap:6px;align-items:center;padding-right:4px}
+.wc button{width:32px;height:28px;display:grid;place-items:center;color:var(--dim);transition:color .12s}
+.wc button svg{width:18px;height:18px}
+.wc button:hover{color:var(--fg)}
+.wc button.x:hover{color:var(--accent)}
+
+/* bottom pill */
+.pill{position:absolute;bottom:14px;left:0;right:0;margin:0 auto;width:min(100% - 28px,820px);height:var(--pillh);border-radius:24px;z-index:7;display:grid;grid-template-columns:auto minmax(0,1fr) auto;align-items:center;gap:10px;padding:0 7px;background:var(--glass);backdrop-filter:blur(28px) saturate(1.8);-webkit-backdrop-filter:blur(28px) saturate(1.8);box-shadow:0 6px 24px #0003,0 0 0 1px var(--line)}
+.pb{height:36px;border-radius:18px;padding:0 14px;display:flex;align-items:center;gap:8px;font-size:13px;font-weight:600;white-space:nowrap}
+.pb:hover,.pb[aria-expanded=true]{background:var(--sel)}
+.pb .ci{font-size:16px;width:20px;text-align:center}
+.sbox{display:flex;align-items:center;gap:8px;height:36px;border-radius:18px;padding:0 14px;background:var(--hover);color:var(--dim);min-width:0}
+.sbox input{flex:1;min-width:0;border:0;outline:0;background:none;color:var(--fg);font:inherit;font-size:13px}
+.sbox:focus-within{box-shadow:0 0 0 2px var(--accent)}
+.pr{display:flex;align-items:center;gap:6px}
+.ab{height:36px;padding:0 16px 0 6px;border-radius:18px;display:flex;align-items:center;gap:10px;font-size:13px;font-weight:600;background:var(--sel);white-space:nowrap}
+.ab:hover,.ab[aria-pressed=true]{background:var(--accent);color:#fff}
+.ab .ag{min-width:26px;height:26px;padding:0 2px;display:grid;place-items:center;font-size:21px;font-weight:400;line-height:1;font-family:"Noto Sans","Segoe UI Symbol","Segoe UI Emoji","Apple Color Emoji",system-ui,sans-serif}
+.ab .ag.none{color:var(--dim)}
+.toast{position:absolute;left:50%;bottom:calc(var(--pillh) + 30px);transform:translate(-50%,10px);background:var(--fg);color:var(--bg);padding:8px 14px;border-radius:18px;font-size:13px;opacity:0;pointer-events:none;transition:.2s;white-space:nowrap;z-index:9}
+.toast.on{opacity:1;transform:translate(-50%,0)}
+
+/* side sheet */
+.sheet{position:absolute;top:48px;right:14px;bottom:calc(var(--pillh) + 30px);width:min(310px,100% - 28px);z-index:8;border-radius:18px;background:var(--glass);backdrop-filter:blur(28px) saturate(1.8);-webkit-backdrop-filter:blur(28px) saturate(1.8);box-shadow:0 10px 40px #0004,0 0 0 1px var(--line);display:flex;flex-direction:column;overflow:hidden;transition:transform .22s,opacity .22s}
+.sheet.off{transform:translateX(24px);opacity:0;pointer-events:none}
+.sheet .big{font-size:84px;line-height:1;text-align:center;padding:26px 10px 14px;font-family:"Noto Sans","Segoe UI Symbol","Segoe UI Emoji","Apple Color Emoji",system-ui,sans-serif;overflow:hidden}
+.sheet .rows{overflow:auto;padding:0 10px 10px;flex:1}
+.sheet .none{padding:30px;text-align:center;color:var(--dim);font-size:13px}
+.row{display:flex;width:100%;align-items:center;justify-content:space-between;gap:10px;padding:8px 10px;border-radius:9px;font-size:13px;text-align:left}
+.row:hover{background:var(--hover)}.row small{color:var(--dim);font-size:11px;text-transform:uppercase;letter-spacing:.04em;flex:none}
+.row code{font:12px ui-monospace,SFMono-Regular,Menlo,monospace;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+
+/* menus */
+.menu{position:fixed;z-index:999;min-width:210px;padding:6px;border-radius:12px;background:var(--glass);backdrop-filter:blur(28px) saturate(1.8);-webkit-backdrop-filter:blur(28px) saturate(1.8);box-shadow:0 10px 40px #0005,0 0 0 1px var(--line);overflow:auto;color:var(--fg);animation:mn .12s ease-out}
+.menu.up{animation-name:mu}
+@keyframes mn{from{opacity:0;transform:translateY(-4px)}}@keyframes mu{from{opacity:0;transform:translateY(6px)}}
+.menu button{display:flex;width:100%;align-items:center;gap:8px;height:32px;padding:0 10px;border-radius:7px;font-size:13px;text-align:left}
+.menu button:hover,.menu button:focus-visible{background:var(--accent);color:#fff;outline:0}
+.menu button:disabled{opacity:.4;pointer-events:none}
+.menu .ck{width:14px;flex:none}.menu .lb{flex:1;white-space:nowrap}.menu .kb{opacity:.6;font-size:11px}
+.menu hr{border:0;border-top:1px solid var(--line);margin:5px 4px}
+.menu .mh{padding:6px 10px 2px;font-size:11px;color:var(--dim);text-transform:uppercase;letter-spacing:.04em}
+
+/* taskbar */
+.task{position:fixed;left:0;right:0;bottom:0;height:44px;background:var(--task);border-top:1px solid var(--line);display:flex;align-items:center;gap:10px;padding:0 10px;font-size:12px}
+.chip{height:30px;padding:0 14px;border-radius:8px;background:var(--sel);font-weight:600;display:flex;align-items:center;gap:8px}
+.chip.min{opacity:.55}.chip span{color:var(--accent)}
+.hud{margin-left:auto;color:var(--dim);font-variant-numeric:tabular-nums;white-space:nowrap}
+.pre button{height:28px;padding:0 10px;border-radius:7px;color:var(--dim)}.pre button:hover{background:var(--hover);color:var(--fg)}
+
+/* tiers: window width, not viewport */
+@container app (max-width:980px){.scroll{--pad:18px}}
+@container app (max-width:700px){.sbox{padding:0 12px}}
+@container app (max-width:560px){.mb{display:none}.hb{display:flex}.pb .cl{display:none}.pb{padding:0 11px}.ab .al{display:none}.ab{padding:0 6px}}
+@container app (max-width:520px){.scroll{--pad:12px}.hd h1{font-size:19px}}
+@container app (max-width:420px){.hd span{display:none}}
+@media (max-width:760px){.pre{display:none}.hud{font-size:11px}}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute"><defs>
+<symbol id="i-s" viewBox="0 0 24 24"><circle cx="11" cy="11" r="6.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M16 16l5 5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+<symbol id="i-b" viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+<symbol id="i-x" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+<symbol id="i-min" viewBox="0 0 24 24"><path d="M7 10l5 5 5-5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+<symbol id="i-max" viewBox="0 0 24 24"><path d="M7 14l5-5 5 5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+<symbol id="i-res" viewBox="0 0 24 24"><path d="M7 6.5l5 4 5-4M7 17.5l5-4 5 4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+</defs></svg>
+
+<div class="desktop" id="desk">
+ <div class="window" id="win">
+  <div class="app" id="app">
+   <div class="scroll" id="scroll"><div class="hd"><h1 id="title"></h1><span id="count"></span></div><div class="grid" id="grid"></div></div>
+   <div class="topfade"></div><div class="botfade"></div>
+   <div class="top" id="top">
+    <button class="hb" id="bHam" aria-haspopup="true" aria-expanded="false" aria-label="Menu"><svg class="i"><use href="#i-b"/></svg></button>
+    <div id="mbar" style="display:contents"></div>
+    <div class="fill"></div>
+    <div class="wc"><button id="wMin" aria-label="Minimize"><svg class="i"><use href="#i-min"/></svg></button><button id="wMax" aria-label="Maximize"><svg class="i"><use href="#i-max"/></svg></button><button class="x" id="wX" aria-label="Close"><svg class="i"><use href="#i-x"/></svg></button></div>
+   </div>
+   <aside class="sheet off" id="sheet" aria-label="Glyph details"></aside>
+   <div class="toast" id="toast"></div>
+   <div class="pill" id="pill">
+    <button class="pb" id="bCat" aria-haspopup="true" aria-expanded="false"><span class="ci" id="cIcon"></span><span class="cl" id="cName"></span></button>
+    <label class="sbox"><svg class="i"><use href="#i-s"/></svg><input id="q" placeholder="Search glyph, U+2192 or category" autocomplete="off" spellcheck="false"></label>
+    <div class="pr"><button class="ab" id="bAbout" aria-pressed="false" aria-label="About this glyph" title="About (I)"><span class="ag none" id="ag">–</span><span class="al">About</span></button></div>
+   </div>
+  </div>
+  <i class="rz" data-d="n"></i><i class="rz" data-d="s"></i><i class="rz" data-d="e"></i><i class="rz" data-d="w"></i><i class="rz" data-d="ne"></i><i class="rz" data-d="nw"></i><i class="rz" data-d="se"></i><i class="rz" data-d="sw"></i>
+ </div>
+</div>
+<div class="task"><button class="chip" id="chip"><span>●</span>Glyphs</button>
+ <div class="pre" id="pre"><button data-p="min">Min</button><button data-p="compact">Compact</button><button data-p="def">Default</button><button data-p="fill">Fill</button></div>
+ <div class="hud" id="hud"></div></div>
+
+<script>
+(() => {'use strict';
+const $ = s => document.querySelector(s);
+const store = {
+  get(k, d){ try { const v = localStorage.getItem('glyphs.' + k); return v == null ? d : JSON.parse(v); } catch (e) { return d; } },
+  set(k, v){ try { localStorage.setItem('glyphs.' + k, JSON.stringify(v)); } catch (e) {} }
+};
+
+/* ---------- data ---------- */
+const L = /[\p{L}\p{N}\p{P}\p{S}]/u, E = /\p{Extended_Pictographic}/u;
+const rng = (rs, re = L) => { const o = []; for (const [a, b] of rs) for (let c = a; c <= b; c++) { const s = String.fromCodePoint(c); if (re.test(s)) o.push(s); } return o; };
+const flags = 'KE US GB FR DE IT ES PT NL BE CH SE NO DK FI IE PL GR TR EG ZA NG GH TZ UG ET MA IN CN JP KR TH VN ID AU NZ CA MX BR AR CL CO PE UA SA AE IL'.split(' ').map(c => [...c].map(x => String.fromCodePoint(127397 + x.charCodeAt(0))).join(''));
+const SECTIONS = [
+ { h: 'Emojis', items: [
+  { id: 'smile', n: 'Smileys & Emotion', i: '☺', kw: 'face happy sad', c: rng([[0x1F600, 0x1F64F]], E) },
+  { id: 'people', n: 'People & Body', i: '👍', kw: 'hand person', c: rng([[0x1F440, 0x1F4AA], [0x1F9D1, 0x1F9DD]], E) },
+  { id: 'animals', n: 'Animals & Nature', i: '🍃', kw: 'cat dog plant', c: rng([[0x1F400, 0x1F43F], [0x1F980, 0x1F9AE], [0x1F330, 0x1F344]], E) },
+  { id: 'food', n: 'Food & Drink', i: '🍴', kw: 'eat fruit', c: rng([[0x1F32D, 0x1F37F], [0x1F950, 0x1F96B]], E) },
+  { id: 'travel', n: 'Travel & Places', i: '🚗', kw: 'car plane', c: rng([[0x1F680, 0x1F6C5], [0x1F30D, 0x1F32C]], E) },
+  { id: 'act', n: 'Activities', i: '⚽', kw: 'sport game', c: rng([[0x26BD, 0x26BE], [0x1F3A0, 0x1F3CA], [0x1F3AF, 0x1F3B9]], E) },
+  { id: 'obj', n: 'Objects', i: '💡', kw: 'tool phone', c: rng([[0x1F4A1, 0x1F4FF], [0x1F50A, 0x1F52E]], E) },
+  { id: 'sym', n: 'Symbols', i: '❖', kw: 'heart star', c: rng([[0x2600, 0x26FF], [0x1F490, 0x1F49F], [0x1F532, 0x1F53D]], E) },
+  { id: 'flags', n: 'Flags', i: '⚑', kw: 'country', c: flags } ] },
+ { h: 'Letters & Symbols', items: [
+  { id: 'punct', n: 'Punctuation', i: '¶', kw: 'quote dash bracket', c: rng([[33, 47], [58, 64], [91, 96], [123, 126], [0xA1, 0xBF], [0x2010, 0x2027], [0x2030, 0x205E]]) },
+  { id: 'arrows', n: 'Arrows', i: '→', kw: 'arrow', c: rng([[0x2190, 0x21FF], [0x27F0, 0x27FF], [0x2900, 0x297F]]) },
+  { id: 'math', n: 'Math', i: '∑', kw: 'plus equal integral', c: rng([[0xB1, 0xB1], [0xD7, 0xD7], [0xF7, 0xF7], [0x2200, 0x22FF]]) },
+  { id: 'cur', n: 'Currency', i: '€', kw: 'money dollar euro', c: rng([[36, 36], [0xA2, 0xA5], [0x20A0, 0x20C0]]) },
+  { id: 'latin', n: 'Latin', i: 'Æ', kw: 'accent letter', c: rng([[0xC0, 0x24F]]) },
+  { id: 'greek', n: 'Greek', i: 'Ω', kw: 'alpha beta', c: rng([[0x370, 0x3FF]]) },
+  { id: 'cyr', n: 'Cyrillic', i: 'Ж', kw: 'russian', c: rng([[0x400, 0x4FF]]) },
+  { id: 'box', n: 'Box Drawing', i: '┼', kw: 'line border', c: rng([[0x2500, 0x259F]]) },
+  { id: 'shape', n: 'Shapes', i: '◆', kw: 'circle square', c: rng([[0x25A0, 0x25FF]]) },
+  { id: 'ding', n: 'Dingbats', i: '✂', kw: 'check cross', c: rng([[0x2700, 0x27BF]]) },
+  { id: 'braille', n: 'Braille', i: '⠿', kw: 'dots', c: rng([[0x2800, 0x28FF]]) } ] }
+];
+const RECENT = { id: 'recent', n: 'Recently Used', i: '⌛', kw: '', c: store.get('recent', []).filter(x => typeof x === 'string') };
+const ALL = SECTIONS.flatMap(s => s.items), byId = {};
+[RECENT, ...ALL].forEach(c => byId[c.id] = c);
+
+/* ---------- state ---------- */
+let cur = store.get('cat', 'punct'); if (!byId[cur]) cur = 'punct';
+let list = [], sel = null, size = store.get('size', 'm'), theme = store.get('theme', 'system');
+let autoCopy = store.get('autocopy', true), mock = store.get('mock', {});
+const hex = s => [...s].map(c => c.codePointAt(0).toString(16).toUpperCase().padStart(4, '0'));
+const esc = s => s.replace(/[&<>"']/g, c => '&#' + c.charCodeAt(0) + ';');
+
+/* ---------- views ---------- */
+function render(chars, title, icon){
+  list = chars; $('#title').textContent = title; $('#count').textContent = chars.length + ' glyphs';
+  $('#cIcon').textContent = icon || '⌕'; $('#cName').textContent = title.length > 22 ? 'Search' : title;
+  $('#grid').innerHTML = chars.length ? chars.map((c, i) => `<button class="g" data-i="${i}" title="U+${hex(c).join(' U+')}">${esc(c)}</button>`).join('')
+    : `<div class="empty">${cur === 'recent' && !$('#q').value ? 'Nothing here yet. Click a glyph to copy it.' : 'No matches.'}</div>`;
+  $('#scroll').scrollTop = 0;
+  if (sel) { const b = document.querySelector(`.g[data-i="${list.indexOf(sel)}"]`); if (b) b.classList.add('sel'); }
+}
+function show(id){ cur = id; store.set('cat', id); $('#q').value = ''; render(byId[id].c, byId[id].n, byId[id].i); }
+function search(v){
+  v = v.trim(); if (!v) return show(cur);
+  const low = v.toLowerCase(), m = /^(?:u\+)?([0-9a-f]{2,6})$/i.exec(v), out = new Set();
+  if (m){ const cp = parseInt(m[1], 16); if (cp <= 0x10FFFF && !(cp >= 0xD800 && cp <= 0xDFFF)) out.add(String.fromCodePoint(cp)); }
+  for (const c of ALL) if (c.n.toLowerCase().includes(low) || c.kw.includes(low)) c.c.forEach(x => out.add(x));
+  for (const ch of v) if (ALL.some(c => c.c.includes(ch))) out.add(ch);
+  render([...out].slice(0, 800), 'Search: ' + v);
+}
+
+/* ---------- copy, select, details ---------- */
+const toastEl = $('#toast'); let tt;
+function toast(t){ toastEl.textContent = t; toastEl.classList.add('on'); clearTimeout(tt); tt = setTimeout(() => toastEl.classList.remove('on'), 1500); }
+async function copy(s, label){
+  let ok = false;
+  try { await navigator.clipboard.writeText(s); ok = true; } catch (e) {
+    try { const t = document.createElement('textarea'); t.value = s; t.style.cssText = 'position:fixed;opacity:0'; document.body.appendChild(t); t.select(); ok = document.execCommand('copy'); t.remove(); } catch (e2) {}
+  }
+  toast(ok ? 'Copied ' + (label || s) : 'Clipboard blocked: select and copy manually');
+  return ok;
+}
+function details(g){
+  const sh = $('#sheet');
+  if (!g){ sh.innerHTML = '<div class="none">Select a glyph to see its codepoint, entities and encodings.</div>'; return; }
+  const h = hex(g), u8 = [...new TextEncoder().encode(g)].map(x => x.toString(16).toUpperCase().padStart(2, '0')).join(' ');
+  const u16 = [...g].flatMap(c => { const p = c.codePointAt(0); return p > 0xFFFF ? [0xD800 + ((p - 0x10000) >> 10), 0xDC00 + ((p - 0x10000) & 1023)] : [p]; }).map(x => x.toString(16).toUpperCase().padStart(4, '0')).join(' ');
+  const rows = [['Glyph', g], ['Unicode', 'U+' + h.join(' U+')], ['HTML', h.map(x => '&#x' + x + ';').join('')], ['CSS', h.map(x => '\\' + x.toLowerCase()).join(' ')], ['JS', h.map(x => '\\u{' + x.toLowerCase() + '}').join('')], ['UTF-8', u8], ['UTF-16', u16]];
+  sh.innerHTML = `<div class="big">${esc(g)}</div><div class="rows">${rows.map((r, i) => `<button class="row" data-r="${i}"><small>${r[0]}</small><code>${esc(r[1])}</code></button>`).join('')}</div>`;
+  sh._rows = rows;
+}
+$('#sheet').addEventListener('click', e => { const b = e.target.closest('.row'); if (b) copy($('#sheet')._rows[+b.dataset.r][1]); });
+function toggleSheet(on){ const s = $('#sheet'); s.classList.toggle('off', on === undefined ? !s.classList.contains('off') : !on); $('#bAbout').setAttribute('aria-pressed', String(!s.classList.contains('off'))); }
+function pick(g, doCopy){
+  sel = g; $('#ag').textContent = g; $('#ag').classList.remove('none');
+  document.querySelectorAll('.g.sel').forEach(e => e.classList.remove('sel'));
+  const b = document.querySelector(`.g[data-i="${list.indexOf(g)}"]`); if (b) b.classList.add('sel');
+  details(g);
+  if (doCopy) copy(g, g + '  U+' + hex(g)[0]).then(ok => {
+    if (!ok) return;
+    RECENT.c = [g, ...RECENT.c.filter(x => x !== g)].slice(0, 42); store.set('recent', RECENT.c);
+    if (cur === 'recent' && !$('#q').value){ const k = $('#scroll').scrollTop; render(RECENT.c, RECENT.n, RECENT.i); $('#scroll').scrollTop = k; }
+  });
+}
+
+/* ---------- menu engine ---------- */
+const menus = [];
+function closeMenu(d = 0){
+  while (menus.length > d){ const m = menus.pop(); m.el.remove(); if (m.anchor && m.anchor.setAttribute) m.anchor.setAttribute('aria-expanded', 'false'); }
+}
+function openMenu(anchor, items, o = {}, depth = 0){
+  closeMenu(depth);
+  const el = document.createElement('div'); el.className = 'menu' + (o.up ? ' up' : ''); el.setAttribute('role', 'menu');
+  let timer;
+  items.forEach(it => {
+    if (it === '-'){ el.appendChild(document.createElement('hr')); return; }
+    if (it.header){ const h = document.createElement('div'); h.className = 'mh'; h.textContent = it.header; el.appendChild(h); return; }
+    const b = document.createElement('button'); b.setAttribute('role', 'menuitem'); b.disabled = !!it.disabled;
+    b.innerHTML = `<span class="ck">${it.checked ? '✓' : ''}</span><span class="lb">${esc(it.label)}</span>${it.kbd ? `<span class="kb">${it.kbd}</span>` : ''}${it.sub ? '<span class="kb">›</span>' : ''}`;
+    const openSub = () => openMenu(b, it.sub, { side: true }, depth + 1);
+    b.onmouseenter = () => { clearTimeout(timer); timer = setTimeout(() => it.sub ? openSub() : closeMenu(depth + 1), 80); };
+    b.onclick = e => { e.stopPropagation(); if (it.sub) return openSub(); closeMenu(0); it.run && it.run(); };
+    el.appendChild(b);
+  });
+  document.body.appendChild(el);
+  const r = anchor.getBoundingClientRect ? anchor.getBoundingClientRect() : { left: anchor.x, right: anchor.x, top: anchor.y, bottom: anchor.y, width: 0 };
+  const vw = innerWidth, vh = innerHeight, gap = o.gap == null ? (o.up ? 14 : 4) : o.gap;
+  if (o.side){ el.style.maxHeight = (vh - 16) + 'px'; }
+  else el.style.maxHeight = Math.max(160, (o.up ? r.top - gap : vh - r.bottom - gap) - 8) + 'px';
+  const w = el.offsetWidth, h = el.offsetHeight; let x, y;
+  if (o.side){ x = r.right - 4; if (x + w > vw - 8) x = r.left - w + 4; y = r.top - 6; }
+  else { x = o.center ? r.left + r.width / 2 - w / 2 : o.right ? r.right - w : r.left; y = o.up ? r.top - gap - h : r.bottom + gap; }
+  el.style.left = Math.max(8, Math.min(x, vw - w - 8)) + 'px';
+  el.style.top = Math.max(8, Math.min(y, vh - h - 8)) + 'px';
+  menus.push({ el, anchor }); if (anchor.setAttribute) anchor.setAttribute('aria-expanded', 'true');
+  return el;
+}
+
+/* ---------- menu definitions ---------- */
+const preview = (k, label) => ({ label, checked: !!mock[k], run: () => { mock[k] = !mock[k]; store.set('mock', mock); toast(label + (mock[k] ? ' on' : ' off') + ' (preview only)'); } });
+const needSel = () => { if (!sel) toast('Select a glyph first'); return !!sel; };
+function catItems(){
+  const mk = c => ({ label: c.n, checked: c.id === cur && !$('#q').value, run: () => show(c.id) });
+  return [mk(RECENT), '-', { label: 'Emojis', sub: SECTIONS[0].items.map(mk) }, { label: 'Letters & Symbols', sub: SECTIONS[1].items.map(mk) }];
+}
+const MENUS = [
+ { label: 'File', items: () => [
+   { label: 'Copy glyph', kbd: 'Enter', run: () => needSel() && pick(sel, true) },
+   { label: 'Copy codepoint', run: () => needSel() && copy('U+' + hex(sel).join(' U+')) },
+   { label: 'Copy HTML entity', run: () => needSel() && copy(hex(sel).map(x => '&#x' + x + ';').join('')) },
+   '-', { label: 'Clear recently used', run: () => { RECENT.c = []; store.set('recent', []); if (cur === 'recent') show('recent'); toast('Recents cleared'); } },
+   '-', { label: 'Close window', run: hideWin } ] },
+ { label: 'Edit', items: () => [
+   { label: 'Find…', kbd: 'Ctrl+F', run: () => { $('#q').focus(); $('#q').select(); } },
+   '-', { label: 'Copy on click', checked: autoCopy, run: () => { autoCopy = !autoCopy; store.set('autocopy', autoCopy); toast('Copy on click ' + (autoCopy ? 'on' : 'off')); } },
+   preview('fav', 'Pin to favourites'), preview('tone', 'Skin tone variants'), preview('names', 'Search by Unicode name') ] },
+ { label: 'Go', items: catItems },
+ { label: 'View', items: () => [
+   { label: 'Details panel', kbd: 'I', checked: !$('#sheet').classList.contains('off'), run: () => toggleSheet() },
+   { label: 'Glyph size', sub: [['s', 'Compact'], ['m', 'Comfortable'], ['l', 'Large']].map(([k, l]) => ({ label: l, checked: size === k, run: () => setSize(k) })) },
+   { label: 'Appearance', sub: [['system', 'Match system'], ['light', 'Light'], ['dark', 'Dark']].map(([k, l]) => ({ label: l, checked: theme === k, run: () => setTheme(k) })) },
+   '-', { label: 'Full screen', kbd: 'F11', run: toggleFS } ] }
+];
+function buildBar(){
+  $('#mbar').innerHTML = MENUS.map((m, i) => `<button class="mb" data-m="${i}" aria-haspopup="true" aria-expanded="false">${m.label}</button>`).join('');
+}
+const mbBtn = i => $('#mbar').children[i];
+function openTop(i){ openMenu(mbBtn(i), MENUS[i].items()); }
+$('#mbar').addEventListener('click', e => { const b = e.target.closest('.mb'); if (!b) return; e.stopPropagation(); const open = menus.length && menus[0].anchor === b; closeMenu(0); if (!open) openTop(+b.dataset.m); });
+$('#mbar').addEventListener('mouseover', e => { const b = e.target.closest('.mb'); if (b && menus.length && menus[0].anchor !== b && menus[0].anchor.classList.contains('mb')) openTop(+b.dataset.m); });
+$('#bHam').onclick = e => { e.stopPropagation(); const b = $('#bHam'), open = menus.length && menus[0].anchor === b; closeMenu(0); if (!open) openMenu(b, MENUS.map(m => ({ label: m.label, sub: m.items() }))); };
+$('#bCat').onclick = e => { e.stopPropagation(); const b = $('#bCat'), open = menus.length && menus[0].anchor === b; closeMenu(0); if (!open) openMenu(b, catItems(), { up: true, center: true }); };
+document.addEventListener('mousedown', e => { if (menus.length && !menus.some(m => m.el.contains(e.target)) && !e.target.closest('[aria-haspopup]')) closeMenu(0); });
+function menuKeys(e){
+  const top = menus[menus.length - 1], btns = [...top.el.querySelectorAll('button:not(:disabled)')], i = btns.indexOf(document.activeElement);
+  if (e.key === 'ArrowDown'){ e.preventDefault(); btns[(i + 1) % btns.length].focus(); }
+  else if (e.key === 'ArrowUp'){ e.preventDefault(); btns[(i - 1 + btns.length) % btns.length].focus(); }
+  else if (e.key === 'ArrowRight'){ const b = btns[i]; if (b && b.querySelector('.kb') && b.textContent.includes('›')){ e.preventDefault(); b.click(); const t = menus[menus.length - 1]; if (t !== top) t.el.querySelector('button').focus(); } else if (menus[0].anchor.classList.contains('mb')){ e.preventDefault(); const n = (+menus[0].anchor.dataset.m + 1) % MENUS.length; closeMenu(0); openTop(n); } }
+  else if (e.key === 'ArrowLeft'){ e.preventDefault(); if (menus.length > 1){ const a = top.anchor; closeMenu(menus.length - 1); a.focus && a.focus(); } else if (menus[0].anchor.classList.contains('mb')){ const n = (+menus[0].anchor.dataset.m + MENUS.length - 1) % MENUS.length; closeMenu(0); openTop(n); } }
+  else if (e.key === 'Escape'){ const a = menus[0].anchor; closeMenu(menus.length > 1 ? menus.length - 1 : 0); if (!menus.length && a.focus) a.focus(); }
+}
+
+/* ---------- appearance ---------- */
+function setSize(s){ size = s; store.set('size', s); $('#scroll').className = 'scroll ' + (s === 'm' ? '' : s); }
+function setTheme(t){ theme = t; store.set('theme', t); if (t === 'system') document.documentElement.removeAttribute('data-theme'); else document.documentElement.dataset.theme = t; }
+
+/* ---------- window manager ---------- */
+const win = $('#win'), desk = $('#desk');
+const dw = () => desk.clientWidth, dh = () => desk.clientHeight, MINW = 360, MINH = 300;
+let W = { x: 0, y: 0, w: 0, h: 0, max: false }, prevMax = false;
+function defRect(){ const w = Math.min(1100, dw() - 48), h = Math.min(700, dh() - 48); return { x: Math.round((dw() - w) / 2), y: Math.round((dh() - h) / 2), w, h, max: false }; }
+function apply(){
+  if (W.max) Object.assign(win.style, { left: 0, top: 0, width: '100%', height: '100%' });
+  else {
+    W.w = Math.max(MINW, Math.min(W.w, dw())); W.h = Math.max(MINH, Math.min(W.h, dh()));
+    W.x = Math.max(-W.w + 80, Math.min(W.x, dw() - 80)); W.y = Math.max(0, Math.min(W.y, dh() - 40));
+    Object.assign(win.style, { left: W.x + 'px', top: W.y + 'px', width: W.w + 'px', height: W.h + 'px' });
+  }
+  win.classList.toggle('max', W.max);
+  $('#wMax use').setAttribute('href', W.max ? '#i-res' : '#i-max'); $('#wMax').setAttribute('aria-label', W.max ? 'Restore' : 'Maximize');
+  const r = win.getBoundingClientRect();
+  $('#hud').textContent = `${Math.round(r.width)} × ${Math.round(r.height)}  ·  x ${Math.round(r.left)}  y ${Math.round(r.top)}`;
+}
+const persist = () => store.set('rect', W);
+const fsOn = () => document.body.classList.contains('fs');
+function maxToggle(){ if (fsOn()) return; W.max = !W.max; apply(); persist(); }
+function toggleFS(){
+  if (!fsOn()){ prevMax = W.max; document.body.classList.add('fs'); W.max = true; }
+  else { document.body.classList.remove('fs'); W.max = prevMax; }
+  apply();
+}
+function hideWin(){ win.classList.add('hide'); $('#chip').classList.add('min'); }
+let drag = null; const top = $('#top');
+top.addEventListener('pointerdown', e => {
+  if (e.button !== 0 || e.target.closest('button,input')) return;
+  drag = { sx: e.clientX, sy: e.clientY, moved: false, ox: W.x, oy: W.y }; top.setPointerCapture(e.pointerId);
+});
+top.addEventListener('pointermove', e => {
+  if (!drag) return;
+  const dx = e.clientX - drag.sx, dy = e.clientY - drag.sy;
+  if (!drag.moved){
+    if (Math.hypot(dx, dy) < 4) return;
+    drag.moved = true;
+    if (fsOn()){ drag = null; return; }
+    if (W.max){
+      const d = defRect(), sv = store.get('rect', d), rw = sv.max ? d : sv, k = (e.clientX - desk.getBoundingClientRect().left) / dw();
+      W = { x: Math.round(e.clientX - rw.w * k), y: 0, w: rw.w, h: rw.h, max: false };
+      drag.ox = W.x; drag.oy = 0; drag.sx = e.clientX; drag.sy = e.clientY; apply(); return;
+    }
+  }
+  W.x = drag.ox + dx; W.y = drag.oy + dy; apply();
+});
+top.addEventListener('pointerup', () => { if (drag && drag.moved) persist(); drag = null; });
+top.addEventListener('dblclick', e => { if (!e.target.closest('button,input')) maxToggle(); });
+top.addEventListener('wheel', e => { $('#scroll').scrollBy(0, e.deltaY); }, { passive: true });
+document.querySelectorAll('.rz').forEach(h => h.addEventListener('pointerdown', e => {
+  e.preventDefault(); const d = h.dataset.d, s = { ...W, px: e.clientX, py: e.clientY }; h.setPointerCapture(e.pointerId);
+  const mv = ev => {
+    const dx = ev.clientX - s.px, dy = ev.clientY - s.py; let { x, y, w, h: hh } = s;
+    if (d.includes('e')) w = Math.max(MINW, s.w + dx);
+    if (d.includes('s')) hh = Math.max(MINH, s.h + dy);
+    if (d.includes('w')){ w = Math.max(MINW, s.w - dx); x = s.x + s.w - w; }
+    if (d.includes('n')){ hh = Math.max(MINH, s.h - dy); y = s.y + s.h - hh; }
+    W = { x, y, w, h: hh, max: false }; apply();
+  };
+  const up = () => { h.removeEventListener('pointermove', mv); h.removeEventListener('pointerup', up); persist(); };
+  h.addEventListener('pointermove', mv); h.addEventListener('pointerup', up);
+}));
+function preset(p){
+  document.body.classList.remove('fs');
+  if (p === 'fill') W = { ...W, max: true };
+  else {
+    const d = defRect(), r = p === 'min' ? { w: MINW, h: MINH } : p === 'compact' ? { w: 640, h: 440 } : { w: d.w, h: d.h };
+    W = { x: Math.round((dw() - r.w) / 2), y: Math.round((dh() - r.h) / 2), w: r.w, h: r.h, max: false };
+  }
+  win.classList.remove('hide'); $('#chip').classList.remove('min'); apply(); persist();
+}
+
+/* ---------- events ---------- */
+$('#grid').addEventListener('click', e => { const b = e.target.closest('.g'); if (b) pick(list[+b.dataset.i], autoCopy); });
+$('#grid').addEventListener('dblclick', e => { const b = e.target.closest('.g'); if (b && !autoCopy) pick(list[+b.dataset.i], true); });
+$('#grid').addEventListener('keydown', e => {
+  const b = e.target.closest('.g'); if (!b) return;
+  const all = [...document.querySelectorAll('.g')], i = all.indexOf(b), cols = getComputedStyle($('#grid')).gridTemplateColumns.split(' ').length;
+  const mv = { ArrowRight: 1, ArrowLeft: -1, ArrowDown: cols, ArrowUp: -cols }[e.key];
+  if (mv && all[i + mv]){ e.preventDefault(); all[i + mv].focus(); pick(list[i + mv], false); }
+  else if (e.key === 'Enter'){ e.preventDefault(); pick(list[i], true); }
+});
+$('#bAbout').onclick = () => toggleSheet();
+$('#q').addEventListener('input', e => search(e.target.value));
+$('#wMin').onclick = hideWin; $('#wX').onclick = hideWin; $('#wMax').onclick = maxToggle;
+$('#chip').onclick = () => { const h = win.classList.toggle('hide'); $('#chip').classList.toggle('min', h); };
+$('#pre').addEventListener('click', e => { const b = e.target.closest('button'); if (b) preset(b.dataset.p); });
+document.addEventListener('keydown', e => {
+  if (menus.length && /^(Arrow|Escape)/.test(e.key)) return menuKeys(e);
+  if (e.key === 'Escape' && fsOn()) return toggleFS();
+  if (e.key === 'F11'){ e.preventDefault(); toggleFS(); }
+  else if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'f'){ e.preventDefault(); $('#q').focus(); $('#q').select(); }
+  else if (e.key.toLowerCase() === 'i' && !e.ctrlKey && !e.metaKey && !e.target.closest('input')) toggleSheet();
+  else if (e.key === 'Escape' && !$('#sheet').classList.contains('off')) toggleSheet(false);
+});
+addEventListener('resize', () => { apply(); closeMenu(0); });
+
+/* ---------- init ---------- */
+setTheme(theme); setSize(size); buildBar(); details(null);
+const sv = store.get('rect', null);
+W = sv && typeof sv.w === 'number' ? sv : defRect();
+apply(); show(cur);
+})();
+</script>
+</body>
+</html>

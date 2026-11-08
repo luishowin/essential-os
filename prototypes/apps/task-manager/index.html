@@ -1,0 +1,893 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Task Manager — Essential OS</title>
+<style>
+:root{
+  --bg:#f5f5f7;--panel:#fff;--fg:#1d1d1f;--fg2:#6e6e73;--fg3:#a1a1a6;
+  --line:rgba(0,0,0,.08);--hover:rgba(0,0,0,.05);--accent:#fa2d48;
+  --glass:rgba(255,255,255,.72);--shadow:0 10px 36px rgba(0,0,0,.16);
+  --wall:#dcdce2;--grid:rgba(0,0,0,.05);--task:rgba(250,250,252,.85);
+  --c-cpu:#fa2d48;--c-mem:#7c5cff;--c-disk:#1fb26b;--c-net:#0a84ff;--c-gpu:#ff9f0a;--c-dgpu:#14b8c4;--c-npu:#d946ef;
+  --font:Inter,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  --bar:40px;--pillh:50px;
+}
+html[data-theme=dark]{
+  --bg:#1c1c1e;--panel:#2c2c2e;--fg:#f5f5f7;--fg2:#a1a1a6;--fg3:#636366;
+  --line:rgba(255,255,255,.09);--hover:rgba(255,255,255,.07);
+  --glass:rgba(44,44,46,.72);--shadow:0 10px 36px rgba(0,0,0,.5);
+  --wall:#0d0d10;--grid:rgba(255,255,255,.04);--task:rgba(30,30,33,.85);
+}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;overflow:hidden;background:var(--wall);color:var(--fg);font:13px/1.4 var(--font);-webkit-font-smoothing:antialiased}
+button,input{font:inherit;color:inherit}
+button{background:none;border:0;cursor:pointer;padding:0}
+svg.i{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;flex:none}
+:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
+
+/* desktop + window */
+.desktop{position:fixed;inset:0 0 44px 0;background-image:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);background-size:32px 32px}
+body.fs .desktop{bottom:0}
+body.fs .taskbar{display:none}
+.window{position:absolute;border-radius:12px;overflow:hidden;background:var(--bg);box-shadow:var(--shadow),0 0 0 1px var(--line);min-width:360px}
+.window.max{left:0!important;top:0!important;width:100%!important;height:100%!important;border-radius:0}
+.window.hid{display:none}
+.app{position:absolute;inset:0;container:app/inline-size;overflow:hidden}
+.rz{position:absolute;z-index:30}
+.rz.n{top:0;left:10px;right:10px;height:5px;cursor:ns-resize}
+.rz.s{bottom:0;left:10px;right:10px;height:5px;cursor:ns-resize}
+.rz.e{right:0;top:10px;bottom:10px;width:5px;cursor:ew-resize}
+.rz.w{left:0;top:10px;bottom:10px;width:5px;cursor:ew-resize}
+.rz.ne{top:0;right:0;width:16px;height:16px;cursor:nesw-resize}
+.rz.nw{top:0;left:0;width:16px;height:16px;cursor:nwse-resize}
+.rz.se{bottom:0;right:0;width:16px;height:16px;cursor:nwse-resize}
+.rz.sw{bottom:0;left:0;width:16px;height:16px;cursor:nesw-resize}
+.window.max .rz,body.mini .rz.n,body.mini .rz.s,body.mini .rz.ne,body.mini .rz.nw,body.mini .rz.se,body.mini .rz.sw{display:none}
+
+/* taskbar */
+.taskbar{position:fixed;left:0;right:0;bottom:0;height:44px;display:flex;align-items:center;gap:10px;padding:0 12px;background:var(--task);backdrop-filter:blur(24px) saturate(1.6);border-top:1px solid var(--line);z-index:50}
+.chip{display:flex;align-items:center;gap:8px;height:30px;padding:0 12px;border-radius:8px;background:var(--hover);font-weight:600}
+.chip i{width:8px;height:8px;border-radius:50%;background:var(--accent)}
+.chip.off{opacity:.55}
+.tb-sp{flex:1}
+.hud{font:12px ui-monospace,SFMono-Regular,Menlo,monospace;color:var(--fg2);white-space:nowrap}
+.presets{display:flex;gap:4px}
+.presets button{height:26px;padding:0 10px;border-radius:7px;color:var(--fg2);font-weight:600;font-size:12px}
+.presets button:hover{background:var(--hover);color:var(--fg)}
+
+/* top bar */
+.top{position:absolute;top:0;left:0;right:0;height:var(--bar);z-index:20;display:flex;align-items:center;justify-content:space-between;padding:0 8px;user-select:none}
+.topfade{position:absolute;top:0;left:0;right:0;height:calc(var(--bar) + 18px);z-index:10;pointer-events:none;background:linear-gradient(var(--bg) 55%,transparent)}
+.botfade{position:absolute;bottom:0;left:0;right:0;height:calc(var(--pillh) + 44px);z-index:10;pointer-events:none;background:linear-gradient(transparent,var(--bg) 70%)}
+.menus{display:flex;align-items:center;gap:2px}
+.menus>button,.burger{height:28px;padding:0 10px;border-radius:7px;font-weight:500;color:var(--fg)}
+.menus>button:hover,.menus>button[aria-expanded=true],.burger:hover,.burger[aria-expanded=true]{background:var(--hover)}
+.menus .appname{font-weight:700;padding:0 10px 0 6px;display:flex;align-items:center;gap:7px;cursor:default}
+.appname i{width:10px;height:10px;border-radius:3px;background:var(--accent)}
+.burger{display:none;align-items:center;justify-content:center;width:34px;padding:0}
+.wc{display:flex;gap:6px;padding-right:4px}
+.wc button{width:30px;height:28px;border-radius:7px;display:grid;place-items:center;color:var(--fg2)}
+.wc button svg{stroke-width:2;width:20px;height:20px}
+.wc button:hover{color:var(--fg)}
+.wc button.close:hover{color:var(--accent)}
+
+/* pill */
+.pill{position:absolute;bottom:14px;left:0;right:0;margin:0 auto;width:min(100% - 28px,820px);height:var(--pillh);z-index:25;display:grid;grid-template-columns:auto minmax(0,1fr) auto;align-items:center;gap:10px;padding:0 8px;border-radius:24px;background:var(--glass);backdrop-filter:blur(28px) saturate(1.8);-webkit-backdrop-filter:blur(28px) saturate(1.8);box-shadow:0 6px 24px rgba(0,0,0,.14),0 0 0 1px var(--line)}
+.seg{display:flex;gap:2px;padding:3px;border-radius:18px;background:var(--hover)}
+.seg button{height:32px;padding:0 12px;border-radius:15px;display:flex;align-items:center;gap:6px;color:var(--fg2);font-weight:600}
+.seg button[aria-pressed=true]{background:var(--panel);color:var(--fg);box-shadow:0 1px 4px rgba(0,0,0,.14)}
+.psearch{display:flex;align-items:center;gap:8px;height:34px;padding:0 12px;border-radius:17px;background:var(--hover);color:var(--fg2);min-width:0}
+.psearch input{flex:1;min-width:0;border:0;background:none;outline:0;color:var(--fg)}
+.psearch:focus-within{box-shadow:0 0 0 2px var(--accent)}
+.endbtn{grid-column:3;height:36px;padding:0 16px;border-radius:18px;background:var(--ab,var(--accent));color:#fff;font-weight:700;display:flex;align-items:center;gap:7px}
+.endbtn:disabled{opacity:.35;cursor:default}
+.endbtn:not(:disabled):hover{filter:brightness(1.08)}
+
+/* menus */
+.menu{position:fixed;z-index:200;min-width:210px;max-width:320px;padding:6px;border-radius:12px;background:var(--glass);backdrop-filter:blur(28px) saturate(1.8);-webkit-backdrop-filter:blur(28px) saturate(1.8);box-shadow:var(--shadow),0 0 0 1px var(--line);overflow-y:auto;animation:mnu .12s ease-out}
+.menu.up{animation-name:mnuup}
+@keyframes mnu{from{opacity:0;transform:translateY(-4px)}}
+@keyframes mnuup{from{opacity:0;transform:translateY(6px)}}
+.mi{display:flex;align-items:center;gap:8px;width:100%;height:30px;padding:0 10px 0 6px;border-radius:7px;text-align:left}
+.mi:hover,.mi:focus-visible{background:var(--accent);color:#fff;outline:0}
+.mi[disabled]{opacity:.4;pointer-events:none}
+.mi .ck{width:16px;display:grid;place-items:center}
+.mi .ck svg{width:14px;height:14px;stroke-width:2.4}
+.mi .lb{flex:1;white-space:nowrap}
+.mi .kb{color:var(--fg2);font-size:12px}
+.mi:hover .kb{color:rgba(255,255,255,.8)}
+.mh{padding:6px 10px 3px 28px;font-size:11px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--fg2)}
+.msep{height:1px;margin:5px 6px;background:var(--line)}
+
+/* toast */
+.toast{position:absolute;left:50%;bottom:calc(var(--pillh) + 30px);transform:translate(-50%,8px);z-index:40;padding:8px 14px;border-radius:14px;background:var(--fg);color:var(--bg);font-weight:600;opacity:0;pointer-events:none;transition:.2s;max-width:calc(100% - 28px);text-align:center}
+.toast.on{opacity:1;transform:translate(-50%,0)}
+
+/* content */
+.scroll{--pad:22px;position:absolute;inset:0;overflow-y:auto;padding:calc(var(--bar) + 10px) var(--pad) calc(var(--pillh) + 14px + 34px);scrollbar-width:thin}
+.view{display:none}
+.view.on{display:block}
+h2.vt{margin:6px 0 14px;font-size:24px;font-weight:800;letter-spacing:-.02em}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-bottom:18px}
+.card{padding:12px 14px;border-radius:14px;background:var(--panel);box-shadow:0 0 0 1px var(--line);min-width:0;position:relative;overflow:hidden}
+.card .k{display:flex;align-items:center;gap:6px;color:var(--fg2);font-weight:600;font-size:12px}
+.card .k i{width:8px;height:8px;border-radius:50%;background:var(--c)}
+.card .v{font-size:24px;font-weight:800;letter-spacing:-.02em;margin-top:2px}
+.card .s{color:var(--fg2);font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.card{padding-bottom:40px}
+.card svg.spark{position:absolute;left:0;bottom:0;width:100%;height:32px;opacity:.9}
+
+/* table */
+.tbl{border-radius:14px;background:var(--panel);box-shadow:0 0 0 1px var(--line);overflow:clip}
+.tr{display:flex;align-items:center;height:34px;padding:0 6px 0 14px;border-top:1px solid var(--line);cursor:default;user-select:none}
+.tr.th{height:32px;border-top:0;color:var(--fg2);font-weight:700;font-size:12px;position:sticky;top:var(--bar);z-index:2;background:var(--panel)}
+.th .td{cursor:pointer}
+.th .td:hover{color:var(--fg)}
+.th .td.sorted{color:var(--fg)}
+.tr.grp{height:28px;background:var(--hover);font-weight:700;color:var(--fg2);font-size:12px}
+.tr.row:hover{background:var(--hover)}
+.tr.row.sel{background:var(--accent);color:#fff}
+.tr.row.sel .td{background:none!important;color:#fff}
+.td{flex:none;width:84px;text-align:right;padding:0 8px;font-variant-numeric:tabular-nums;height:100%;display:flex;align-items:center;justify-content:flex-end;white-space:nowrap}
+.td.name{flex:1;width:auto;min-width:0;justify-content:flex-start;gap:9px;font-weight:600}
+.td.name span{overflow:hidden;text-overflow:ellipsis}
+.td.name i{width:8px;height:8px;border-radius:3px;background:var(--fg3);flex:none}
+.td.name i.dot-app{background:var(--accent)}
+.td.c-pid{width:70px;color:var(--fg2)}
+.td.heat{background:color-mix(in srgb,var(--c) calc(var(--h) * 38%),transparent)}
+.no-pid .c-pid,.no-cpu .c-cpu,.no-mem .c-mem,.no-disk .c-disk,.no-net .c-net{display:none}
+.empty{padding:30px;text-align:center;color:var(--fg2)}
+
+/* performance */
+.perf{display:grid;grid-template-columns:190px minmax(0,1fr);gap:16px;align-items:start}
+.tiles{display:flex;flex-direction:column;gap:6px}
+.tile{display:flex;flex-direction:column;gap:2px;padding:9px 12px;border-radius:12px;text-align:left;background:var(--panel);box-shadow:0 0 0 1px var(--line)}
+.tile{transition:background .15s}
+.tile:hover{background:var(--hover)}
+.tile[aria-pressed=true]{background:var(--hover);box-shadow:0 0 0 2px var(--c)}
+.tile[aria-pressed=true] b,.tile[aria-pressed=true] span{color:var(--c)}
+.tile b{font-size:13px}
+.tile span{color:var(--fg2);font-size:12px;font-variant-numeric:tabular-nums}
+.pdetail h3{margin:0 0 2px;font-size:20px;font-weight:800;display:flex;justify-content:space-between;gap:10px}
+.pdetail h3 small{font-size:12px;color:var(--fg2);font-weight:500;align-self:end}
+.chart{margin:10px 0 14px;border-radius:14px;background:var(--panel);box-shadow:0 0 0 1px var(--line);overflow:hidden;position:relative}
+.chart svg{display:block;width:100%;height:210px}
+.chart .cl{position:absolute;left:10px;top:6px;font-size:11px;color:var(--fg2)}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:12px 18px;margin-bottom:16px}
+.stats div{min-width:0}
+.stats small{display:block;color:var(--fg2);font-size:12px}
+.stats b{font-size:17px;font-weight:700;font-variant-numeric:tabular-nums}
+.capbar{display:flex;height:12px;border-radius:6px;background:var(--hover);overflow:hidden;margin:-4px 0 8px}
+.capbar i{display:block;height:100%}
+.capleg{display:flex;flex-wrap:wrap;gap:4px 16px;color:var(--fg2);font-size:12px;margin-bottom:16px}
+.capleg b{display:inline-block;width:8px;height:8px;border-radius:2px;margin-right:6px;background:var(--hover);box-shadow:0 0 0 1px var(--line)}
+.cores{display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:8px;margin-bottom:16px}
+.core{border-radius:10px;background:var(--panel);box-shadow:0 0 0 1px var(--line);overflow:hidden;position:relative;height:56px}
+.core svg{position:absolute;inset:0;width:100%;height:100%}
+.core span{position:absolute;left:8px;top:4px;font-size:11px;color:var(--fg2);font-variant-numeric:tabular-nums}
+.real{padding:14px;border-radius:14px;background:var(--panel);box-shadow:0 0 0 1px var(--line)}
+.real h4{margin:0 0 10px;font-size:13px}
+.real h4 em{font-style:normal;font-weight:500;color:var(--fg2)}
+.real .stats{margin:0}
+
+/* startup */
+.srow{display:flex;align-items:center;gap:12px;padding:10px 14px;border-top:1px solid var(--line)}
+.srow:first-child{border-top:0}
+.srow .nm{flex:1;min-width:0}
+.srow .nm b{display:block}
+.srow .nm small{color:var(--fg2)}
+.imp{font-size:12px;font-weight:600;padding:2px 9px;border-radius:10px;background:var(--hover);color:var(--fg2)}
+.imp.High{background:color-mix(in srgb,var(--accent) 16%,transparent);color:var(--accent)}
+.imp.Medium{background:color-mix(in srgb,var(--c-gpu) 20%,transparent);color:#b36b00}
+html[data-theme=dark] .imp.Medium{color:var(--c-gpu)}
+.tg{position:relative;width:38px;height:22px;border-radius:11px;background:var(--fg3);flex:none;transition:.15s}
+.tg::after{content:"";position:absolute;top:2px;left:2px;width:18px;height:18px;border-radius:50%;background:#fff;transition:.15s;box-shadow:0 1px 3px rgba(0,0,0,.3)}
+.tg[aria-checked=true]{background:var(--accent)}
+.tg[aria-checked=true]::after{left:18px}
+
+/* desktop overlay (HUD) */
+.hudov{display:none;position:fixed;left:14px;top:14px;z-index:150;min-width:200px;padding:10px 12px 8px;border-radius:14px;pointer-events:none;background:color-mix(in srgb,var(--panel) 52%,transparent);backdrop-filter:blur(18px) saturate(1.6);-webkit-backdrop-filter:blur(18px) saturate(1.6);box-shadow:0 6px 24px rgba(0,0,0,.18),0 0 0 1px var(--line);font:12px/1.5 ui-monospace,SFMono-Regular,Menlo,monospace}
+.hudov.on{display:block}
+.hudov h5{margin:0 0 4px;font:700 10px/1.4 var(--font);letter-spacing:.08em;text-transform:uppercase;color:var(--fg2)}
+.hudov div.hr{display:flex;align-items:center;gap:8px;height:19px}
+.hudov .hr i{width:7px;height:7px;border-radius:50%;background:var(--c)}
+.hudov .hr span{flex:1;color:var(--fg2)}
+.hudov .hr b{font-weight:600;font-variant-numeric:tabular-nums}
+
+/* sheet */
+.sheet{position:absolute;right:14px;top:calc(var(--bar) + 8px);bottom:calc(var(--pillh) + 14px + 14px);width:min(330px,100% - 28px);z-index:22;padding:16px;border-radius:18px;overflow-y:auto;background:var(--glass);backdrop-filter:blur(28px) saturate(1.8);-webkit-backdrop-filter:blur(28px) saturate(1.8);box-shadow:var(--shadow),0 0 0 1px var(--line);transform:translateX(calc(100% + 30px));transition:transform .22s cubic-bezier(.2,.8,.2,1);visibility:hidden}
+.sheet.on{transform:none;visibility:visible}
+.sheet h3{margin:0 0 2px;font-size:18px;padding-right:30px}
+.sheet .x{position:absolute;right:10px;top:10px;width:28px;height:28px;border-radius:8px;display:grid;place-items:center;color:var(--fg2)}
+.sheet .x:hover{background:var(--hover);color:var(--fg)}
+.sheet dl{margin:14px 0;display:grid;grid-template-columns:auto 1fr;gap:7px 14px}
+.sheet dt{color:var(--fg2)}
+.sheet dd{margin:0;text-align:right;font-variant-numeric:tabular-nums;overflow:hidden;text-overflow:ellipsis}
+.sheet .btn{width:100%;height:36px;border-radius:12px;background:var(--accent);color:#fff;font-weight:700}
+.sheet .btn.alt{background:var(--hover);color:var(--fg);margin-top:8px}
+
+/* mini */
+.ministrip{display:none;position:absolute;left:0;right:0;top:var(--bar);bottom:0;z-index:15;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;padding:0 14px 12px}
+body.mini .ministrip{display:grid}
+body.mini .scroll,body.mini .pill,body.mini .botfade,body.mini .sheet,body.mini .toast{display:none}
+.mcell{position:relative;border-radius:12px;background:var(--panel);box-shadow:0 0 0 1px var(--line);padding:8px 10px;overflow:hidden;min-width:0}
+.mcell small{color:var(--fg2);font-weight:600;font-size:11px;display:block}
+.mcell b{font-size:20px;font-weight:800;font-variant-numeric:tabular-nums}
+.mcell svg{position:absolute;left:0;bottom:0;width:100%;height:34%}
+.mcell{padding-bottom:18px}
+
+/* tiers: window width, not viewport */
+@container app (max-width:980px){.c-disk{display:none}.perf{grid-template-columns:160px minmax(0,1fr)}}
+@container app (max-width:700px){
+  .c-net{display:none}
+  .endbtn span,.psearch kbd{display:none}.endbtn{padding:0 11px}
+  .perf{grid-template-columns:1fr}
+  .tiles{flex-direction:row;overflow-x:auto;padding-bottom:4px}.tile{min-width:120px;flex:1}
+}
+@container app (max-width:560px){
+  .menus>button:not(.appname):not(.burger){display:none}.menus .appname span{display:none}
+  .burger{display:flex}
+  .c-pid{display:none}
+}
+@container app (max-width:520px){
+  .scroll{--pad:12px}
+  h2.vt{font-size:20px}
+  .seg button span{display:none}.seg button{padding:0 11px}
+  .card .v{font-size:20px}
+}
+@container app (max-width:420px){
+  .psearch{display:none}
+  .pill{grid-template-columns:auto 1fr auto}
+  .sopen .psearch{display:flex;position:absolute;left:0;right:0;bottom:calc(100% + 10px);background:var(--glass);backdrop-filter:blur(28px);box-shadow:var(--shadow)}
+  .tiles .tile{min-width:100px}
+  .ministrip{gap:6px;padding:0 8px 10px}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+<symbol id="i-list" viewBox="0 0 24 24"><path d="M9 6h11M9 12h11M9 18h11"/><circle cx="4.5" cy="6" r=".6"/><circle cx="4.5" cy="12" r=".6"/><circle cx="4.5" cy="18" r=".6"/></symbol>
+<symbol id="i-chart" viewBox="0 0 24 24"><path d="M3 3v18h18M7 15l4-5 3 3 5-7"/></symbol>
+<symbol id="i-power" viewBox="0 0 24 24"><path d="M12 3v9M6.3 6.3a8 8 0 1 0 11.4 0"/></symbol>
+<symbol id="i-x" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></symbol>
+<symbol id="i-min" viewBox="0 0 24 24"><path d="M5 12h14"/></symbol>
+<symbol id="i-max" viewBox="0 0 24 24"><rect x="5" y="5" width="14" height="14" rx="2"/></symbol>
+<symbol id="i-rest" viewBox="0 0 24 24"><rect x="8" y="8" width="11" height="11" rx="2"/><path d="M5 15V7a2 2 0 0 1 2-2h8"/></symbol>
+<symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="6"/><path d="M20 20l-4.5-4.5"/></symbol>
+<symbol id="i-menu" viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16"/></symbol>
+<symbol id="i-stop" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M9 9l6 6M15 9l-6 6"/></symbol>
+<symbol id="i-check" viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></symbol>
+<symbol id="i-cdown" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></symbol>
+<symbol id="i-cup" viewBox="0 0 24 24"><path d="M6 15l6-6 6 6"/></symbol>
+<symbol id="i-pause" viewBox="0 0 24 24"><path d="M9 6v12M15 6v12"/></symbol>
+<symbol id="i-play" viewBox="0 0 24 24"><path d="M8 5.5v13l10-6.5z"/></symbol>
+<symbol id="i-download" viewBox="0 0 24 24"><path d="M12 4v11M7 10.5l5 5 5-5M5 20h14"/></symbol>
+<symbol id="i-overlay" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2.5"/><path d="M7 9h6M7 13h4"/></symbol>
+<symbol id="i-chev" viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></symbol>
+</defs></svg>
+
+<div class="desktop" id="desk">
+ <div class="window" id="win">
+  <div class="app" id="app">
+   <div class="scroll" id="scroll">
+    <section class="view on" id="v-proc" aria-label="Processes">
+      <h2 class="vt">Processes</h2>
+      <div class="cards" id="cards"></div>
+      <div class="tbl" id="tbl" role="table"></div>
+    </section>
+    <section class="view" id="v-perf" aria-label="Performance">
+      <h2 class="vt">Performance</h2>
+      <div class="perf"><div class="tiles" id="tiles"></div><div class="pdetail" id="pdetail"></div></div>
+    </section>
+    <section class="view" id="v-start" aria-label="Startup apps">
+      <h2 class="vt">Startup apps</h2>
+      <div class="tbl" id="startlist"></div>
+    </section>
+   </div>
+   <div class="topfade"></div><div class="botfade"></div>
+   <div class="top" id="top">
+     <div class="menus" id="menus">
+       <button data-menu="file" aria-haspopup="true" aria-expanded="false">File</button>
+       <button data-menu="proc" aria-haspopup="true" aria-expanded="false">Process</button>
+       <button data-menu="view" aria-haspopup="true" aria-expanded="false">View</button>
+       <button class="burger" id="burger" data-menu="all" aria-haspopup="true" aria-expanded="false" aria-label="Menu"><svg class="i"><use href="#i-menu"/></svg></button>
+     </div>
+     <div class="wc">
+       <button id="wc-min" aria-label="Minimize"><svg class="i"><use href="#i-cdown"/></svg></button>
+       <button id="wc-max" aria-label="Maximize"><svg class="i"><use href="#i-cup"/></svg></button>
+       <button id="wc-close" class="close" aria-label="Close"><svg class="i"><use href="#i-x"/></svg></button>
+     </div>
+   </div>
+   <div class="ministrip" id="ministrip"></div>
+   <aside class="sheet" id="sheet" aria-label="Process details"></aside>
+   <div class="pill" id="pill">
+     <div class="seg" id="seg">
+       <button data-v="proc" aria-pressed="true" title="Processes (1)"><svg class="i"><use href="#i-list"/></svg><span>Processes</span></button>
+       <button data-v="perf" aria-pressed="false" title="Performance (2)"><svg class="i"><use href="#i-chart"/></svg><span>Performance</span></button>
+       <button data-v="start" aria-pressed="false" title="Startup apps (3)"><svg class="i"><use href="#i-power"/></svg><span>Startup</span></button>
+     </div>
+     <label class="psearch"><svg class="i"><use href="#i-search"/></svg><input id="q" type="search" placeholder="Find a process" aria-label="Find a process" autocomplete="off"></label>
+     <button class="endbtn" id="endbtn" disabled><svg class="i"><use href="#i-stop"/></svg><span>End task</span></button>
+   </div>
+   <div class="toast" id="toast" role="status"></div>
+  </div>
+  <i class="rz n" data-d="n"></i><i class="rz s" data-d="s"></i><i class="rz e" data-d="e"></i><i class="rz w" data-d="w"></i>
+  <i class="rz ne" data-d="ne"></i><i class="rz nw" data-d="nw"></i><i class="rz se" data-d="se"></i><i class="rz sw" data-d="sw"></i>
+ </div>
+</div>
+<div class="hudov" id="hudov" aria-hidden="true"></div>
+<div class="taskbar" id="taskbar">
+  <button class="chip" id="chip"><i></i>Task Manager</button>
+  <span class="tb-sp"></span>
+  <span class="hud" id="hud"></span>
+  <div class="presets" id="presets">
+    <button data-p="min">Min</button><button data-p="compact">Compact</button><button data-p="default">Default</button><button data-p="fill">Fill</button>
+  </div>
+</div>
+<script>(() => {'use strict';
+const $ = (s, r = document) => r.querySelector(s);
+const $$ = (s, r = document) => [...r.querySelectorAll(s)];
+const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const clamp = (v, a, b) => Math.min(b, Math.max(a, v));
+const NS = 'taskmgr.';
+const store = {
+  get(k, d) { try { const v = localStorage.getItem(NS + k); return v == null ? d : JSON.parse(v); } catch (e) { return d; } },
+  set(k, v) { try { localStorage.setItem(NS + k, JSON.stringify(v)); } catch (e) {} }
+};
+let toastT;
+function toast(msg) {
+  const t = $('#toast'); t.textContent = msg; t.classList.add('on');
+  clearTimeout(toastT); toastT = setTimeout(() => t.classList.remove('on'), 2200);
+}
+const fmtMem = mb => mb >= 1024 ? (mb / 1024).toFixed(1) + ' GB' : Math.round(mb) + ' MB';
+const fmtPct = v => v.toFixed(1) + '%';
+const fmtDisk = v => v < 0.05 ? '0 MB/s' : v.toFixed(1) + ' MB/s';
+const fmtNet = v => v < 0.05 ? '0 Mbps' : v.toFixed(1) + ' Mbps';
+const fmtUp = s => { s = Math.floor(s); const h = Math.floor(s / 3600), m = Math.floor(s % 3600 / 60); return h + ':' + String(m).padStart(2, '0') + ':' + String(s % 60).padStart(2, '0'); };
+const icon = id => '<svg class="i"><use href="#i-' + id + '"/></svg>';
+
+/* ---------- state ---------- */
+const S = Object.assign({
+  view: 'proc', sort: { k: 'cpu', d: -1 }, group: true,
+  cols: { pid: true, cpu: true, mem: true, disk: true, net: true },
+  speed: 1000, paused: false, overlay: false, theme: 'system', perfSel: 'cpu',
+  startup: { 'Cloud sync': true, 'Essential Music': true, 'Print spooler UI': false, 'Update notifier': true, 'Screenshot helper': false, 'VPN tray': true }
+}, store.get('state', {}));
+S.cols = Object.assign({ pid: true, cpu: true, mem: true, disk: true, net: true }, S.cols);
+S.sel = null; S.q = ''; S.mini = false;
+const saveState = () => store.set('state', { view: S.view, sort: S.sort, group: S.group, cols: S.cols, speed: S.speed, overlay: S.overlay, theme: S.theme, perfSel: S.perfSel, startup: S.startup });
+
+/* ---------- simulated processes ---------- */
+const CORES = 24; // simulated: Ryzen AI 9 HX 375, 12 cores / 24 threads
+const MEM_TOTAL = 64 * 1024; // simulated 64 GB
+const DISK_TB = 2, DISK_USED_GB = 640;
+const SEED = [
+  // name, type, cpu, mem MB, disk MB/s, net Mbps, threads, user, protected
+  ['Essential Editor', 'Apps', 3, 410, .2, 0, 24, 'luis'],
+  ['Essential Music', 'Apps', 4, 280, .4, 1.2, 31, 'luis'],
+  ['Files', 'Apps', 1, 120, .6, 0, 14, 'luis'],
+  ['Terminal', 'Apps', 1.5, 85, .1, 0, 8, 'luis'],
+  ['Web Browser', 'Apps', 9, 1450, .8, 6, 78, 'luis'],
+  ['Settings', 'Apps', .3, 95, 0, 0, 12, 'luis'],
+  ['pipewire', 'Background', 1.2, 38, 0, 0, 6, 'luis'],
+  ['NetworkManager', 'Background', .4, 24, 0, .3, 5, 'root'],
+  ['bluetoothd', 'Background', .1, 9, 0, 0, 3, 'root'],
+  ['cupsd', 'Background', 0, 14, 0, 0, 4, 'root'],
+  ['tracker-miner', 'Background', 2.5, 210, 2.5, 0, 9, 'luis'],
+  ['cloud-sync', 'Background', 1.8, 160, .5, 2.4, 11, 'luis'],
+  ['update-notifier', 'Background', .1, 52, 0, 0, 4, 'luis'],
+  ['ssh-agent', 'Background', 0, 4, 0, 0, 1, 'luis'],
+  ['cron', 'Background', 0, 3, 0, 0, 1, 'root'],
+  ['polkitd', 'Background', .1, 18, 0, 0, 4, 'root'],
+  ['essential-wm', 'System', 4, 340, 0, 0, 16, 'luis', 1],
+  ['systemd', 'System', .2, 24, 0, 0, 1, 'root', 1],
+  ['systemd-journald', 'System', .3, 48, .3, 0, 1, 'root', 1],
+  ['systemd-udevd', 'System', 0, 11, 0, 0, 1, 'root', 1],
+  ['dbus-daemon', 'System', .2, 8, 0, 0, 2, 'root', 1],
+  ['kworker/u16:2', 'System', .6, 0, .1, 0, 1, 'root', 1],
+  ['ksoftirqd/0', 'System', .2, 0, 0, 0, 1, 'root', 1],
+  ['kthreadd', 'System', 0, 0, 0, 0, 1, 'root', 1]
+];
+let procs = [], nextPid = 1200;
+function seedProcs() {
+  procs = SEED.map((r, i) => ({
+    pid: i === 17 ? 1 : i === 23 ? 2 : (nextPid += 7 + (i * 13) % 31),
+    name: r[0], type: r[1], base: r[2], bmem: r[3], bdisk: r[4], bnet: r[5], threads: r[6], user: r[7], prot: !!r[8],
+    cpu: r[2], mem: r[3], disk: r[4], net: r[5], prio: 'Normal', started: Date.now() - Math.random() * 3.6e6
+  }));
+}
+seedProcs();
+
+/* ---------- history + tick ---------- */
+const HN = 60;
+const cpuGHz = () => 2.0 + T.cpu / 100 * 3.1;
+const H = { cpu: [], mem: [], disk: [], net: [], gpu: [], dgpu: [], npu: [] };
+const coreH = Array.from({ length: CORES }, () => []);
+const T = { cpu: 0, mem: 0, memMB: 0, disk: 0, net: 0, gpu: 0, dgpu: 0, npu: 0, cores: [], threads: 0 };
+let dBurst = 0, nBurst = 0;
+const push = (a, v) => { a.push(v); if (a.length > HN) a.shift(); };
+const jit = (b, amt) => Math.max(0, b * (1 + (Math.random() - .5) * amt));
+function tick() {
+  for (const p of procs) {
+    const spike = Math.random() < .03 ? 2 + Math.random() * 3 : 1;
+    p.cpu = clamp(p.cpu * .55 + jit(p.base, 1.2) * spike * .45, 0, 60);
+    p.mem = clamp(p.mem + (Math.random() - .48) * p.bmem * .006, p.bmem * .8, p.bmem * 1.3);
+    p.disk = p.bdisk ? clamp(p.disk * .5 + jit(p.bdisk, 2.2) * .5, 0, 80) : 0;
+    p.net = p.bnet ? clamp(p.net * .5 + jit(p.bnet, 2) * .5, 0, 200) : 0;
+  }
+  T.cpu = clamp(procs.reduce((a, p) => a + p.cpu, 0) + 2 + Math.random() * 2, 1, 100);
+  T.memMB = 9200 + procs.reduce((a, p) => a + p.mem, 0);
+  T.mem = T.memMB / MEM_TOTAL * 100;
+  T.disk = procs.reduce((a, p) => a + p.disk, 0);
+  T.net = procs.reduce((a, p) => a + p.net, 0);
+  T.gpu = clamp(T.gpu * .7 + (4 + T.cpu * .35 + Math.random() * 6) * .3, 0, 100);
+  if (dBurst <= 0 && Math.random() < .04) dBurst = 4 + Math.random() * 8;
+  T.dgpu = clamp(T.dgpu * .6 + (dBurst > 0 ? 45 + Math.random() * 45 : 1 + Math.random() * 4) * .4, 0, 100); dBurst--;
+  if (nBurst <= 0 && Math.random() < .05) nBurst = 3 + Math.random() * 7;
+  T.npu = clamp(T.npu * .5 + (nBurst > 0 ? 30 + Math.random() * 55 : Math.random() * 2) * .5, 0, 100); nBurst--;
+  T.threads = procs.reduce((a, p) => a + p.threads, 0);
+  T.cores = coreH.map((h, i) => clamp(T.cpu * (.6 + Math.random() * .8) + (i === 0 ? 4 : 0), 0, 100));
+  T.cores.forEach((v, i) => push(coreH[i], v));
+  push(H.cpu, T.cpu); push(H.mem, T.mem); push(H.disk, T.disk); push(H.net, T.net); push(H.gpu, T.gpu); push(H.dgpu, T.dgpu); push(H.npu, T.npu);
+}
+for (let i = 0; i < HN; i++) tick();
+
+/* ---------- real, browser-side stats ---------- */
+const R = { fps: 0, heap: null, heapMax: null, batt: null, net: null };
+(function fpsLoop() {
+  let n = 0, t0 = performance.now();
+  const f = t => { n++; if (t - t0 >= 1000) { R.fps = Math.round(n * 1000 / (t - t0)); n = 0; t0 = t; } requestAnimationFrame(f); };
+  requestAnimationFrame(f);
+})();
+function readReal() {
+  if (performance.memory) { R.heap = performance.memory.usedJSHeapSize / 1048576; R.heapMax = performance.memory.jsHeapSizeLimit / 1048576; }
+  const c = navigator.connection; R.net = c ? (c.effectiveType || '—') + (c.downlink ? ' · ' + c.downlink + ' Mbps' : '') : null;
+}
+try { navigator.getBattery && navigator.getBattery().then(b => { const u = () => R.batt = Math.round(b.level * 100) + '%' + (b.charging ? ' ⚡' : ''); u(); b.addEventListener('levelchange', u); b.addEventListener('chargingchange', u); }).catch(() => {}); } catch (e) {}
+const BOOT = Date.now();
+
+/* ---------- colours / metrics meta ---------- */
+const METRICS = {
+  cpu: { name: 'CPU', c: 'var(--c-cpu)', max: 100, val: () => fmtPct(T.cpu), sub: () => 'AMD Ryzen AI 9 HX 375 · ' + cpuGHz().toFixed(2) + ' GHz' },
+  mem: { name: 'Memory', c: 'var(--c-mem)', max: 100, val: () => fmtPct(T.mem), sub: () => fmtMem(T.memMB) + ' of 64 GB' },
+  disk: { name: 'Storage', c: 'var(--c-disk)', max: 0, val: () => fmtDisk(T.disk), sub: () => 'Samsung 9100 PRO · 2 TB (simulated)' },
+  net: { name: 'Network', c: 'var(--c-net)', max: 0, val: () => fmtNet(T.net), sub: () => 'wlan0 (simulated)' },
+  gpu: { name: 'GPU 0', c: 'var(--c-gpu)', max: 100, val: () => fmtPct(T.gpu), sub: () => 'AMD Radeon 890M · integrated (simulated)' },
+  dgpu: { name: 'GPU 1', c: 'var(--c-dgpu)', max: 100, val: () => fmtPct(T.dgpu), sub: () => 'NVIDIA RTX PRO 6000 Blackwell · 96 GB (simulated)' },
+  npu: { name: 'NPU', c: 'var(--c-npu)', max: 100, val: () => fmtPct(T.npu), sub: () => 'AMD XDNA 2 NPU · 50 TOPS (simulated)' }
+};
+function histMax(k) { const m = METRICS[k]; return m.max || Math.max(10, Math.ceil(Math.max(...H[k]) * 1.25 / 10) * 10); }
+function sparkPath(arr, max, w, h, close) {
+  const n = arr.length, st = w / (HN - 1), off = (HN - n) * st;
+  let d = arr.map((v, i) => (i ? 'L' : 'M') + (off + i * st).toFixed(1) + ' ' + (h - clamp(v / max, 0, 1) * (h - 2) - 1).toFixed(1)).join('');
+  if (close) d += 'L' + w + ' ' + h + 'L' + off.toFixed(1) + ' ' + h + 'Z';
+  return d;
+}
+function sparkSVG(arr, max, color, cls) {
+  return '<svg class="' + (cls || 'spark') + '" viewBox="0 0 120 40" preserveAspectRatio="none"><path d="' + sparkPath(arr, max, 120, 40, true) + '" fill="' + color + '" opacity=".18"/><path d="' + sparkPath(arr, max, 120, 40) + '" fill="none" stroke="' + color + '" stroke-width="1.5" vector-effect="non-scaling-stroke"/></svg>';
+}
+
+/* ---------- views ---------- */
+const COLS = [['name', 'Name'], ['pid', 'PID'], ['cpu', 'CPU'], ['mem', 'Memory'], ['disk', 'Disk'], ['net', 'Network']];
+const GROUPS = [['Apps', 'Apps'], ['Background', 'Background processes'], ['System', 'System processes']];
+function visibleProcs() {
+  const q = S.q.trim().toLowerCase();
+  let l = procs.filter(p => !q || p.name.toLowerCase().includes(q) || String(p.pid) === q || p.user.includes(q));
+  const { k, d } = S.sort;
+  return l.sort((a, b) => (k === 'name' ? a.name.localeCompare(b.name) : a[k] - b[k]) * d);
+}
+const getProc = pid => procs.find(p => p.pid === pid);
+function cell(p, k) {
+  switch (k) {
+    case 'pid': return '<div class="td c-pid">' + p.pid + '</div>';
+    case 'cpu': return '<div class="td c-cpu heat" style="--c:var(--c-cpu);--h:' + clamp(p.cpu / 25, 0, 1).toFixed(2) + '">' + fmtPct(p.cpu) + '</div>';
+    case 'mem': return '<div class="td c-mem heat" style="--c:var(--c-mem);--h:' + clamp(p.mem / 1500, 0, 1).toFixed(2) + '">' + fmtMem(p.mem) + '</div>';
+    case 'disk': return '<div class="td c-disk heat" style="--c:var(--c-disk);--h:' + clamp(p.disk / 5, 0, 1).toFixed(2) + '">' + fmtDisk(p.disk) + '</div>';
+    case 'net': return '<div class="td c-net heat" style="--c:var(--c-net);--h:' + clamp(p.net / 8, 0, 1).toFixed(2) + '">' + fmtNet(p.net) + '</div>';
+  }
+}
+function rowHTML(p) {
+  return '<div class="tr row' + (p.pid === S.sel ? ' sel' : '') + '" data-pid="' + p.pid + '" role="row"><div class="td name"><i class="' + (p.type === 'Apps' ? 'dot-app' : '') + '"></i><span>' + esc(p.name) + '</span></div>' +
+    ['pid', 'cpu', 'mem', 'disk', 'net'].map(k => cell(p, k)).join('') + '</div>';
+}
+function ensureSel() {
+  const l = visibleProcs();
+  if (!l.some(p => p.pid === S.sel)) S.sel = null; // never auto-select: End task needs a deliberate pick
+}
+function renderTable() {
+  ensureSel();
+  const l = visibleProcs();
+  let h = '<div class="tr th" role="row">' + COLS.map(([k, n]) => '<div class="td' + (k === 'name' ? ' name' : ' c-' + k) + (S.sort.k === k ? ' sorted' : '') + '" data-sort="' + k + '">' + n + (S.sort.k === k ? (S.sort.d < 0 ? ' ▾' : ' ▴') : '') + '</div>').join('') + '</div>';
+  if (!l.length) h += '<div class="empty">No process matches “' + esc(S.q) + '”.</div>';
+  else if (S.group) GROUPS.forEach(([t, n]) => { const g = l.filter(p => p.type === t); if (g.length) h += '<div class="tr grp"><div class="td name">' + n + ' (' + g.length + ')</div></div>' + g.map(rowHTML).join(''); });
+  else h += l.map(rowHTML).join('');
+  $('#tbl').innerHTML = h;
+  updateAction();
+}
+function renderCards() {
+  $('#cards').innerHTML = ['cpu', 'mem', 'disk', 'net'].map(k => {
+    const m = METRICS[k];
+    return '<div class="card" style="--c:' + m.c + '"><div class="k"><i></i>' + m.name + '</div><div class="v">' + m.val() + '</div><div class="s">' + m.sub() + '</div>' + sparkSVG(H[k], histMax(k), m.c) + '</div>';
+  }).join('');
+}
+function renderPerf() {
+  $('#tiles').innerHTML = Object.keys(METRICS).map(k => {
+    const m = METRICS[k];
+    return '<button class="tile" data-m="' + k + '" style="--c:' + m.c + '" aria-pressed="' + (S.perfSel === k) + '"><b>' + m.name + '</b><span>' + m.val() + '</span></button>';
+  }).join('');
+  const k = S.perfSel, m = METRICS[k], max = histMax(k);
+  let grid = ''; for (let i = 1; i < 4; i++) grid += '<line x1="0" x2="600" y1="' + (i * 52.5) + '" y2="' + (i * 52.5) + '" stroke="var(--line)"/>';
+  const stat = (a, b) => '<div><small>' + a + '</small><b>' + b + '</b></div>';
+  let st = '';
+  if (k === 'cpu') st = stat('Utilization', fmtPct(T.cpu)) + stat('Speed', cpuGHz().toFixed(2) + ' GHz') + stat('Cores / threads', '12 / 24') + stat('Processes', procs.length) + stat('Threads', T.threads) + stat('Session uptime', fmtUp((Date.now() - BOOT) / 1000)) + stat('Max boost', '5.1 GHz') + stat('L3 cache', '24 MB');
+  if (k === 'mem') st = stat('In use', fmtMem(T.memMB)) + stat('Available', fmtMem(MEM_TOTAL - T.memMB)) + stat('Total', '64.0 GB') + stat('Cached', fmtMem(T.memMB * .31)) + stat('Type', 'LPDDR5X-7500') + stat('Swap', '0 GB');
+  if (k === 'disk') st = stat('Read', fmtDisk(T.disk * .6)) + stat('Write', fmtDisk(T.disk * .4)) + stat('Active time', fmtPct(clamp(T.disk * 2, 0, 100))) + stat('Capacity', '2 TB') + stat('Used', DISK_USED_GB + ' GB') + stat('Interface', 'PCIe 5.0 x4 NVMe') + stat('Temperature', Math.round(34 + T.disk * .6) + ' °C') + stat('Health', '99%');
+  if (k === 'net') st = stat('Send', fmtNet(T.net * .3)) + stat('Receive', fmtNet(T.net * .7)) + stat('Adapter', 'wlan0') + stat('Link speed', '866 Mbps');
+  if (k === 'gpu') st = stat('Utilization', fmtPct(T.gpu)) + stat('Shared memory', fmtMem(512 + T.gpu * 24)) + stat('Temperature', Math.round(38 + T.gpu * .3) + ' °C') + stat('Driver', 'amdgpu (sim.)');
+  if (k === 'dgpu') st = stat('Utilization', fmtPct(T.dgpu)) + stat('Dedicated memory', (1.2 + T.dgpu * .6).toFixed(1) + ' / 96 GB') + stat('Temperature', Math.round(34 + T.dgpu * .45) + ' °C') + stat('Power draw', Math.round(22 + T.dgpu * 5.6) + ' / 600 W') + stat('Memory type', 'GDDR7 ECC') + stat('Driver', 'nvidia (sim.)');
+  if (k === 'npu') st = stat('Utilization', fmtPct(T.npu)) + stat('Throughput', (T.npu * .5).toFixed(1) + ' / 50 TOPS') + stat('Shared memory', fmtMem(120 + T.npu * 14)) + stat('Power draw', (0.4 + T.npu * .08).toFixed(1) + ' W') + stat('Driver', 'amdxdna (sim.)');
+  const cap = k === 'disk' ? '<div class="capbar" aria-label="Capacity"><i style="width:' + (180 / 20.48).toFixed(1) + '%;background:var(--c-disk)"></i><i style="width:' + (460 / 20.48).toFixed(1) + '%;background:var(--c-net)"></i></div><div class="capleg"><span><b style="background:var(--c-disk)"></b>System 180 GB</span><span><b style="background:var(--c-net)"></b>Home 460 GB</span><span><b></b>Free ' + (2048 - DISK_USED_GB) + ' GB</span></div>' : '';
+  let cores = '';
+  if (k === 'cpu') cores = '<div class="cores">' + coreH.map((h, i) => '<div class="core"><span>Core ' + i + ' · ' + Math.round(T.cores[i]) + '%</span>' + sparkSVG(h, 100, 'var(--c-cpu)', '') + '</div>').join('') + '</div>';
+  readReal();
+  const real = '<div class="real"><h4>This page <em>· real values from your browser</em></h4><div class="stats">' +
+    stat('Logical cores', navigator.hardwareConcurrency || 'n/a') + stat('Device memory', navigator.deviceMemory ? '≥ ' + navigator.deviceMemory + ' GB' : 'n/a') +
+    stat('JS heap', R.heap == null ? 'n/a' : R.heap.toFixed(1) + ' MB') + stat('Frame rate', R.fps + ' fps') + stat('Battery', R.batt || 'n/a') + stat('Connection', R.net || 'n/a') + '</div></div>';
+  setTimeout(updateAction, 0);
+  $('#pdetail').innerHTML = '<h3>' + m.name + '<small>' + m.sub() + '</small></h3><div class="chart"><span class="cl">60 seconds · max ' + (k === 'disk' ? max + ' MB/s' : k === 'net' ? max + ' Mbps' : '100%') + '</span><svg viewBox="0 0 600 210" preserveAspectRatio="none">' + grid +
+    '<path d="' + sparkPath(H[k], max, 600, 210, true) + '" fill="' + m.c + '" opacity=".16"/><path d="' + sparkPath(H[k], max, 600, 210) + '" fill="none" stroke="' + m.c + '" stroke-width="2" vector-effect="non-scaling-stroke"/></svg></div>' + cap + '<div class="stats">' + st + '</div>' + cores + real;
+}
+const STARTUP = [['Cloud sync', 'Essential Cloud', 'High'], ['Essential Music', 'Essential OS', 'Medium'], ['Print spooler UI', 'CUPS', 'Low'], ['Update notifier', 'Essential OS', 'Low'], ['Screenshot helper', 'Essential OS', 'None'], ['VPN tray', 'WireGuard', 'Medium']];
+function renderStart() {
+  $('#startlist').innerHTML = STARTUP.map(([n, p, i]) => '<div class="srow"><div class="nm"><b>' + n + '</b><small>' + p + '</small></div><span class="imp ' + i + '">' + i + ' impact</span><button class="tg" role="switch" data-su="' + esc(n) + '" aria-checked="' + !!S.startup[n] + '" aria-label="' + esc(n) + '"></button></div>').join('');
+}
+function renderMini() {
+  $('#ministrip').innerHTML = [['cpu', 'CPU'], ['mem', 'Memory'], ['net', 'Network']].map(([k, n]) => '<div class="mcell"><small>' + n + '</small><b>' + METRICS[k].val() + '</b>' + sparkSVG(H[k], histMax(k), METRICS[k].c, '') + '</div>').join('');
+}
+/* ---------- sheet ---------- */
+function renderSheet() {
+  const p = getProc(S.sheetPid), el = $('#sheet');
+  if (!p) { el.classList.remove('on'); S.sheetPid = null; return; }
+  el.innerHTML = '<button class="x" id="sheet-x" aria-label="Close">' + icon('x') + '</button><h3>' + esc(p.name) + '</h3><small style="color:var(--fg2)">' + p.type + ' · PID ' + p.pid + '</small><dl>' +
+    [['User', p.user], ['CPU', fmtPct(p.cpu)], ['Memory', fmtMem(p.mem)], ['Disk', fmtDisk(p.disk)], ['Network', fmtNet(p.net)], ['Threads', p.threads], ['Priority', p.prio], ['Running for', fmtUp((Date.now() - p.started) / 1000)]].map(([a, b]) => '<dt>' + a + '</dt><dd>' + esc(b) + '</dd>').join('') +
+    '</dl><button class="btn" id="sheet-end">End task</button><button class="btn alt" id="sheet-copy">Copy PID</button>';
+  el.classList.add('on');
+}
+function openSheet(pid) { S.sheetPid = pid; renderSheet(); }
+/* ---------- actions ---------- */
+function render() {
+  $$('.view').forEach(v => v.classList.toggle('on', v.id === 'v-' + S.view));
+  $$('#seg button').forEach(b => b.setAttribute('aria-pressed', b.dataset.v === S.view));
+  if (S.view === 'proc') { renderCards(); renderTable(); }
+  if (S.view === 'perf') renderPerf();
+  if (S.view === 'start') renderStart();
+  if (S.mini) renderMini();
+  if (S.sheetPid) renderSheet();
+  ['pid', 'cpu', 'mem', 'disk', 'net'].forEach(k => $('#app').classList.toggle('no-' + k, !S.cols[k]));
+  updateAction(); renderOverlay();
+}
+/* contextual pill action: one button, different job per tab */
+let actKey = '';
+function actionDef() {
+  if (S.view === 'proc') { const p = getProc(S.sel); return { id: 'end', label: 'End task', icon: 'stop', color: 'var(--accent)', off: !p }; }
+  if (S.view === 'perf') return { id: 'overlay', label: S.overlay ? 'Hide overlay' : 'Overlay', icon: 'overlay', color: METRICS[S.perfSel].c };
+  return { id: 'export', label: 'Export log', icon: 'download', color: 'var(--c-disk)' };
+}
+function updateAction() {
+  const a = actionDef(), key = [a.id, a.label, a.color, a.off].join('|');
+  if (key === actKey) return; actKey = key;
+  const b = $('#endbtn'); b.innerHTML = icon(a.icon) + '<span>' + a.label + '</span>'; b.style.setProperty('--ab', a.color); b.disabled = !!a.off; b.title = a.label; b.dataset.act = a.id;
+}
+function doAction() {
+  const id = $('#endbtn').dataset.act;
+  if (id === 'end') endTask();
+  else if (id === 'overlay') toggleOverlay();
+  else exportStartupLog();
+}
+function setView(v) { S.view = v; saveState(); render(); $('#scroll').scrollTop = 0; }
+function endTask(pid) {
+  const p = getProc(pid == null ? S.sel : pid); if (!p) return toast('Select a process first');
+  if (p.prot) return toast('Access denied: “' + p.name + '” is a system process');
+  procs = procs.filter(x => x !== p);
+  if (S.sel === p.pid) S.sel = null;
+  if (S.sheetPid === p.pid) S.sheetPid = null;
+  toast('Ended “' + p.name + '”'); tick(); render();
+}
+function setPrio(pid, v) { const p = getProc(pid == null ? S.sel : pid); if (!p) return toast('Select a process first'); p.prio = v; toast('Priority: ' + v + ' (preview only)'); if (S.sheetPid) renderSheet(); }
+function exportCSV() {
+  const rows = [['pid', 'name', 'type', 'user', 'cpu_pct', 'mem_mb', 'disk_mbs', 'net_mbps', 'threads']].concat(procs.map(p => [p.pid, p.name, p.type, p.user, p.cpu.toFixed(2), p.mem.toFixed(0), p.disk.toFixed(2), p.net.toFixed(2), p.threads]));
+  const blob = new Blob([rows.map(r => r.join(',')).join('\n')], { type: 'text/csv' });
+  const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'processes.csv'; a.click(); setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+  toast('Snapshot exported');
+}
+function copyText(t, ok) { try { navigator.clipboard.writeText(t).then(() => toast(ok), () => toast('Clipboard blocked by browser')); } catch (e) { toast('Clipboard blocked by browser'); } }
+function applyTheme() {
+  const dark = S.theme === 'dark' || (S.theme === 'system' && matchMedia('(prefers-color-scheme: dark)').matches);
+  document.documentElement.dataset.theme = dark ? 'dark' : 'light';
+}
+matchMedia('(prefers-color-scheme: dark)').addEventListener('change', applyTheme);
+let timer;
+function schedule() { clearInterval(timer); if (!S.paused) timer = setInterval(() => { tick(); render(); }, S.speed); }
+
+/* ---------- desktop overlay (HUD) ---------- */
+function renderOverlay() {
+  const el = $('#hudov'); el.classList.toggle('on', !!S.overlay); if (!S.overlay) return;
+  const rows = [['CPU', 'cpu', fmtPct(T.cpu)], ['Memory', 'mem', fmtPct(T.mem)], ['GPU 0', 'gpu', fmtPct(T.gpu)], ['GPU 1', 'dgpu', fmtPct(T.dgpu)], ['NPU', 'npu', fmtPct(T.npu)], ['Storage', 'disk', fmtDisk(T.disk)], ['Network', 'net', fmtNet(T.net)]];
+  el.innerHTML = '<h5>Task Manager · live</h5>' + rows.map(([n, k, v]) => '<div class="hr" style="--c:' + METRICS[k].c + '"><i></i><span>' + n + '</span><b>' + v + '</b></div>').join('') + '<div class="hr" style="--c:var(--fg3)"><i></i><span>Frame rate</span><b>' + R.fps + ' fps</b></div>';
+}
+function toggleOverlay(v) {
+  S.overlay = v == null ? !S.overlay : v; saveState(); renderOverlay(); updateAction();
+  toast(S.overlay ? 'Overlay on — top left of the screen' : 'Overlay off');
+}
+/* ---------- startup log export ---------- */
+function exportStartupLog() {
+  const now = new Date(), pad = n => String(n).padStart(2, '0');
+  const stamp = now.getFullYear() + '-' + pad(now.getMonth() + 1) + '-' + pad(now.getDate()) + ' ' + pad(now.getHours()) + ':' + pad(now.getMinutes()) + ':' + pad(now.getSeconds());
+  const ms = { High: 1800, Medium: 750, Low: 220, None: 40 };
+  const lines = ['Essential OS — startup log (simulated)', 'Exported: ' + stamp, 'Machine : AMD Ryzen AI 9 HX 375 · 64 GB · Samsung 9100 PRO 2 TB', '', 'Name'.padEnd(22) + 'Publisher'.padEnd(18) + 'Impact'.padEnd(9) + 'State'.padEnd(10) + 'Boot delay'];
+  STARTUP.forEach(([n, p, i]) => lines.push(n.padEnd(22) + p.padEnd(18) + i.padEnd(9) + (S.startup[n] ? 'Enabled' : 'Disabled').padEnd(10) + (S.startup[n] ? ms[i] + ' ms' : '—')));
+  const total = STARTUP.reduce((a, [n, , i]) => a + (S.startup[n] ? ms[i] : 0), 0);
+  lines.push('', 'Total startup delay: ' + (total / 1000).toFixed(2) + ' s', '');
+  const blob = new Blob([lines.join('\n')], { type: 'text/plain' });
+  const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'startup-log.txt'; a.click(); setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+  toast('Startup log exported');
+}
+
+/* ---------- menu engine ---------- */
+const menus = []; let subT;
+function closeMenu(depth = 0) {
+  while (menus.length > depth) menus.pop().el.remove();
+  if (depth === 0) $$('[aria-haspopup][aria-expanded=true]').forEach(b => b.setAttribute('aria-expanded', 'false'));
+}
+function openMenu(anchor, items, o = {}, depth = 0) {
+  closeMenu(depth);
+  const el = document.createElement('div'); el.className = 'menu' + (o.up ? ' up' : ''); el.setAttribute('role', 'menu');
+  items.forEach(it => {
+    if (it === '-') { el.insertAdjacentHTML('beforeend', '<div class="msep"></div>'); return; }
+    if (it.header) { el.insertAdjacentHTML('beforeend', '<div class="mh">' + esc(it.label) + '</div>'); return; }
+    const b = document.createElement('button'); b.className = 'mi'; b.setAttribute('role', 'menuitem'); b.disabled = !!it.disabled;
+    b.innerHTML = '<span class="ck">' + (it.checked ? icon('check') : '') + '</span><span class="lb">' + esc(it.label) + '</span>' + (it.kbd ? '<span class="kb">' + it.kbd + '</span>' : '') + (it.sub ? '<span class="kb">' + icon('chev') + '</span>' : '');
+    if (it.sub) b.setAttribute('aria-haspopup', 'true');
+    b.addEventListener('mouseenter', () => { clearTimeout(subT); subT = setTimeout(() => { if (it.sub) openMenu(b, it.sub, { side: true }, depth + 1); else closeMenu(depth + 1); }, 80); });
+    b.addEventListener('click', e => { e.stopPropagation(); if (it.sub) { openMenu(b, it.sub, { side: true }, depth + 1); return; } closeMenu(0); it.run && it.run(); });
+    el.appendChild(b);
+  });
+  document.body.appendChild(el);
+  const r = anchor.getBoundingClientRect ? anchor.getBoundingClientRect() : { left: anchor.x, right: anchor.x, top: anchor.y, bottom: anchor.y, width: 0, height: 0 };
+  const VW = innerWidth, VH = innerHeight, gap = o.gap == null ? 6 : o.gap;
+  let room = o.up ? r.top - gap - 8 : VH - r.bottom - gap - 8;
+  if (o.side) room = VH - 16;
+  el.style.maxHeight = Math.max(120, room) + 'px';
+  const mw = el.offsetWidth, mh = el.offsetHeight;
+  let x = r.left, y = r.bottom + gap;
+  if (o.center) x = r.left + r.width / 2 - mw / 2;
+  if (o.right) x = r.right - mw;
+  if (o.side) { x = r.right - 4; if (x + mw > VW - 8) x = r.left - mw + 4; y = r.top - 6; }
+  else if (o.up) y = r.top - gap - mh;
+  else if (!anchor.getBoundingClientRect && y + mh > VH - 8) y = Math.max(8, VH - mh - 8);
+  el.style.left = clamp(x, 8, Math.max(8, VW - mw - 8)) + 'px';
+  el.style.top = clamp(y, 8, Math.max(8, VH - mh - 8)) + 'px';
+  menus.push({ el, anchor });
+  return el;
+}
+/* ---------- menu definitions ---------- */
+const setTheme = t => () => { S.theme = t; saveState(); applyTheme(); };
+const setSpeed = (ms, n) => ({ label: n, checked: S.speed === ms && !S.paused, run: () => { S.speed = ms; S.paused = false; saveState(); schedule(); toast('Update speed: ' + n); } });
+const PRIOS = ['Realtime', 'High', 'Above normal', 'Normal', 'Below normal', 'Low'];
+const MENUS = {
+  file: () => [
+    { label: 'Export snapshot (CSV)', run: exportCSV },
+    { label: 'Export startup log', run: exportStartupLog },
+    { label: 'Copy process list', run: () => copyText(procs.map(p => p.pid + '\t' + p.name).join('\n'), 'Process list copied') },
+    '-',
+    { label: 'Run new task…', kbd: 'Ctrl+N', run: () => toast('Run new task (preview only)') },
+    { label: 'Restore ended processes', run: () => { seedProcs(); S.sel = null; toast('Processes restored'); render(); } },
+    '-',
+    { label: 'Close window', kbd: 'Alt+F4', run: () => closeWin() }
+  ],
+  proc: () => [
+    { label: 'End task', kbd: 'Del', disabled: !getProc(S.sel), run: () => endTask() },
+    { label: 'End process tree', disabled: !getProc(S.sel), run: () => toast('End process tree (preview only)') },
+    { label: 'Process details', kbd: 'Enter', disabled: !getProc(S.sel), run: () => openSheet(S.sel) },
+    { label: 'Set priority', disabled: !getProc(S.sel), sub: PRIOS.map(n => ({ label: n, checked: (getProc(S.sel) || {}).prio === n, run: () => setPrio(S.sel, n) })) },
+    '-',
+    { label: 'Find process…', kbd: 'Ctrl+F', run: focusSearch },
+    { label: 'Pause updates', kbd: 'Space', checked: S.paused, run: togglePause },
+    { label: 'Update speed', sub: [setSpeed(500, 'High (0.5 s)'), setSpeed(1000, 'Normal (1 s)'), setSpeed(2000, 'Low (2 s)')] }
+  ],
+  view: () => [
+    { header: 1, label: 'Views' },
+    { label: 'Processes', kbd: '1', checked: S.view === 'proc', run: () => setView('proc') },
+    { label: 'Performance', kbd: '2', checked: S.view === 'perf', run: () => setView('perf') },
+    { label: 'Startup apps', kbd: '3', checked: S.view === 'start', run: () => setView('start') },
+    '-',
+    { label: 'Group by type', checked: S.group, run: () => { S.group = !S.group; saveState(); render(); } },
+    { label: 'Columns', sub: [['pid', 'PID'], ['cpu', 'CPU'], ['mem', 'Memory'], ['disk', 'Disk'], ['net', 'Network']].map(([k, n]) => ({ label: n, checked: S.cols[k], run: () => { S.cols[k] = !S.cols[k]; saveState(); render(); } })) },
+    '-',
+    { label: 'Performance overlay', checked: S.overlay, run: () => toggleOverlay() },
+    { label: 'Mini mode', checked: S.mini, run: () => WM.mini(!S.mini) },
+    { label: 'Full screen', kbd: 'F11', checked: document.body.classList.contains('fs'), run: () => WM.fs() },
+    { label: 'Appearance', sub: [['light', 'Light'], ['dark', 'Dark'], ['system', 'Match system']].map(([k, n]) => ({ label: n, checked: S.theme === k, run: setTheme(k) })) }
+  ]
+};
+MENUS.all = () => [{ label: 'File', sub: MENUS.file() }, { label: 'Process', sub: MENUS.proc() }, { label: 'View', sub: MENUS.view() }];
+function focusSearch() {
+  const pill = $('#pill'); $('#app').classList.add('sopen');
+  const q = $('#q'); q.focus(); q.select();
+}
+function togglePause() { S.paused = !S.paused; schedule(); toast(S.paused ? 'Updates paused' : 'Updates resumed'); updateAction(); }
+let barT = 0;
+function openBar(btn, fromClick) {
+  const wasOpen = btn.getAttribute('aria-expanded') === 'true';
+  if (wasOpen && fromClick && Date.now() - barT < 500) return; // opened by hover a moment ago
+  closeMenu(0); if (wasOpen) return;
+  barT = Date.now();
+  openMenu(btn, MENUS[btn.dataset.menu](), btn.id === 'burger' ? { right: true } : {});
+  btn.setAttribute('aria-expanded', 'true');
+}
+/* ---------- events ---------- */
+$$('#menus [data-menu]').forEach(b => {
+  b.addEventListener('click', e => { e.stopPropagation(); openBar(b, true); });
+  b.addEventListener('mouseenter', () => { if (menus.length && b.getAttribute('aria-expanded') !== 'true') { openBar(b); } });
+});
+document.addEventListener('mousedown', e => { if (menus.length && !e.target.closest('.menu') && !e.target.closest('[aria-haspopup]')) closeMenu(0); });
+$('#seg').addEventListener('click', e => { const b = e.target.closest('button'); if (b) setView(b.dataset.v); });
+$('#endbtn').addEventListener('click', doAction);
+$('#q').addEventListener('input', e => { S.q = e.target.value; if (S.view !== 'proc') setView('proc'); else renderTable(); });
+$('#q').addEventListener('blur', () => { if (!S.q) $('#app').classList.remove('sopen'); });
+$('#q').addEventListener('keydown', e => { if (e.key === 'Escape') { e.target.value = ''; S.q = ''; e.target.blur(); renderTable(); e.stopPropagation(); } });
+$('#tbl').addEventListener('pointerdown', e => {
+  const th = e.target.closest('[data-sort]');
+  if (th) { const k = th.dataset.sort; S.sort = { k, d: S.sort.k === k ? -S.sort.d : (k === 'name' ? 1 : -1) }; saveState(); renderTable(); return; }
+  const r = e.target.closest('.row'); if (!r || e.button === 2) return;
+  const pid = +r.dataset.pid, now = Date.now(), dbl = S.lastDown && S.lastDown.pid === pid && now - S.lastDown.t < 400;
+  S.lastDown = { pid, t: now }; S.sel = pid; renderTable();
+  if (dbl || S.sheetPid) openSheet(pid);
+});
+$('#tbl').addEventListener('contextmenu', e => {
+  const r = e.target.closest('.row'); if (!r) return; e.preventDefault();
+  const pid = +r.dataset.pid; S.sel = pid; renderTable();
+  openMenu({ x: e.clientX, y: e.clientY }, [
+    { label: 'Process details', run: () => openSheet(pid) },
+    { label: 'End task', run: () => endTask(pid) },
+    { label: 'Set priority', sub: PRIOS.map(n => ({ label: n, run: () => setPrio(pid, n) })) },
+    '-', { label: 'Copy PID', run: () => copyText(String(pid), 'PID copied') }
+  ], { gap: 0 });
+});
+$('#tiles').addEventListener('click', e => { const t = e.target.closest('.tile'); if (t) { S.perfSel = t.dataset.m; saveState(); renderPerf(); } });
+$('#startlist').addEventListener('click', e => { const t = e.target.closest('.tg'); if (!t) return; const n = t.dataset.su; S.startup[n] = !S.startup[n]; saveState(); renderStart(); toast(n + ': ' + (S.startup[n] ? 'enabled' : 'disabled') + ' (preview only)'); });
+$('#sheet').addEventListener('click', e => {
+  if (e.target.closest('#sheet-x')) { S.sheetPid = null; $('#sheet').classList.remove('on'); }
+  if (e.target.closest('#sheet-end')) endTask(S.sheetPid);
+  if (e.target.closest('#sheet-copy')) copyText(String(S.sheetPid), 'PID copied');
+});
+$('#ministrip').addEventListener('dblclick', () => WM.mini(false));
+$('#scroll').addEventListener('wheel', () => {}, { passive: true });
+$('#top').addEventListener('wheel', e => { if (!e.target.closest('.menu')) $('#scroll').scrollTop += e.deltaY; }, { passive: true });
+document.addEventListener('keydown', e => {
+  if (menus.length) {
+    const last = menus[menus.length - 1].el, items = $$('.mi:not([disabled])', last), i = items.indexOf(document.activeElement);
+    if (e.key === 'Escape') { closeMenu(menus.length > 1 ? menus.length - 1 : 0); e.preventDefault(); return; }
+    if (e.key === 'ArrowDown') { (items[i + 1] || items[0]).focus(); e.preventDefault(); return; }
+    if (e.key === 'ArrowUp') { (items[i - 1] || items[items.length - 1]).focus(); e.preventDefault(); return; }
+    if (e.key === 'ArrowRight') {
+      if (i >= 0 && items[i].getAttribute('aria-haspopup')) { items[i].click(); const s = menus[menus.length - 1].el.querySelector('.mi'); s && s.focus(); }
+      else { const bars = $$('#menus [data-menu]').filter(b => getComputedStyle(b).display !== 'none'), c = bars.findIndex(b => b.getAttribute('aria-expanded') === 'true'); if (c >= 0) { const n = bars[(c + 1) % bars.length]; closeMenu(0); openBar(n); } }
+      e.preventDefault(); return;
+    }
+    if (e.key === 'ArrowLeft') {
+      if (menus.length > 1) closeMenu(menus.length - 1);
+      else { const bars = $$('#menus [data-menu]').filter(b => getComputedStyle(b).display !== 'none'), c = bars.findIndex(b => b.getAttribute('aria-expanded') === 'true'); if (c >= 0) { const n = bars[(c - 1 + bars.length) % bars.length]; closeMenu(0); openBar(n); } }
+      e.preventDefault(); return;
+    }
+    return;
+  }
+  if (e.key === 'F11') { e.preventDefault(); WM.fs(); return; }
+  if (e.key === 'Escape' && document.body.classList.contains('fs')) { WM.fs(false); return; }
+  if (e.target.closest('input')) return;
+  if (e.key === 'f' && (e.ctrlKey || e.metaKey)) { e.preventDefault(); focusSearch(); return; }
+  if (e.key === 'Escape' && S.sel != null) { S.sel = null; if (S.view === 'proc') renderTable(); return; }
+  if (e.key === 'Delete' && S.view === 'proc') { endTask(); return; }
+  if (e.key === 'Enter' && getProc(S.sel)) { openSheet(S.sel); return; }
+  if (e.key === ' ') { e.preventDefault(); togglePause(); return; }
+  if (e.key === '1') setView('proc'); if (e.key === '2') setView('perf'); if (e.key === '3') setView('start');
+  if (S.view === 'proc' && (e.key === 'ArrowDown' || e.key === 'ArrowUp')) {
+    e.preventDefault(); const ids = $$('.row').map(r => +r.dataset.pid); if (!ids.length) return;
+    const i = ids.indexOf(S.sel), n = clamp((i < 0 ? (e.key === 'ArrowDown' ? 0 : ids.length - 1) : i + (e.key === 'ArrowDown' ? 1 : -1)), 0, ids.length - 1);
+    S.sel = ids[n]; renderTable(); const el = $('.row.sel'); el && el.scrollIntoView({ block: 'nearest' });
+  }
+});
+
+/* ---------- window manager ---------- */
+const WM = (() => {
+  const win = $('#win'), desk = $('#desk');
+  const MINW = 360, MINH = 300, MINI_H = 112;
+  const defRect = () => { const W = desk.clientWidth, H = desk.clientHeight, w = Math.min(1100, W - 48), h = Math.min(700, H - 48); return { x: Math.round((W - w) / 2), y: Math.round((H - h) / 2), w, h }; };
+  const saved = store.get('rect', null);
+  let r = saved && saved.r ? saved.r : defRect(), max = !!(saved && saved.max), hid = false, prevMax = false, miniSave = null;
+  const save = () => store.set('rect', { r, max });
+  function fit() { const W = desk.clientWidth, H = desk.clientHeight; r.w = clamp(r.w, MINW, Math.max(MINW, W)); r.h = clamp(r.h, MINH, Math.max(MINH, H)); r.x = clamp(r.x, 80 - r.w, W - 80); r.y = clamp(r.y, 0, H - 40); }
+  function apply() {
+    fit();
+    win.classList.toggle('max', max); win.classList.toggle('hid', hid);
+    win.style.left = r.x + 'px'; win.style.top = r.y + 'px'; win.style.width = r.w + 'px'; win.style.height = (S.mini ? MINI_H : r.h) + 'px';
+    const w = win.offsetWidth, h = win.offsetHeight;
+    $('#hud').textContent = w + ' × ' + h + '  ·  x ' + (max ? 0 : r.x) + '  y ' + (max ? 0 : r.y);
+    $('#wc-max').title = max ? 'Restore' : 'Maximize';
+    $('#chip').classList.toggle('off', hid);
+  }
+  function setMax(v) { max = v; apply(); save(); }
+  function preset(p) {
+    if (S.mini) mini(false);
+    const W = desk.clientWidth, H = desk.clientHeight; max = false;
+    if (p === 'fill') max = true;
+    else { const d = defRect(); const s = p === 'min' ? { w: MINW, h: MINH } : p === 'compact' ? { w: 640, h: 440 } : d; r = { w: Math.min(s.w, W - 8), h: Math.min(s.h, H - 8) }; r.x = Math.round((W - r.w) / 2); r.y = Math.round((H - r.h) / 2); }
+    apply(); save();
+  }
+  function mini(v) {
+    if (v === S.mini) return;
+    if (v) { miniSave = { r: { ...r }, max }; if (max) { max = false; r = { ...defRect(), ...{} }; r = { ...miniSave.r }; } r.w = clamp(r.w, 420, 560); S.mini = true; document.body.classList.add('mini'); renderMini(); }
+    else { S.mini = false; document.body.classList.remove('mini'); if (miniSave) { r = miniSave.r; max = miniSave.max; miniSave = null; } render(); }
+    closeMenu(0); apply(); save();
+  }
+  function fs(v) {
+    const on = document.body.classList.contains('fs'); v = v == null ? !on : v; if (v === on) return;
+    if (v) { if (S.mini) mini(false); prevMax = max; max = true; document.body.classList.add('fs'); }
+    else { document.body.classList.remove('fs'); max = prevMax; }
+    closeMenu(0); apply();
+  }
+  function toggleHide() { hid = !hid; apply(); }
+  /* drag */
+  let drag = null;
+  $('#top').addEventListener('pointerdown', e => {
+    if (e.button !== 0 || e.target.closest('button,input,.appname')) return;
+    drag = { sx: e.clientX, sy: e.clientY, on: false, id: e.pointerId }; $('#top').setPointerCapture(e.pointerId);
+  });
+  $('#top').addEventListener('pointermove', e => {
+    if (!drag) return;
+    const dx = e.clientX - drag.sx, dy = e.clientY - drag.sy;
+    if (!drag.on) {
+      if (Math.hypot(dx, dy) < 4) return; drag.on = true;
+      if (max && !document.body.classList.contains('fs')) { const W = desk.clientWidth, f = e.clientX / W; max = false; r.x = Math.round(e.clientX - r.w * f); r.y = 4; drag.ox = r.x; drag.oy = r.y; drag.sx = e.clientX; drag.sy = e.clientY; apply(); return; }
+      if (max) { drag = null; return; }
+      drag.ox = r.x; drag.oy = r.y;
+    }
+    r.x = drag.ox + (e.clientX - drag.sx); r.y = drag.oy + (e.clientY - drag.sy); apply();
+  });
+  const endDrag = () => { if (drag && drag.on) save(); drag = null; };
+  $('#top').addEventListener('pointerup', endDrag); $('#top').addEventListener('pointercancel', endDrag);
+  $('#top').addEventListener('dblclick', e => { if (e.target.closest('button,input,.appname') || S.mini) return; if (!document.body.classList.contains('fs')) setMax(!max); });
+  /* resize */
+  $$('.rz').forEach(h => h.addEventListener('pointerdown', e => {
+    if (e.button !== 0 || max) return; e.preventDefault(); h.setPointerCapture(e.pointerId);
+    const d = h.dataset.d, s = { ...r, px: e.clientX, py: e.clientY };
+    const mv = ev => {
+      const dx = ev.clientX - s.px, dy = ev.clientY - s.py, nr = { x: s.x, y: s.y, w: s.w, h: s.h };
+      if (d.includes('e')) nr.w = Math.max(MINW, s.w + dx);
+      if (d.includes('s')) nr.h = Math.max(MINH, s.h + dy);
+      if (d.includes('w')) { nr.w = Math.max(MINW, s.w - dx); nr.x = s.x + s.w - nr.w; }
+      if (d.includes('n')) { nr.h = Math.max(MINH, s.h - dy); nr.y = s.y + s.h - nr.h; }
+      r = nr; apply();
+    };
+    const up = () => { h.removeEventListener('pointermove', mv); h.removeEventListener('pointerup', up); h.removeEventListener('pointercancel', up); save(); };
+    h.addEventListener('pointermove', mv); h.addEventListener('pointerup', up); h.addEventListener('pointercancel', up);
+  }));
+  /* buttons */
+  $('#wc-min').addEventListener('click', toggleHide);
+  $('#wc-max').addEventListener('click', () => { if (document.body.classList.contains('fs')) fs(false); else setMax(!max); });
+  $('#wc-close').addEventListener('click', () => closeWin());
+  $('#chip').addEventListener('click', toggleHide);
+  $('#presets').addEventListener('click', e => { const b = e.target.closest('button'); if (b) preset(b.dataset.p); });
+  addEventListener('resize', apply);
+  return { apply, mini, fs, preset, hide: () => { hid = true; apply(); }, get rect() { return r; } };
+})();
+function closeWin() { WM.hide(); toast('Window hidden — use the taskbar to bring it back'); }
+/* ---------- boot ---------- */
+applyTheme(); WM.apply(); render(); schedule();
+
+})();</script>
+</body>
+</html>
