@@ -19,8 +19,10 @@ criteria, not by calendar pressure.
 | [success-metrics.md](success-metrics.md) | Product, quality and sustainability measures |
 | [project-tracking.md](project-tracking.md) | Board, labels, definitions of ready and done, weekly cadence |
 | [quality-and-release.md](quality-and-release.md) | Test levels and release gate checklist |
+| [release-and-support-policy.md](release-and-support-policy.md) | Release channels, versioning, LTS support and end of life |
 | [website-and-support.md](website-and-support.md) | Public site, support boundary and triage |
 | [ai-workflow.md](ai-workflow.md) | AI-assisted development rules and verification |
+| [agent-workflow.md](agent-workflow.md) | Roles, permissions, handoffs and evidence for automated agents |
 | [first-30-days.md](first-30-days.md) | The first month of execution |
 | [initial-backlog.csv](initial-backlog.csv) | Seed tasks for GitHub Issues |
 
