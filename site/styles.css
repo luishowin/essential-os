@@ -311,6 +311,47 @@ strong { font-weight: 550; }
 .status__list li { padding: 0.5rem 0; border-top: 1px solid var(--line); font-size: 0.94rem; }
 .status__list li:last-child { border-bottom: 1px solid var(--line); }
 
+/* ── Build tracker ──────────────────────────────────────────────────── */
+.tracker-summary {
+  display: grid; grid-template-columns: repeat(5, 1fr); gap: 0.6rem;
+  margin: 1.4rem 0 0;
+}
+.tracker-stat {
+  border: 1px solid var(--line); border-radius: 10px;
+  padding: 0.85rem 0.5rem; text-align: center; background: var(--panel);
+}
+.tracker-stat__num {
+  display: block; font-family: var(--serif);
+  font-size: clamp(1.25rem, 3vw, 1.6rem); line-height: 1.1;
+}
+.tracker-stat__label {
+  display: block; font-size: 0.66rem; letter-spacing: 0.1em;
+  text-transform: uppercase; color: var(--muted); margin-top: 0.35rem;
+}
+
+.tracker {
+  list-style: none; margin: 0.9rem 0 0; padding: 0;
+  display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0.6rem;
+}
+.tracker__item {
+  display: flex; flex-direction: column; gap: 0.45rem; height: 100%;
+  padding: 1rem 1.1rem; border: 1px solid var(--line);
+  border-radius: 10px; background: var(--panel); text-decoration: none;
+  transition: border-color 0.2s;
+}
+.tracker__item:hover { border-color: var(--line-strong); }
+main a.tracker__item { color: var(--fg); text-decoration: none; }
+main a.tracker__item:hover { color: var(--fg); }
+.tracker__head {
+  display: flex; align-items: baseline; justify-content: space-between; gap: 0.8rem;
+}
+.tracker__name { font-size: 0.98rem; letter-spacing: 0.01em; }
+.tracker__desc { color: var(--muted); font-size: 0.84rem; line-height: 1.45; }
+.tracker__desc::after { content: " \2197"; color: var(--faint); font-size: 0.9em; }
+.tracker .tag { flex: none; white-space: nowrap; }
+.tag--proto { color: var(--fg); border-color: var(--line-strong); }
+.tag--tool { color: var(--muted); border-color: var(--line-strong); border-style: dashed; }
+
 /* ── Closing ────────────────────────────────────────────────────────── */
 .closing { padding: clamp(4rem, 12vw, 8rem) 0; text-align: center; }
 .closing__line { font-family: var(--serif); font-size: clamp(1.5rem, 5vw, 2.4rem); margin: 0 0 0.8rem; }
@@ -343,6 +384,8 @@ a:focus-visible, button:focus-visible {
   .hero__title { max-width: none; }
   .node { min-width: 100%; }
   .chapter { scroll-margin-top: 4rem; }
+  .tracker-summary { grid-template-columns: repeat(2, 1fr); }
+  .tracker { grid-template-columns: 1fr; }
 }
 
 @media (prefers-reduced-motion: reduce) {

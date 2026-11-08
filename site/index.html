@@ -46,6 +46,7 @@
       <li><a href="#007-ownership"><span class="ch__num">007</span><span class="ch__label">Ownership and recovery</span></a></li>
       <li><a href="#008-machine"><span class="ch__num">008</span><span class="ch__label">The machine</span></a></li>
       <li><a href="#009-roadmap"><span class="ch__num">009</span><span class="ch__label">The roadmap</span></a></li>
+      <li><a href="#010-built"><span class="ch__num">010</span><span class="ch__label">Built so far</span></a></li>
     </ol>
   </nav>
   <noscript><style>.chapters__toggle{display:none}.chapters{position:static;transform:none;margin:2rem auto;max-width:var(--measure)}.chapters ol{display:block;position:static;max-height:none}</style></noscript>
@@ -425,6 +426,172 @@
         <li>the enormous scope of an operating-system layer</li>
         <li>a good UX while the architecture becomes complex</li>
       </ul>
+      <p class="caption">
+        The interface prototypes that exist today are listed in
+        <a href="#010-built">Built so far</a>.
+      </p>
+    </section>
+
+    <!-- ── 010 ──────────────────────────────────────────────────────── -->
+    <section class="block chapter" id="010-built" aria-labelledby="h-010">
+      <p class="chap__num" aria-hidden="true">010</p>
+      <h2 id="h-010">Built so far</h2>
+      <p class="status__stamp">November 2026 · Interface prototypes</p>
+      <p>
+        Seventeen working interface studies exist today: fifteen applications, a
+        desktop shell and the SLATE keyboard study. Each is one self-contained
+        HTML file. The interactions are real in the browser; the data, files and
+        system integration are mocked. These are <strong>mockups, not shipped
+        software</strong>.
+      </p>
+
+      <div class="tracker-summary" aria-label="Prototype counts">
+        <div class="tracker-stat">
+          <span class="tracker-stat__num">15</span>
+          <span class="tracker-stat__label">App mockups</span>
+        </div>
+        <div class="tracker-stat">
+          <span class="tracker-stat__num">1</span>
+          <span class="tracker-stat__label">Desktop shell</span>
+        </div>
+        <div class="tracker-stat">
+          <span class="tracker-stat__num">1</span>
+          <span class="tracker-stat__label">Hardware study</span>
+        </div>
+        <div class="tracker-stat">
+          <span class="tracker-stat__num">9</span>
+          <span class="tracker-stat__label">Kept iterations</span>
+        </div>
+        <div class="tracker-stat">
+          <span class="tracker-stat__num">1</span>
+          <span class="tracker-stat__label">Claude skill</span>
+        </div>
+      </div>
+
+      <h3 class="sub">Applications</h3>
+      <ul class="tracker">
+        <li>
+          <a class="tracker__item" href="prototypes/apps/calculator/">
+            <span class="tracker__head"><span class="tracker__name">Calculator</span><span class="tag tag--proto">Prototype</span></span>
+            <span class="tracker__desc">Quiet utility, keyboard-first entry, compact window</span>
+          </a>
+        </li>
+        <li>
+          <a class="tracker__item" href="prototypes/apps/calendar/">
+            <span class="tracker__head"><span class="tracker__name">Calendar</span><span class="tag tag--proto">Prototype</span></span>
+            <span class="tracker__desc">Month and day views, event sheets, restrained toolbar</span>
+          </a>
+        </li>
+        <li>
+          <a class="tracker__item" href="prototypes/apps/clock/">
+            <span class="tracker__head"><span class="tracker__name">Clock</span><span class="tag tag--proto">Prototype</span></span>
+            <span class="tracker__desc">World clock, timers, desktop-widget treatment</span>
+          </a>
+        </li>
+        <li>
+          <a class="tracker__item" href="prototypes/apps/color-picker/">
+            <span class="tracker__head"><span class="tracker__name">Color Picker</span><span class="tag tag--proto">Prototype</span></span>
+            <span class="tracker__desc">Palette, sliders and live preview</span>
+          </a>
+        </li>
+        <li>
+          <a class="tracker__item" href="prototypes/apps/docs/">
+            <span class="tracker__head"><span class="tracker__name">Docs</span><span class="tag tag--proto">Prototype</span></span>
+            <span class="tracker__desc">Document editor, menu bar, bottom command pill</span>
+          </a>
+        </li>
+        <li>
+          <a class="tracker__item" href="prototypes/apps/files/">
+            <span class="tracker__head"><span class="tracker__name">Files</span><span class="tag tag--proto">Prototype</span></span>
+            <span class="tracker__desc">Browser, sidebar, list and grid views</span>
+          </a>
+        </li>
+        <li>
+          <a class="tracker__item" href="prototypes/apps/fonts/">
+            <span class="tracker__head"><span class="tracker__name">Fonts</span><span class="tag tag--proto">Prototype</span></span>
+            <span class="tracker__desc">Type specimens and font management</span>
+          </a>
+        </li>
+        <li>
+          <a class="tracker__item" href="prototypes/apps/glyphs/">
+            <span class="tracker__head"><span class="tracker__name">Glyphs</span><span class="tag tag--proto">Prototype</span></span>
+            <span class="tracker__desc">Character and glyph inspection</span>
+          </a>
+        </li>
+        <li>
+          <a class="tracker__item" href="prototypes/apps/ide/">
+            <span class="tracker__head"><span class="tracker__name">IDE</span><span class="tag tag--proto">Prototype</span></span>
+            <span class="tracker__desc">Code editor shell for the platform</span>
+          </a>
+        </li>
+        <li>
+          <a class="tracker__item" href="prototypes/apps/notes/">
+            <span class="tracker__head"><span class="tracker__name">Notes</span><span class="tag tag--proto">Prototype</span></span>
+            <span class="tracker__desc">The Quiet Editor writing surface</span>
+          </a>
+        </li>
+        <li>
+          <a class="tracker__item" href="prototypes/apps/photos/">
+            <span class="tracker__head"><span class="tracker__name">Photos</span><span class="tag tag--proto">Prototype</span></span>
+            <span class="tracker__desc">Library, albums, full-window viewer</span>
+          </a>
+        </li>
+        <li>
+          <a class="tracker__item" href="prototypes/apps/settings/">
+            <span class="tracker__head"><span class="tracker__name">Settings</span><span class="tag tag--proto">Prototype</span></span>
+            <span class="tracker__desc">Settings navigation and panels</span>
+          </a>
+        </li>
+        <li>
+          <a class="tracker__item" href="prototypes/apps/sheets/">
+            <span class="tracker__head"><span class="tracker__name">Sheets</span><span class="tag tag--proto">Prototype</span></span>
+            <span class="tracker__desc">Spreadsheet grid, formula bar, sheets</span>
+          </a>
+        </li>
+        <li>
+          <a class="tracker__item" href="prototypes/apps/software/">
+            <span class="tracker__head"><span class="tracker__name">Software</span><span class="tag tag--proto">Prototype</span></span>
+            <span class="tracker__desc">Application store and update surface</span>
+          </a>
+        </li>
+        <li>
+          <a class="tracker__item" href="prototypes/apps/task-manager/">
+            <span class="tracker__head"><span class="tracker__name">Task Manager</span><span class="tag tag--proto">Prototype</span></span>
+            <span class="tracker__desc">Processes, resource graphs, per-app detail</span>
+          </a>
+        </li>
+      </ul>
+
+      <h3 class="sub">Shell and hardware</h3>
+      <ul class="tracker">
+        <li>
+          <a class="tracker__item" href="prototypes/desktop/">
+            <span class="tracker__head"><span class="tracker__name">Desktop shell</span><span class="tag tag--proto">Prototype</span></span>
+            <span class="tracker__desc">Window chrome, taskbar, presets, drag and resize</span>
+          </a>
+        </li>
+        <li>
+          <a class="tracker__item" href="prototypes/hardware/keyboard/">
+            <span class="tracker__head"><span class="tracker__name">Keyboard</span><span class="tag tag--proto">Prototype</span></span>
+            <span class="tracker__desc">SLATE laptop keyboard layout study</span>
+          </a>
+        </li>
+      </ul>
+
+      <h3 class="sub">Tooling</h3>
+      <ul class="tracker">
+        <li>
+          <a class="tracker__item" href="https://github.com/luishowin/essential-os/tree/main/skills/essential-os-app">
+            <span class="tracker__head"><span class="tracker__name">Essential OS app skill</span><span class="tag tag--tool">Tooling</span></span>
+            <span class="tracker__desc">Claude plugin that encodes the app pattern</span>
+          </a>
+        </li>
+      </ul>
+
+      <p class="caption">
+        Dates, kept iterations and the honest limits are recorded in
+        <a href="https://github.com/luishowin/essential-os/blob/main/docs/status.md">docs/status.md</a>.
+      </p>
     </section>
 
     <!-- ── Closing ──────────────────────────────────────────────────── -->
