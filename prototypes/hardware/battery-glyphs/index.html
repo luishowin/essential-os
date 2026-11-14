@@ -1,0 +1,144 @@
+<!DOCTYPE html><html lang="en" data-theme="dark"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Essential OS: battery glyphs in context</title>
+<style>
+:root{--bg:#f3f3f5;--fg:#1c1c1e;--mut:#6b6b73;--glass:rgba(255,255,255,.72);--line:rgba(0,0,0,.12);--grid:rgba(0,0,0,.05);--acc:#fa2d48;--card:rgba(255,255,255,.8)}
+html[data-theme=dark]{--bg:#17171a;--fg:#fff;--mut:#9a9aa3;--glass:rgba(40,40,46,.72);--line:rgba(255,255,255,.14);--grid:rgba(255,255,255,.05);--card:rgba(32,32,38,.85)}
+*{box-sizing:border-box}html,body{height:100%;margin:0}
+body{font:14px/1.4 Inter,system-ui,sans-serif;color:var(--fg);background:var(--bg);overflow:hidden;padding-top:env(safe-area-inset-top,0px)}
+.desktop{position:fixed;inset:calc(44px + env(safe-area-inset-top,0px)) 0 0 0;background-image:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);background-size:32px 32px;display:flex;align-items:center;justify-content:center;padding:12px}
+.eos-win{width:min(760px,100%);max-height:100%;overflow:auto;background:var(--card);backdrop-filter:blur(28px) saturate(1.8);border:1px solid var(--line);border-radius:12px;box-shadow:0 20px 60px rgba(0,0,0,.35)}
+.eos-top{display:flex;align-items:center;gap:8px;padding:10px 14px;border-bottom:1px solid var(--line);font-weight:600}
+.eos-top svg{height:14px;width:auto;flex:none}
+.eos-top button{margin-left:auto}
+.eos-body{padding:16px;display:grid;gap:16px;grid-template-columns:1fr 1fr}
+@media(max-width:640px){.eos-body{grid-template-columns:1fr}}
+.eos-h{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--mut);margin:0 0 8px}
+.eos-states{display:grid;gap:6px}
+.eos-st{display:flex;align-items:center;gap:12px;text-align:left;padding:8px 10px;border:1px solid var(--line);background:transparent;color:var(--fg);border-radius:10px;cursor:pointer;font:inherit;font-size:13px}
+.eos-st[aria-pressed=true]{border-color:var(--acc);background:color-mix(in srgb,var(--acc) 12%,transparent)}
+.eos-st svg{width:34px;height:auto;flex:none}
+.eos-big{display:flex;align-items:center;justify-content:center;height:120px;border:1px solid var(--line);border-radius:12px;margin-bottom:12px}
+.eos-big svg{height:56px;width:auto}
+.eos-lbl{min-height:40px;font-weight:600;margin-bottom:12px}
+.eos-row{display:flex;align-items:center;gap:10px;margin:8px 0;font-size:13px}
+.eos-row label{flex:1}
+input[type=range]{flex:2;accent-color:var(--acc)}
+button{font:inherit;color:var(--fg);background:transparent;border:1px solid var(--line);border-radius:8px;padding:5px 10px;cursor:pointer}
+button:hover{border-color:var(--acc)}
+.eos-tb{position:fixed;left:0;right:0;top:0;height:calc(44px + env(safe-area-inset-top,0px));padding-top:env(safe-area-inset-top,0px);display:flex;align-items:center;gap:8px;padding-inline:10px;background:var(--glass);backdrop-filter:blur(28px) saturate(1.8);border-bottom:1px solid var(--line);z-index:5}
+.eos-chip{font-weight:600;padding:4px 10px;border-radius:8px;background:var(--line)}
+.eos-tray{margin-left:auto;display:flex;align-items:center;gap:4px}
+.eos-ti{display:flex;align-items:center;justify-content:center;height:32px;min-width:32px;padding:0 6px;border:0;border-radius:8px;background:transparent}
+.eos-ti:hover{background:var(--line)}
+.eos-ti svg{height:16px;width:auto;display:block}
+.eos-clk{display:flex;flex-direction:column;align-items:flex-end;line-height:1.15;font-size:12px;font-variant-numeric:tabular-nums;padding:2px 8px}
+.eos-clk b{font-size:13px}
+.eos-tip{position:fixed;top:calc(56px + env(safe-area-inset-top,0px));right:10px;background:var(--glass);backdrop-filter:blur(28px) saturate(1.8);border:1px solid var(--line);border-radius:14px;padding:10px 14px;max-width:260px;box-shadow:0 10px 30px rgba(0,0,0,.3);opacity:0;transform:translateY(-8px);pointer-events:none;transition:.18s;z-index:6;font-size:13px}
+.eos-tip.on{opacity:1;transform:none}
+@media(max-width:520px){.eos-chip{display:none}}
+@media(prefers-reduced-motion:reduce){.eos-tip{transition:none}}
+.f{color:var(--fg)}
+.eos-ti svg,.eos-big svg,.eos-st svg,.eos-top svg{overflow:visible}
+</style></head><body>
+<svg width="0" height="0" style="position:absolute"><defs>
+<symbol id="eos-bolt" viewBox="0 0 24 10.4"><path transform="translate(21.77 5.2) scale(1.15) translate(-21.77 -5.2) translate(-1.6187 -48.6428)" d="M21.9076 54.4656C21.8046 54.4656 21.7388 54.3559 21.7872 54.2651L23.358 51.3171C23.4248 51.1918 23.6148 51.2392 23.6148 51.3813V53.2071C23.6148 53.2824 23.6759 53.3435 23.7512 53.3435H24.8736C24.9779 53.3435 25.0436 53.4558 24.9925 53.5467L23.4135 56.3584C23.3447 56.4808 23.1581 56.432 23.1581 56.2916V54.6021C23.1581 54.5267 23.097 54.4656 23.0217 54.4656H21.9076Z" fill="currentColor"/></symbol>
+<symbol id="eos-bang" viewBox="0 0 24 10.4"><path transform="translate(21.07 5.085) scale(1.15) translate(-21.07 -5.085) translate(-1.6187 -98.094)" d="M22.6904 104.69C23.0771 104.69 23.3906 105.004 23.3906 105.39C23.3906 105.777 23.077 106.09 22.6904 106.091C22.3037 106.091 21.9893 105.777 21.9893 105.39C21.9893 105.004 22.3036 104.69 22.6904 104.69ZM22.6885 100.266C23.0741 100.266 23.3867 100.579 23.3867 100.965V103.541C23.3867 103.926 23.0741 104.239 22.6885 104.239C22.3027 104.239 21.9902 103.927 21.9902 103.541V100.965C21.9902 100.579 22.3027 100.266 22.6885 100.266Z" fill="currentColor"/></symbol>
+</defs></svg>
+<div class="desktop"><section class="eos-win" aria-label="Power simulator">
+<div class="eos-top"><svg viewBox="0 0 24 10.4" aria-hidden="true"><rect x=".5" y=".5" width="18.12" height="9.39" rx="2.5" fill="none" stroke="currentColor"/><rect x="2.34" y="2.17" width="14.76" height="6.04" rx="1" fill="currentColor"/><rect x="19.89" y="2.88" width=".97" height="3.63" rx=".49" fill="currentColor"/></svg>Battery glyph simulator<button id="theme" type="button">Light / dark</button></div>
+<div class="eos-body">
+<div><h2 class="eos-h">Glyph states from your sheet</h2><div class="eos-states" id="states"></div></div>
+<div><h2 class="eos-h">Live preview (zoomed)</h2>
+<div class="eos-big" id="big"></div><div class="eos-lbl" id="lbl"></div>
+<h2 class="eos-h">Controls</h2>
+<div class="eos-row"><label for="pct">Charge <b id="pv"></b></label><input id="pct" type="range" min="0" max="100"></div>
+<div class="eos-row"><label for="plug">Plugged in</label><input id="plug" type="checkbox"></div>
+<div class="eos-row"><label for="bad">Bad charger</label><input id="bad" type="checkbox"></div>
+<div class="eos-row"><label for="ps">Power saving</label><input id="ps" type="checkbox"></div>
+<div class="eos-row"><label for="nob">No battery detected</label><input id="nob" type="checkbox"></div>
+<div class="eos-row"><label for="sim">Run simulation (1% / second)</label><input id="sim" type="checkbox"></div>
+<p class="eos-h" style="margin-top:12px">Tray: click Wi-Fi to cycle signal, click sound to mute, scroll over it for volume, click battery for details.</p>
+</div></div></section></div>
+<div class="eos-tb"><span class="eos-chip">Power</span>
+<div class="eos-tray">
+<button class="eos-ti" id="wifi" type="button" aria-label="Wi-Fi"></button>
+<button class="eos-ti" id="snd" type="button" aria-label="Sound"></button>
+<button class="eos-ti" id="bat" type="button" aria-label="Battery"></button>
+<div class="eos-clk"><b id="tm"></b><span id="dt"></span></div></div></div>
+<div class="eos-tip" id="tip" role="status"></div>
+<script>(()=>{'use strict';
+const Y='#FFD305',G='#80EA64',R='#FF4332',O='#FFB222',$=id=>document.getElementById(id);
+const S={pct:100,plug:false,bad:false,ps:false,nob:false,sim:false,wifi:3,vol:60,mute:false};
+const PRESETS=[
+['100% charged, not plugged in',{pct:100,plug:0,bad:0,ps:0}],
+['25% charge remaining, not plugged in, powersaving on',{pct:25,plug:0,bad:0,ps:1}],
+['100% charged, plugged in',{pct:100,plug:1,bad:0,ps:0}],
+['35% charged, plugged in',{pct:35,plug:1,bad:0,ps:0}],
+['50% charged, plugged in, bad charger',{pct:50,plug:1,bad:1,ps:0}],
+['less than 10% charge remaining, not plugged in',{pct:8,plug:0,bad:0,ps:0}],
+['less than 5% charge remaining, not plugged in',{pct:3,plug:0,bad:0,ps:0}],
+['no valid battery detected',{nob:1}],
+['5% charged, plugged in, power saving',{pct:5,plug:1,bad:0,ps:1}]];
+function glyph(s){
+ let fill='currentColor',w=Math.max(.65,s.pct*.1476),badge='';
+ if(s.ps)fill=Y;else if(s.plug&&!s.bad)fill=G;else if(s.pct<10&&!s.plug)fill=R;
+ if(s.bad)badge='<use href="#eos-bang" color="'+O+'" width="24" height="10.4"/>';
+ else if(s.plug)badge='<use href="#eos-bolt" color="currentColor" width="24" height="10.4"/>';
+ else if(s.pct<5)badge='<use href="#eos-bang" color="currentColor" width="24" height="10.4"/>';
+ const body='<rect x=".5" y=".5" width="18.12" height="9.39" rx="2.5" fill="none" stroke="currentColor"/>'+
+ (badge?'':'<rect x="19.89" y="2.88" width=".97" height="3.63" rx=".49" fill="currentColor"/>');
+ if(s.nob)return '<svg viewBox="0 0 24 10.4" class="f" aria-hidden="true">'+body+'<path d="M7.1 2.7l5 5M12.1 2.7l-5 5" stroke="currentColor" stroke-linecap="round" fill="none"/></svg>';
+ const rx=Math.min(1,w/2);
+ return '<svg viewBox="0 0 24 10.4" class="f" aria-hidden="true">'+body+'<rect x="2.34" y="2.17" width="'+w.toFixed(2)+'" height="6.04" rx="'+rx.toFixed(2)+'" fill="'+fill+'"/>'+badge+'</svg>';
+}
+function label(s){
+ if(s.nob)return 'no valid battery detected';
+ const p=Math.round(s.pct);let a;
+ if(s.plug)a=(p>=100?'100% charged':p+'% charged')+', plugged in';
+ else if(p>=100)a='100% charged, not plugged in';
+ else if(p<5)a='less than 5% charge remaining, not plugged in';
+ else if(p<10)a='less than 10% charge remaining, not plugged in';
+ else a=p+'% charge remaining, not plugged in';
+ if(s.bad&&s.plug)a+=', bad charger';
+ if(s.ps)a+=s.plug?', power saving':', powersaving on';
+ return a;
+}
+function wifiSvg(n){const c=i=>i<=n?'currentColor':'currentColor" opacity=".25';
+ return '<svg viewBox="0 0 20 15" fill="none" stroke-width="1.8" stroke-linecap="round" stroke="currentColor"><path d="M2 5.2a11 11 0 0 1 16 0" stroke="'+c(3)+'"/><path d="M4.7 8.2a7 7 0 0 1 10.6 0" stroke="'+c(2)+'"/><path d="M7.4 11a3.2 3.2 0 0 1 5.2 0" stroke="'+c(1)+'"/><circle cx="10" cy="13.4" r="1" fill="'+(n?'currentColor':'none')+'" stroke="none"/>'+(n?'':'<path d="M3 2l14 12" stroke="currentColor"/>')+'</svg>';}
+function sndSvg(v,m){const w=m||v==0?'<path d="M13 5l5 5M18 5l-5 5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>':
+ '<path d="M12.5 5.5a3.5 3.5 0 0 1 0 4"/>'+(v>35?'<path d="M14.6 3.6a6.5 6.5 0 0 1 0 7.8"/>':'');
+ return '<svg viewBox="0 0 20 15" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M2 5.5h2.5L8 2.5v10L4.5 9.5H2z" fill="currentColor" stroke-linejoin="round"/>'+w+'</svg>';}
+const D=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'],M=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+function clock(){const n=new Date();let h=n.getHours(),ap=h<12?'AM':'PM';h=h%12||12;
+ $('tm').textContent=h+':'+String(n.getMinutes()).padStart(2,'0')+' '+ap;
+ $('dt').textContent=D[n.getDay()]+' '+n.getDate()+' '+M[n.getMonth()];}
+function render(){
+ const g=glyph(S),l=label(S);
+ $('bat').innerHTML=g;$('big').innerHTML=g;$('lbl').textContent=l;$('bat').setAttribute('aria-label','Battery: '+l);
+ $('wifi').innerHTML=wifiSvg(S.wifi);$('snd').innerHTML=sndSvg(S.vol,S.mute);
+ $('pct').value=S.pct;$('pv').textContent=Math.round(S.pct)+'%';
+ for(const k of['plug','bad','ps','nob','sim'])$(k).checked=!!S[k];
+ $('pct').disabled=S.nob;
+ const t=$('tip');if(t.classList.contains('on'))tip();
+ [...document.querySelectorAll('.eos-st')].forEach((b,i)=>{const p=PRESETS[i][1];
+  b.setAttribute('aria-pressed',String(Object.keys(p).every(k=>(k==='pct'?(p.nob?false:Math.round(S.pct)===p.pct):!!S[k]===!!p[k]))&&(p.nob||!S.nob)));});
+}
+function tip(msg){const t=$('tip');t.textContent=msg||('Battery: '+label(S)+'. Wi-Fi: '+(S.wifi?['','weak','good','strong'][S.wifi]:'off')+'. Volume: '+(S.mute?'muted':S.vol+'%')+'.');}
+let tt;function flash(m){tip(m);const t=$('tip');t.classList.add('on');clearTimeout(tt);tt=setTimeout(()=>t.classList.remove('on'),2600);}
+PRESETS.forEach(([n,p],i)=>{const b=document.createElement('button');b.className='eos-st';b.type='button';
+ const tmp=Object.assign({pct:100,plug:0,bad:0,ps:0,nob:0},p);
+ b.innerHTML=glyph(tmp)+'<span>'+n+'</span>';
+ b.onclick=()=>{S.nob=0;Object.assign(S,p);render();};$('states').appendChild(b);});
+$('pct').oninput=e=>{S.pct=+e.target.value;render();};
+for(const k of['plug','bad','ps','nob','sim'])$(k).onchange=e=>{S[k]=e.target.checked;render();};
+$('wifi').onclick=()=>{S.wifi=(S.wifi+3)%4;flash();render();};
+$('snd').onclick=()=>{S.mute=!S.mute;flash();render();};
+$('snd').addEventListener('wheel',e=>{e.preventDefault();S.vol=Math.max(0,Math.min(100,S.vol+(e.deltaY<0?5:-5)));S.mute=false;flash();render();},{passive:false});
+$('bat').onclick=()=>{const t=$('tip');if(t.classList.contains('on')){t.classList.remove('on');}else{tip();t.classList.add('on');clearTimeout(tt);}};
+$('theme').onclick=()=>{const h=document.documentElement;h.dataset.theme=h.dataset.theme==='dark'?'light':'dark';try{localStorage.setItem('eos.theme',h.dataset.theme)}catch(e){}};
+try{const t=localStorage.getItem('eos.theme');if(t)document.documentElement.dataset.theme=t;}catch(e){}
+setInterval(()=>{if(S.sim&&!S.nob){S.pct=Math.max(0,Math.min(100,S.pct+(S.plug?1:-1)));
+ if(S.pct<=0&&!S.plug){S.sim=false;flash('Battery empty: shutting down (simulated)');}render();}},1000);
+clock();setInterval(clock,1000);render();
+})();</script></body></html>

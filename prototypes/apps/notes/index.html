@@ -1,1044 +1,290 @@
-<!doctype html>
-<html lang="en" data-theme="light">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Quiet Editor – UI study</title>
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8"><title>Notes</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <style>
-/* ==========================================================
-   DESIGN TOKENS — tweak these, everything else follows
-   ========================================================== */
-:root {
-  --font-ui: Inter, "Inter Variable", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Noto Sans", sans-serif;
-  --font-doc: var(--font-ui);
-
-  --bg: #ffffff;
-  --fg: #121214;
-  --muted: #8a8a90;
-  --subtle: #cfcfd4;
-  --tab-active: #ebebed;
-  --tab-hover: #f4f4f6;
-  --pill: #f2f2f4;
-  --pill-hover: #e7e7ea;
-  --accent: #2f6df6;
-  --accent-hover: #2560e6;
-  --accent-fg: #ffffff;
-  --link: #7ba6cb;
-  --caret: #b3b3b9;
-  --selection: rgba(47, 109, 246, .22);
-  --menu-bg: #ffffff;
-  --menu-border: rgba(0, 0, 0, .08);
-  --shadow: 0 10px 30px rgba(0, 0, 0, .14), 0 1px 3px rgba(0, 0, 0, .08);
-  --toast-bg: #1b1b1e;
-  --toast-fg: #f4f4f5;
-
-  --radius-sm: 6px;
-  --radius-md: 8px;
-  --radius-lg: 10px;
-
-  --fs: 15px;      /* document font size   */
-  --lh: 1.6;       /* document line height */
-  --titlebar-h: 46px;
-}
-html[data-theme="dark"] {
-  --bg: #161618;
-  --fg: #ececee;
-  --muted: #8e8e96;
-  --subtle: #3a3a40;
-  --tab-active: #2a2a2e;
-  --tab-hover: #202023;
-  --pill: #232327;
-  --pill-hover: #2f2f34;
-  --accent: #4b83ff;
-  --accent-hover: #6293ff;
-  --link: #8fb8de;
-  --caret: #6d6d75;
-  --selection: rgba(75, 131, 255, .32);
-  --menu-bg: #1f1f23;
-  --menu-border: rgba(255, 255, 255, .08);
-  --shadow: 0 10px 30px rgba(0, 0, 0, .5), 0 1px 3px rgba(0, 0, 0, .4);
-  --toast-bg: #ececee;
-  --toast-fg: #161618;
-}
-
-/* ---------- base ---------- */
-* { box-sizing: border-box; margin: 0; }
-html, body { height: 100%; }
-body {
-  background: #0f1218;
-  color: var(--fg);
-  font: 13px/1.4 var(--font-ui);
-  -webkit-font-smoothing: antialiased;
-  overflow: hidden;
-}
-button { font: inherit; color: inherit; background: none; border: 0; padding: 0; cursor: default; }
-button:focus-visible, .tab:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
-svg { display: block; flex: none; }
-::selection { background: var(--selection); }
-
-/* ---------- desktop sandbox: wallpaper, window, resize handles, taskbar ---------- */
-.desktop {
-  position: fixed; inset: 0 0 44px 0; overflow: hidden;
-  background:
-    linear-gradient(rgba(255,255,255,.035) 1px, transparent 1px) 0 0 / 32px 32px,      /* 32 px grid: handy for judging sizes */
-    linear-gradient(90deg, rgba(255,255,255,.035) 1px, transparent 1px) 0 0 / 32px 32px,
-    radial-gradient(1100px 700px at 15% 0%, #2c4a70 0, transparent 60%),
-    radial-gradient(900px 600px at 100% 100%, #3a2c5e 0, transparent 55%),
-    #151a24;
-}
-.desktop.interacting { user-select: none; }
-.desktop.interacting .window { transition: none; }
-
-.window {
-  position: absolute; z-index: 1;
-  border-radius: 12px;
-  box-shadow: 0 0 0 1px rgba(0, 0, 0, .4), 0 24px 64px rgba(0, 0, 0, .45), 0 4px 14px rgba(0, 0, 0, .3);
-  transition: opacity .16s, transform .16s;
-}
-.window.gone {
-  opacity: 0; transform: scale(.97) translateY(10px);
-  pointer-events: none; visibility: hidden;
-  transition: opacity .16s, transform .16s, visibility 0s linear .16s;
-}
-.window.maxed { border-radius: 0; box-shadow: none; }
-.window.maxed .app { border-radius: 0; }
-
-/* the app fills whatever size the window has; it is also the container that drives responsive rules */
-.app {
-  position: relative; display: flex; flex-direction: column;
-  width: 100%; height: 100%;
-  background: var(--bg); color: var(--fg);
-  border-radius: 12px; overflow: hidden;
-  container: win / inline-size;
-}
-.app::after {                                   /* hairline window edge */
-  content: ""; position: absolute; inset: 0; z-index: 70;
-  border-radius: inherit; pointer-events: none;
-  box-shadow: inset 0 0 0 1px rgba(127, 127, 127, .28);
-}
-
-.rz { position: absolute; z-index: 80; touch-action: none; }
-.rz.n  { top: -4px;    left: 12px;  right: 12px;  height: 8px;  cursor: ns-resize; }
-.rz.s  { bottom: -4px; left: 12px;  right: 12px;  height: 8px;  cursor: ns-resize; }
-.rz.e  { right: -4px;  top: 12px;   bottom: 12px; width: 8px;   cursor: ew-resize; }
-.rz.w  { left: -4px;   top: 12px;   bottom: 12px; width: 8px;   cursor: ew-resize; }
-.rz.ne { top: -5px;    right: -5px; width: 16px;  height: 16px; cursor: nesw-resize; }
-.rz.sw { bottom: -5px; left: -5px;  width: 16px;  height: 16px; cursor: nesw-resize; }
-.rz.nw { top: -5px;    left: -5px;  width: 16px;  height: 16px; cursor: nwse-resize; }
-.rz.se { bottom: -5px; right: -5px; width: 16px;  height: 16px; cursor: nwse-resize; }
-.window.maxed .rz { display: none; }
-
-.taskbar {
-  position: fixed; left: 0; right: 0; bottom: 0; z-index: 40; height: 44px;
-  display: flex; align-items: center; gap: 12px; padding: 0 10px;
-  background: rgba(14, 16, 22, .86); -webkit-backdrop-filter: blur(14px); backdrop-filter: blur(14px);
-  border-top: 1px solid rgba(255, 255, 255, .08);
-  color: #d5d8df; font: 12px/1 var(--font-ui); user-select: none;
-}
-.taskbar button { padding: 7px 12px; border-radius: 7px; color: inherit; }
-.taskbar button:hover { background: rgba(255, 255, 255, .09); }
-.taskbar .chip { position: relative; display: inline-flex; align-items: center; gap: 8px; }
-.taskbar .chip[aria-pressed="true"] { background: rgba(255, 255, 255, .07); }
-.taskbar .chip .dot {
-  position: absolute; left: 50%; bottom: -3px; width: 14px; height: 2px; margin-left: -7px;
-  border-radius: 2px; background: #6f9cff; opacity: 0;
-}
-.taskbar .chip[aria-pressed="true"] .dot { opacity: 1; }
-.taskbar .tb-spacer { flex: 1; }
-.taskbar .hud { padding: 0 6px; color: #9aa0ad; white-space: nowrap; font-variant-numeric: tabular-nums; }
-.taskbar .presets { display: flex; gap: 2px; }
-.titlebar { touch-action: none; }
-
-/* ---------- title bar: tabs + menus + window controls ---------- */
-.titlebar {
-  display: flex; align-items: center; flex: none;
-  height: var(--titlebar-h);
-  padding: 0 10px 0 8px;
-  user-select: none;
-}
-.tabs { display: flex; align-items: center; min-width: 0; overflow: hidden; }
-.tab {
-  position: relative; flex: none;
-  display: flex; align-items: center; gap: 8px;
-  height: 27px; max-width: 240px;
-  padding: 0 35px 0 14px;
-  border-radius: var(--radius-md);
-  font-size: 15px; white-space: nowrap;
-  transition: background .12s;
-}
-.tab .title { overflow: hidden; text-overflow: ellipsis; }
-.tab:not(.active):hover { background: var(--tab-hover); }
-.tab:not(.active)::after {              /* hairline separator */
-  content: ""; position: absolute; right: 0; top: 50%;
-  width: 1.5px; height: 12px; margin-top: -6px;
-  background: var(--subtle); border-radius: 1px;
-}
-.tab:has(+ .tab.active)::after, .tab:hover::after { opacity: 0; }
-.tab.active {
-  background: var(--tab-active);
-  min-width: 190px; padding: 0 9px 0 11px;
-}
-.tab.active .title { flex: 1; }
-.tab .title[contenteditable="true"] { outline: 0; text-overflow: clip; cursor: text; min-width: 3ch; }
-.tab .x {
-  display: grid; place-items: center; width: 18px; height: 18px;
-  border-radius: 5px; color: var(--muted);
-}
-.tab .x:hover { background: var(--pill-hover); color: var(--fg); }
-
-.icon-btn {
-  display: grid; place-items: center;
-  width: 28px; height: 28px; border-radius: var(--radius-sm);
-  color: var(--muted);
-}
-.icon-btn:hover { background: var(--pill); color: var(--fg); }
-.newtab { margin-left: 6px; width: 26px; height: 26px; }
-
-.menubar { display: flex; margin-left: auto; flex: none; }
-.menubar button {
-  padding: 6px 19px; border-radius: var(--radius-sm);
-  font-size: 12px; font-weight: 450; color: var(--fg);
-}
-.menubar button:hover, .menubar button[aria-expanded="true"] { background: var(--pill); }
-.hamburger { display: none; margin-left: auto; flex: none; }   /* shown by the narrow-window container query */
-.hamburger[aria-expanded="true"] { background: var(--pill); color: var(--fg); }
-.newtab { flex: none; }
-.winctl { display: flex; gap: 5px; margin-left: 10px; flex: none; }
-.winctl .icon-btn { color: #55555b; }
-html[data-theme="dark"] .winctl .icon-btn { color: #a8a8b0; }
-
-/* ---------- editor ---------- */
-.stage { flex: 1; min-height: 0; overflow: auto; padding: 8px 18px 28px; cursor: text; }
-#editor {
-  min-height: 100%;
-  outline: 0;
-  font-family: var(--font-doc);
-  font-size: var(--fs);
-  line-height: var(--lh);
-  caret-color: var(--caret);
-  word-wrap: break-word;
-}
-#editor p { margin: 0 0 .75em; }
-#editor p:last-child { margin-bottom: 0; }
-#editor h1 { font-size: 1.75em; line-height: 1.25; font-weight: 700; letter-spacing: -.015em; margin: .2em 0 .45em; }
-#editor h2 { font-size: 1.4em;  line-height: 1.3;  font-weight: 650; letter-spacing: -.01em; margin: .2em 0 .4em; }
-#editor h3 { font-size: 1.15em; line-height: 1.35; font-weight: 650; margin: .2em 0 .35em; }
-#editor ul, #editor ol { padding-left: 1.4em; margin: 0 0 .75em; }
-#editor a { color: var(--link); text-decoration: none; }
-#editor a:hover { text-decoration: underline; }
-#editor.plain { white-space: pre-wrap; }
-
-/* ---------- status bar ---------- */
-.statusbar {
-  display: flex; align-items: center; flex: none; flex-wrap: wrap;
-  padding: 0 12px 14px 14px; gap: 23px;
-}
-.statusinfo { display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--muted); user-select: none; }
-.statusinfo > * { padding: 4px 8px; border-radius: var(--radius-sm); white-space: nowrap; }
-.statusinfo button:hover { background: var(--pill); color: var(--fg); }
-.aa { display: inline-flex; align-items: baseline; gap: 1px; }
-.aa small { font-size: .78em; margin-right: 1px; }
-.statusbar .spacer { flex: 1; }
-
-.update {
-  display: inline-flex; align-items: center; gap: 12px;
-  height: 27px; padding: 0 22px 0 16px;
-  background: var(--accent); color: var(--accent-fg);
-  border-radius: var(--radius-sm);
-  font-size: 15px; font-weight: 450; white-space: nowrap;
-  transition: background .12s, opacity .4s, transform .4s;
-}
-.update:hover { background: var(--accent-hover); }
-.update.done { background: var(--pill); color: var(--muted); }
-.update.gone { opacity: 0; transform: translateY(4px); pointer-events: none; }
-
-.fmtbar {
-  display: flex; align-items: center; justify-content: space-between;
-  width: 345px; height: 28px; padding: 0 4px;
-  background: var(--pill); border-radius: var(--radius-md);
-  color: var(--muted); user-select: none;
-}
-.fmtbar button {
-  display: grid; place-items: center; height: 22px; min-width: 40px;
-  border-radius: 5px; font-size: 15px; color: var(--muted);
-}
-.fmtbar button:hover { background: var(--pill-hover); color: var(--fg); }
-.fmtbar button.on { color: var(--fg); background: var(--pill-hover); }
-.fmtbar .h { display: inline-flex; align-items: center; gap: 2px; padding: 0 6px; min-width: 58px; font-size: 16px; }
-.fmtbar .b { font-weight: 800; font-size: 17px; }
-.fmtbar .i { font-family: Georgia, "Times New Roman", serif; font-style: italic; font-weight: 600; font-size: 17px; }
-.fmtbar .abx { font-size: 16px; line-height: 1; }
-.fmtbar .abx i { font-family: Georgia, serif; font-size: .7em; line-height: 0; vertical-align: baseline; position: relative; top: .12em; }
-body.is-plain .fmtbar button:not(.keep) { opacity: .4; pointer-events: none; }
-.is-hidden { display: none !important; }
-
-/* ---------- menus + toast ---------- */
-.menu {
-  position: fixed; z-index: 50; min-width: 224px; padding: 6px;
-  max-height: calc(100vh - 24px); overflow-y: auto;
-  background: var(--menu-bg); border: 1px solid var(--menu-border);
-  border-radius: var(--radius-lg); box-shadow: var(--shadow);
-  animation: pop .1s ease-out;
-}
-@keyframes pop { from { opacity: 0; transform: translateY(-3px) scale(.99); } }
-.mi {
-  display: flex; align-items: center; gap: 8px; width: 100%;
-  padding: 7px 10px 7px 6px; border-radius: var(--radius-sm);
-  font-size: 13px; text-align: left; white-space: nowrap;
-}
-.mi:hover:not(:disabled) { background: var(--pill-hover); }
-.mi:disabled { color: var(--muted); }
-.mi .ck { width: 14px; display: grid; place-items: center; color: var(--accent); }
-.mi kbd { margin-left: auto; padding-left: 24px; font: 11px var(--font-ui); color: var(--muted); }
-.msep { height: 1px; margin: 5px 6px; background: var(--menu-border); }
-.mlabel { padding: 6px 10px 4px 28px; font-size: 11px; letter-spacing: .04em; text-transform: uppercase; color: var(--muted); }
-
-.toast {
-  position: absolute; left: 50%; bottom: 56px; z-index: 60;
-  max-width: calc(100% - 24px); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-  transform: translate(-50%, 8px); opacity: 0; pointer-events: none;
-  padding: 9px 16px; border-radius: 999px;
-  background: var(--toast-bg); color: var(--toast-fg);
-  font-size: 13px; transition: opacity .2s, transform .2s;
-}
-.toast.show { opacity: 1; transform: translate(-50%, 0); }
-
-/* ---------- responsive: driven by the WINDOW width (container query), not the viewport ---------- */
-@container win (max-width: 1060px) { .statusinfo .optional { display: none; } }
-@container win (max-width: 900px)  { .u-opt { display: none; } }
-@container win (max-width: 760px) {
-  .statusbar { row-gap: 8px; }
-  .statusbar .spacer { display: none; }
-  .statusinfo { order: 3; flex: 1 0 100%; flex-wrap: wrap; }
-  .statusinfo .optional { display: inline-block; }
-  .update { margin-left: auto; }
-  .fmtbar { width: auto; gap: 2px; }
-  .fmtbar button { min-width: 36px; }
-}
-@container win (max-width: 640px) { .menubar { display: none; } .hamburger { display: grid; } }
-@container win (max-width: 560px) {
-  .u-txt { display: none; }
-  .update { padding: 0 12px 0 10px; gap: 8px; }
-  .fmtbar button { min-width: 30px; }
-  .tab { max-width: 160px; }
-}
-@media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
-</style>
-</head>
+:root{--bg:#f7f7f8;--fg:#1d1d1f;--mut:#86868b;--ln:rgba(0,0,0,.09);--glass:rgba(255,255,255,.74);--card:rgba(0,0,0,.05);--sel:rgba(0,0,0,.09);--acc:#ffc20d;--desk:#c9ced8;--grid:rgba(0,0,0,.06);--sh:0 20px 60px rgba(0,0,0,.28);--tb:calc(44px + env(safe-area-inset-bottom,0px));color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media(prefers-color-scheme:dark){:root:not([data-theme=light]){--sel:rgba(255,255,255,.13);--bg:#1c1c1e;--fg:#f2f2f4;--mut:#8e8e93;--ln:rgba(255,255,255,.1);--glass:rgba(44,44,46,.74);--card:rgba(255,255,255,.07);--desk:#0e0f13;--grid:rgba(255,255,255,.05);color-scheme:dark}}
+:root[data-theme=dark]{--sel:rgba(255,255,255,.13);--bg:#1c1c1e;--fg:#f2f2f4;--mut:#8e8e93;--ln:rgba(255,255,255,.1);--glass:rgba(44,44,46,.74);--card:rgba(255,255,255,.07);--desk:#0e0f13;--grid:rgba(255,255,255,.05);color-scheme:dark}
+*{box-sizing:border-box}[hidden]{display:none!important}
+html,body{height:100%;margin:0;overflow:hidden}
+body{font:14px/1.45 Inter,system-ui,-apple-system,"Segoe UI",sans-serif;color:var(--fg);background:var(--desk)}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer;border-radius:8px}
+svg.i{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.desktop{position:fixed;left:0;right:0;top:env(safe-area-inset-top,0px);bottom:var(--tb);overflow:hidden;background-color:var(--desk);background-image:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);background-size:32px 32px}
+body.fs .desktop{bottom:0}body.fs .taskbar{display:none}
+.window{position:absolute;border-radius:12px;box-shadow:var(--sh)}
+.window.max,body.fs .window{border-radius:0}.window.hide{display:none}
+.app{position:absolute;inset:0;border-radius:inherit;overflow:hidden;container:app/inline-size;background:var(--bg)}
+.rz{position:absolute;z-index:5}.window.max .rz{display:none}
+.rz[data-d=n]{top:-4px;left:12px;right:12px;height:8px;cursor:ns-resize}
+.rz[data-d=s]{bottom:-4px;left:12px;right:12px;height:8px;cursor:ns-resize}
+.rz[data-d=e]{right:-4px;top:12px;bottom:12px;width:8px;cursor:ew-resize}
+.rz[data-d=w]{left:-4px;top:12px;bottom:12px;width:8px;cursor:ew-resize}
+.rz[data-d=nw]{top:-5px;left:-5px;width:14px;height:14px;cursor:nwse-resize}
+.rz[data-d=se]{bottom:-5px;right:-5px;width:14px;height:14px;cursor:nwse-resize}
+.rz[data-d=ne]{top:-5px;right:-5px;width:14px;height:14px;cursor:nesw-resize}
+.rz[data-d=sw]{bottom:-5px;left:-5px;width:14px;height:14px;cursor:nesw-resize}
+.top{position:absolute;top:0;left:0;right:0;height:40px;display:flex;align-items:center;gap:2px;padding:0 8px;z-index:4;user-select:none}
+.top button{height:28px;padding:0 10px}.top button:hover,.top button[aria-expanded=true]{background:var(--card)}
+.top .sq{width:30px;padding:0;display:grid;place-items:center}
+.top nav{display:flex}.sp{flex:1;height:100%}
+#hb,#back{display:none}
+.topfade,.botfade{position:absolute;left:0;right:0;z-index:3;pointer-events:none}
+.topfade{top:0;height:56px;background:linear-gradient(var(--bg) 35%,transparent)}
+.botfade{bottom:0;height:92px;background:linear-gradient(to top,var(--bg) 30%,transparent)}
+.main{position:absolute;inset:0;display:grid;grid-template-columns:200px 300px minmax(0,1fr)}
+.list{overflow:auto;padding:52px 10px 104px;border-right:1px solid var(--ln)}
+.ni{display:block;width:100%;text-align:left;padding:9px 12px;margin-bottom:2px;border-radius:10px}
+.ni:hover{background:var(--card)}.ni.on{background:var(--sel)}
+.ni b,.ni span{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ni b{font-weight:600}.ni span{color:var(--mut);font-size:12px}.ni i{color:var(--acc);font-style:normal;font-size:10px}
+.none{color:var(--mut);text-align:center;margin-top:24px}
+.ed{--pad:36px;position:relative;min-width:0;display:flex;flex-direction:column}
+#ta{flex:1;width:100%;resize:none;border:0;outline:0;background:transparent;color:inherit;font:16px/1.65 Inter,system-ui,-apple-system,"Segoe UI",sans-serif;padding:56px var(--pad) 104px}
+.app.mono #ta{font:14px/1.7 ui-monospace,Menlo,Consolas,monospace}
+.empty{margin:auto;text-align:center;color:var(--mut)}
+.empty button{margin-top:8px;padding:7px 14px;background:var(--acc);color:#1d1d1f;border-radius:18px}
+.pill{position:absolute;bottom:14px;left:0;right:0;margin:0 auto;width:min(100% - 28px,820px);height:50px;border-radius:24px;display:grid;grid-template-columns:auto minmax(0,1fr) auto;align-items:center;gap:10px;padding:0 8px;z-index:4;background:var(--glass);backdrop-filter:blur(28px) saturate(1.8);-webkit-backdrop-filter:blur(28px) saturate(1.8);box-shadow:0 8px 30px rgba(0,0,0,.18),0 0 0 1px var(--ln)}
+.ib{width:36px;height:36px;display:grid;place-items:center;border-radius:50%!important}.ib:hover{background:var(--card)}
+#add,#add:hover{background:var(--acc);color:#1d1d1f}
+.sbox{position:relative}.sbox svg{position:absolute;left:10px;top:9px;width:16px;height:16px;color:var(--mut)}
+.sbox input{width:100%;height:34px;border:0;outline:0;border-radius:17px;background:var(--card);color:inherit;font:inherit;padding:0 12px 0 32px;-webkit-appearance:none;appearance:none}
+.rt{display:flex;align-items:center;gap:4px}.stat{color:var(--mut);font-size:12px;white-space:nowrap;padding:0 6px}
+.toast{position:absolute;left:50%;bottom:92px;transform:translateX(-50%);z-index:6;padding:8px 14px;border-radius:14px;background:var(--fg);color:var(--bg);opacity:0;pointer-events:none;transition:opacity .2s;white-space:nowrap}
+.toast.on{opacity:1;pointer-events:auto}.toast button{color:inherit;text-decoration:underline;padding:0 4px}
+.menu{position:fixed;z-index:100;min-width:210px;overflow:auto;padding:5px;border-radius:12px;background:var(--glass);backdrop-filter:blur(28px) saturate(1.8);-webkit-backdrop-filter:blur(28px) saturate(1.8);box-shadow:0 10px 40px rgba(0,0,0,.25),0 0 0 1px var(--ln);animation:sd .12s}
+.menu.up{animation-name:su}@keyframes sd{from{transform:translateY(-6px);opacity:0}}@keyframes su{from{transform:translateY(6px);opacity:0}}
+.mi{display:grid;grid-template-columns:16px 1fr auto;gap:8px;width:100%;text-align:left;padding:6px 8px;border-radius:7px!important}
+.mi kbd{font:inherit;opacity:.55}.mi:hover:not(:disabled),.mi:focus-visible{background:var(--acc);color:#1d1d1f;outline:0}
+.mi:disabled{opacity:.45;cursor:default}.mi.hd{font-size:11px;text-transform:uppercase;letter-spacing:.04em}
+.menu hr{border:0;border-top:1px solid var(--ln);margin:4px 6px}
+.taskbar{position:fixed;left:0;right:0;bottom:0;height:var(--tb);padding:0 10px env(safe-area-inset-bottom,0px);display:flex;align-items:center;gap:8px;z-index:50;container:tb/inline-size;background:var(--glass);backdrop-filter:blur(28px);-webkit-backdrop-filter:blur(28px);border-top:1px solid var(--ln)}
+.chip{display:flex;align-items:center;gap:8px;height:32px;padding:0 12px}.chip.on{background:var(--card);box-shadow:inset 0 -2px var(--acc)}
+.presets button{height:28px;padding:0 9px;color:var(--mut)}.presets button:hover{background:var(--card);color:var(--fg)}
+.hud{margin-left:auto;color:var(--mut);font:12px ui-monospace,Menlo,monospace}
+@container tb (max-width:560px){.presets,.hud{display:none}}
+@container app (max-width:980px){.main{grid-template-columns:140px 220px minmax(0,1fr)}}@container app (max-width:800px){.fold{display:none}.main{grid-template-columns:230px minmax(0,1fr)}.lh{cursor:pointer}.lh::after{content:" ▾";color:var(--mut)}}@container app (max-width:700px){.main{grid-template-columns:200px minmax(0,1fr)}.ib.sec{display:none}}
+@container app (max-width:560px){.main{grid-template-columns:1fr}#menubar{display:none}#hb{display:grid}.app:not([data-pane=folders]) #back{display:grid}.app[data-pane=folders] .list,.app[data-pane=folders] .ed,.app[data-pane=list] .fold,.app[data-pane=list] .ed,.app[data-pane=ed] .fold,.app[data-pane=ed] .list{display:none}.list,.fold{border-right:0}}
+@container app (max-width:520px){.ed{--pad:18px}.rt{display:none}.pill{grid-template-columns:auto minmax(0,1fr)}}
+.fold{overflow:auto;padding:52px 8px 104px;border-right:1px solid var(--ln)}
+.fi{display:flex;justify-content:space-between;gap:6px;width:100%;text-align:left;padding:7px 10px;margin-bottom:2px;border-radius:9px}
+.fi:hover{background:var(--card)}.fi.on{background:var(--sel)}.fi span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.fi em{font-style:normal;color:var(--mut);font-size:12px}.fnew{color:var(--mut)}
+.fin{display:block;width:100%;height:32px;margin-bottom:6px;border:0;outline:2px solid var(--acc);border-radius:8px;background:var(--bg);color:inherit;font:inherit;padding:0 8px}
+.lh{display:block;width:100%;text-align:left;font-weight:700;font-size:20px;padding:0 12px 8px;cursor:default}
+.dn{height:34px;padding:0 14px;border-radius:17px!important;background:var(--acc);color:#1d1d1f;font-weight:600}
+.tools{display:flex;gap:2px;overflow-x:auto;scrollbar-width:none;min-width:0}.tl{flex:none;min-width:36px;height:36px;padding:0 8px;border-radius:10px;font-size:15px}.tl:hover{background:var(--card)}
+.app:not([data-mode=edit]) #pille,.app[data-mode=edit] #pillb{display:none}
+.ser{font:italic 600 18px/1 Georgia,"Times New Roman",serif}.h1t{font-size:14px}.tl svg.i{width:20px;height:20px}.tools{scroll-snap-type:x proximity}.tl{scroll-snap-align:start}
+@container app (max-width:520px){.pill{gap:6px}.dn{padding:0 10px}.tl{min-width:32px;padding:0 4px}.tl[data-t=un],.tl[data-t=re]{display:none}}
+.zoom{display:flex;align-items:center;gap:2px}.zoom button{width:28px;height:28px}.zoom #zv{width:auto;min-width:46px;font:12px ui-monospace,Menlo,monospace;color:var(--mut)}
+@media(prefers-reduced-motion:reduce){.menu,.toast{animation:none;transition:none}}
+</style></head>
 <body>
-<div class="desktop" id="desktop">
-<div class="window" id="window" role="application" aria-label="Quiet Editor window">
-<div class="app" id="app">
-
-  <header class="titlebar">
-    <div class="tabs" id="tabs" role="tablist" aria-label="Open documents"></div>
-    <button class="icon-btn newtab" id="newTab" aria-label="New tab" title="New tab (Alt+T)">
-      <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M7 2v10M2 7h10"/></svg>
-    </button>
-
-    <nav class="menubar" id="menubar" aria-label="Main menu">
-      <button data-menu="File"     aria-haspopup="menu" aria-expanded="false">File</button>
-      <button data-menu="Edit"     aria-haspopup="menu" aria-expanded="false">Edit</button>
-      <button data-menu="View"     aria-haspopup="menu" aria-expanded="false">View</button>
-      <button data-menu="Settings" aria-haspopup="menu" aria-expanded="false">Settings</button>
-    </nav>
-
-    <button class="icon-btn hamburger" id="menuBtn" aria-label="Menu" title="Menu" aria-haspopup="menu" aria-expanded="false">
-      <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M2.5 4.5h11M2.5 8h11M2.5 11.5h11"/></svg>
-    </button>
-
-    <div class="winctl">
-      <button class="icon-btn" id="winMin"   aria-label="Minimize" title="Minimize">
-        <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M2.5 5l4.5 4.5L11.5 5"/></svg>
-      </button>
-      <button class="icon-btn" id="winMax"   aria-label="Maximize or restore" title="Maximize">
-        <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M2.5 9l4.5-4.5L11.5 9"/></svg>
-      </button>
-      <button class="icon-btn" id="winClose" aria-label="Close window" title="Close">
-        <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M3 3l8 8M11 3l-8 8"/></svg>
-      </button>
-    </div>
-  </header>
-
-  <main class="stage" id="stage">
-    <div id="editor" contenteditable="true" role="textbox" aria-multiline="true" aria-label="Document" spellcheck="false"></div>
-  </main>
-
-  <footer class="statusbar" id="statusbar">
-    <div class="statusinfo" id="statusinfo">
-      <span id="pos">Ln 1, Col 1</span>
-      <span id="count">0 characters</span>
-      <button id="modeBtn" title="Toggle formatted / plain text"><span class="aa"><small>A</small>A</span> <span id="modeLabel">Formatted</span></button>
-      <button id="extBtn" class="optional" title="Switch file type"><span id="extLabel">txt file</span></button>
-      <span class="optional">UTF-8</span>
-    </div>
-    <div class="spacer"></div>
-
-    <button class="update" id="update">
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"><path d="M12 2.5l8.5 4.7v9.6L12 21.5l-8.5-4.7V7.2L12 2.5z"/><path d="M3.8 7.4L12 12l8.2-4.6M12 12v9"/></svg>
-      <span id="updateLabel"><span class="u-txt">Update <span class="u-opt">Available: </span></span>1.4.1</span>
-    </button>
-
-    <div class="fmtbar" id="fmtbar" role="toolbar" aria-label="Formatting">
-      <button class="h keep" id="blockBtn" title="Text style" aria-haspopup="menu" aria-expanded="false">
-        <span id="blockLabel">H1</span>
-        <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" style="opacity:.55"><path d="M3 4.5l3 3 3-3"/></svg>
-      </button>
-      <button data-cmd="insertUnorderedList" title="Bulleted list" aria-label="Bulleted list">
-        <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor"><circle cx="3.5" cy="5" r="1.5"/><circle cx="3.5" cy="10" r="1.5"/><circle cx="3.5" cy="15" r="1.5"/><rect x="7.5" y="4" width="10" height="2" rx="1"/><rect x="7.5" y="9" width="10" height="2" rx="1"/><rect x="7.5" y="14" width="10" height="2" rx="1"/></svg>
-      </button>
-      <button class="b" data-cmd="bold" title="Bold (Ctrl+B)" aria-label="Bold">B</button>
-      <button class="i" data-cmd="italic" title="Italic (Ctrl+I)" aria-label="Italic">I</button>
-      <button data-cmd="link" title="Link" aria-label="Link">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
-      </button>
-      <button class="abx" data-cmd="clear" title="Clear formatting" aria-label="Clear formatting">Ab<i>x</i></button>
-    </div>
-  </footer>
-
-  <div class="toast" id="toast" role="status" aria-live="polite"></div>
-</div><!-- /.app -->
-
-<div class="rz n"  data-dir="n"></div>
-<div class="rz s"  data-dir="s"></div>
-<div class="rz e"  data-dir="e"></div>
-<div class="rz w"  data-dir="w"></div>
-<div class="rz ne" data-dir="ne"></div>
-<div class="rz nw" data-dir="nw"></div>
-<div class="rz se" data-dir="se"></div>
-<div class="rz sw" data-dir="sw"></div>
-</div><!-- /.window -->
-</div><!-- /.desktop -->
-
-<footer class="taskbar" id="taskbar">
-  <button class="chip" id="appChip" aria-pressed="true" title="Show / hide window">
-    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round"><path d="M4 1.75h5.5L12.5 4.75v9.5H4z"/><path d="M9.5 1.75v3h3M6 8h4.5M6 10.5h4.5"/></svg>
-    <span>Quiet Editor</span><i class="dot"></i>
-  </button>
-  <div class="tb-spacer"></div>
-  <div class="hud" id="hud" aria-hidden="true"></div>
-  <div class="presets" role="group" aria-label="Window size presets">
-    <button data-preset="min"     title="420 × 260 (minimum size)">Min</button>
-    <button data-preset="compact" title="640 × 420">Compact</button>
-    <button data-preset="default" title="Default size, centred">Default</button>
-    <button data-preset="fill"    title="Maximize">Fill</button>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+<symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+<symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></symbol>
+<symbol id="i-note" viewBox="0 0 24 24"><path d="M6 3h9l4 4v14H6z"/><path d="M9 12h7M9 16h7"/></symbol>
+<symbol id="i-sort" viewBox="0 0 24 24"><path d="M4 7h16M7 12h10M10 17h4"/></symbol>
+<symbol id="i-menu" viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16"/></symbol>
+<symbol id="i-back" viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></symbol>
+<symbol id="i-min" viewBox="0 0 24 24"><path d="M6 12h12"/></symbol>
+<symbol id="i-max" viewBox="0 0 24 24"><rect x="6" y="6" width="12" height="12" rx="2"/></symbol>
+<symbol id="i-x" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></symbol>
+</defs></svg>
+<div class="desktop" id="desk">
+ <div class="window" id="win">
+  <div class="app" id="app" data-pane="folders" data-mode="browse">
+   <div class="main">
+    <div class="fold" id="fold"></div><div class="list" id="list"></div>
+    <div class="ed"><textarea id="ta" placeholder="Start typing…" aria-label="Note text"></textarea>
+     <div class="empty" id="empty" hidden><p>No note selected</p><button id="emptynew">New note</button></div></div>
+   </div>
+   <div class="topfade"></div><div class="botfade"></div>
+   <div class="top" id="top">
+    <button class="sq" id="back" aria-label="Notes list"><svg class="i"><use href="#i-back"/></svg></button>
+    <button class="sq" id="hb" aria-haspopup="true" aria-expanded="false" aria-label="Menu"><svg class="i"><use href="#i-menu"/></svg></button>
+    <nav id="menubar"><button data-m="file">File</button><button data-m="edit">Edit</button><button data-m="view">View</button></nav>
+    <span class="sp"></span>
+    <button class="sq" id="wmin" aria-label="Minimize"><svg class="i"><use href="#i-min"/></svg></button>
+    <button class="sq" id="wmax" aria-label="Maximize"><svg class="i"><use href="#i-max"/></svg></button>
+    <button class="sq" id="wx" aria-label="Close"><svg class="i"><use href="#i-x"/></svg></button>
+   </div>
+   <div class="pill" id="pillb">
+    <button class="ib" id="add" aria-label="New note"><svg class="i"><use href="#i-plus"/></svg></button>
+    <div class="sbox"><svg class="i"><use href="#i-search"/></svg><input id="q" type="search" placeholder="Search notes" aria-label="Search notes"></div>
+    <span class="rt"><span class="stat" id="stat"></span><button class="ib sec" id="sortb" aria-haspopup="true" aria-expanded="false" aria-label="Sort"><svg class="i"><use href="#i-sort"/></svg></button></span>
+   </div>
+   <div class="pill" id="pille"><button class="dn" id="done">Done</button><div class="tools" id="tools"><button class="tl" data-t="b" title="Bold" aria-label="Bold"><b>B</b></button><button class="tl" data-t="i" title="Italic" aria-label="Italic"><span class="ser">I</span></button><button class="tl" data-t="h" title="Heading" aria-label="Heading 1"><b class="h1t">H1</b></button><button class="tl" data-t="ul" title="Bulleted list" aria-label="Bulleted list"><svg class="i"><path d="M3 6h5M3 12h5M3 18h5"/><circle cx="14" cy="6" r="1.3" fill="currentColor"/><circle cx="14" cy="12" r="1.3" fill="currentColor"/><circle cx="14" cy="18" r="1.3" fill="currentColor"/></svg></button><button class="tl" data-t="ck" title="Checklist" aria-label="Checklist"><svg class="i"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></button><button class="tl" data-t="q" title="Quote" aria-label="Quote">❝</button><button class="tl" data-t="tb" title="Table" aria-label="Table"><svg class="i"><rect x="3.5" y="5" width="17" height="14" rx="2"/><path d="M3.5 10h17M3.5 14.5h17M10 5v14"/></svg></button><button class="tl" data-t="un" title="Undo" aria-label="Undo">↶</button><button class="tl" data-t="re" title="Redo" aria-label="Redo">↷</button></div><span class="rt"><span class="stat" id="stat2"></span></span></div>
+   <div class="toast" id="toast" role="status"></div>
   </div>
-</footer>
+  <i class="rz" data-d="n"></i><i class="rz" data-d="s"></i><i class="rz" data-d="e"></i><i class="rz" data-d="w"></i>
+  <i class="rz" data-d="nw"></i><i class="rz" data-d="ne"></i><i class="rz" data-d="sw"></i><i class="rz" data-d="se"></i>
+ </div>
+</div>
+<div class="taskbar" id="tb">
+ <button class="chip on" id="chip"><svg class="i"><use href="#i-note"/></svg>Notes</button>
+ <span class="presets"><button data-p="min">Min</button><button data-p="compact">Compact</button><button data-p="def">Default</button><button data-p="fill">Fill</button></span>
+ <span class="sp"></span><span class="hud" id="hud"></span><span class="zoom"><button id="zout" aria-label="Zoom out">−</button><button id="zv" aria-label="Reset zoom">100%</button><button id="zin" aria-label="Zoom in">+</button></span>
+</div>
+<script>(()=>{'use strict';
+const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
+const esc=s=>s.replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const S={get(k,d){try{const v=localStorage.getItem('notes.'+k);return v===null?d:JSON.parse(v)}catch(e){return d}},set(k,v){try{localStorage.setItem('notes.'+k,JSON.stringify(v))}catch(e){}}};
+const win=$('#win'),desk=$('#desk'),app=$('#app'),L=$('#list'),ta=$('#ta'),root=document.documentElement;
 
-<script>
-(() => {
-'use strict';
+/* ---------- data ---------- */
+const H=36e5,seed=()=>{const n=Date.now();return[
+{id:n+1,f:'inbox',pin:1,ts:n-H,t:'Welcome to Notes\nA calm, local notes app. Everything saves as you type, in this browser only.\n\nTry Alt+N for a new note, / to search, F11 for full screen.'},
+{id:n+2,f:'inbox',pin:0,ts:n-5*H,t:'Groceries\nOat milk\nLimes\nCoffee beans (1 kg)\nBatteries AA'},
+{id:n+3,f:'ideas',pin:0,ts:n-30*H,t:'Window manager ideas\nSnap to halves, tile on edge drag, remember geometry per app.'}]};
+let notes=S.get('data',null);if(!Array.isArray(notes))notes=seed();
+let folders=S.get('folders',null),cf=S.get('cf','all'),fedit=null,cur=S.get('cur',null),q='',sort=S.get('sort','ts'),mono=S.get('mono',false),wc=S.get('wc',true),spell=S.get('spell',true),theme=S.get('theme','system'),md=S.get('md',false),tm,tt;if(!Array.isArray(folders)||!folders.length)folders=[{id:'inbox',name:'Notes'},{id:'work',name:'Work'},{id:'ideas',name:'Ideas'}];if(cf!=='all'&&!folders.some(f=>f.id===cf))cf='all';const fo=n=>n.f||'inbox';
+const save=()=>S.set('data',notes),get=id=>notes.find(n=>n.id===id);
+const title=n=>(n.t.split('\n').find(l=>l.trim())||'New note').trim();
+const bodyOf=n=>{const l=n.t.split('\n'),i=l.findIndex(x=>x.trim());return(i<0?'':l.slice(i+1).join(' ').trim())||'No additional text'};
+const fmt=ts=>{const d=new Date(ts);return d.toDateString()===new Date().toDateString()?d.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'}):d.toLocaleDateString([],{month:'short',day:'numeric'})};
+const visible=()=>{const k=q.toLowerCase();return notes.filter(n=>(q||cf==='all'||fo(n)===cf)&&(!k||n.t.toLowerCase().includes(k))).sort((a,b)=>b.pin-a.pin||(sort==='title'?title(a).localeCompare(title(b)):b.ts-a.ts))};
 
-/* ==========================================================
-   helpers
-   ========================================================== */
-const $  = (s, r = document) => r.querySelector(s);
-const editor = $('#editor'), tabsEl = $('#tabs'), app = $('#app');
-const KEY = 'ui-lab.quiet-editor.v1';
-const esc = s => s.replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
-const textToHtml = t => t.split('\n').map(l => `<p>${l ? esc(l) : '<br>'}</p>`).join('');
-const rid = () => 't' + Math.random().toString(36).slice(2, 8);
-const FONTS = {
-  sans:  'Inter, "Inter Variable", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif',
-  serif: 'Charter, "Iowan Old Style", "Palatino Linotype", Georgia, serif',
-  mono:  'ui-monospace, "JetBrains Mono", "SF Mono", Menlo, Consolas, monospace'
-};
+/* ---------- views ---------- */
+function renderList(){const v=visible();L.innerHTML=head()+(v.length?v.map(n=>`<button class="ni${n.id===cur?' on':''}" data-id="${n.id}"><b>${n.pin?'<i>●</i> ':''}${esc(title(n))}</b><span>${fmt(n.ts)} · ${esc(bodyOf(n))}</span></button>`).join(''):'<p class="none">No notes here</p>');bindFin()}
+const fname=id=>id==='all'?'All notes':(folders.find(f=>f.id===id)||{name:'Notes'}).name,fcount=id=>notes.filter(n=>id==='all'||fo(n)===id).length,fh=()=>$('#fold').offsetParent===null;
+const head=()=>fedit&&fedit===cf&&fh()?'<input class="fin" id="fin" aria-label="Folder name" value="'+esc(fname(cf))+'">':'<button class="lh" id="lh">'+esc(q?'Search':fname(cf))+'</button>';
+function renderFold(){$('#fold').innerHTML=[{id:'all',name:'All notes'},...folders].map(f=>f.id===fedit&&!fh()?'<input class="fin" id="fin" aria-label="Folder name" value="'+esc(f.name)+'">':`<button class="fi${f.id===cf?' on':''}" data-f="${f.id}"><span>${esc(f.name)}</span><em>${fcount(f.id)}</em></button>`).join('')+'<button class="fi fnew" id="fnew"><span>+ New folder</span></button>';bindFin()}
+function bindFin(){const i=$('#fin');if(!i||i.dataset.b)return;i.dataset.b=1;i.focus();i.select();const ok=()=>{if(fedit===null)return;const v=i.value.trim(),f=folders.find(x=>x.id===fedit);if(f&&v)f.name=v;fedit=null;S.set('folders',folders);renderAll()};i.onblur=ok;i.onkeydown=e=>{e.stopPropagation();if(e.key==='Enter')ok();if(e.key==='Escape'){fedit=null;renderAll()}}}
+function renderAll(){renderFold();renderList();renderEd()}
+function setFold(id){cf=id;S.set('cf',id);q='';$('#q').value='';cur=null;S.set('cur',null);app.dataset.pane='list';app.dataset.mode='browse';renderAll()}
+function newFolder(){const f={id:'f'+Date.now(),name:'New folder'};folders.push(f);S.set('folders',folders);cf=f.id;S.set('cf',cf);q='';$('#q').value='';cur=null;fedit=f.id;app.dataset.mode='browse';app.dataset.pane=fh()?'list':'folders';renderAll()}
+function delFolder(id){notes.forEach(n=>{if(fo(n)===id)n.f='inbox'});folders=folders.filter(f=>f.id!==id);if(cf===id)cf='all';S.set('folders',folders);S.set('cf',cf);save();renderAll()}
+function move(id){const n=get(cur);if(!n)return;n.f=id;save();if(cf!=='all'&&cf!==id){cur=null;app.dataset.mode='browse'}renderAll();toast('Moved to '+fname(id))}
+const foldItems=()=>[{label:'All notes',checked:cf==='all',run:()=>setFold('all')},...folders.map(f=>({label:f.name,checked:cf===f.id,run:()=>setFold(f.id)})),'-',{label:'New folder',run:newFolder}];
+const folderCtx=id=>[{label:'Rename folder',run:()=>{cf=id;fedit=id;renderAll()}},{label:'Delete folder',disabled:id==='inbox',run:()=>delFolder(id)}];
+$('#fold').addEventListener('click',e=>{if(e.target.closest('#fnew'))return newFolder();const b=e.target.closest('[data-f]');if(b)setFold(b.dataset.f)});
+$('#fold').addEventListener('contextmenu',e=>{const b=e.target.closest('[data-f]');if(!b||b.dataset.f==='all')return;e.preventDefault();openMenu({x:e.clientX,y:e.clientY},folderCtx(b.dataset.f))});
+L.addEventListener('click',e=>{const b=e.target.closest('#lh');if(b&&fh())openMenu(b,foldItems())});
+/* editing tools */
+const ins=(t,s,e)=>{ta.focus();ta.setSelectionRange(s,e);if(!document.execCommand('insertText',false,t)){ta.setRangeText(t,s,e,'end');ta.dispatchEvent(new Event('input'))}};
+const wrap=a=>{const s=ta.selectionStart,e=ta.selectionEnd,t=ta.value.slice(s,e);ins(a+t+a,s,e);if(!t)ta.setSelectionRange(s+a.length,s+a.length)};
+const pref=p=>{const v=ta.value,s=ta.selectionStart,e=ta.selectionEnd,a=s?v.lastIndexOf('\n',s-1)+1:0,i=v.indexOf('\n',e),b=i<0?v.length:i,ls=v.slice(a,b).split('\n'),all=ls.every(l=>l.startsWith(p));ins(ls.map(l=>all?l.slice(p.length):p+l).join('\n'),a,b)};
+const tbl=()=>{const s=ta.selectionStart,pre=s&&ta.value[s-1]!=='\n'?'\n\n':'';ins(pre+'| Column 1 | Column 2 |\n| --- | --- |\n|  |  |\n',s,ta.selectionEnd)};const TL={tb:tbl,b:()=>wrap('**'),i:()=>wrap('*'),h:()=>pref('# '),ul:()=>pref('- '),ck:()=>pref('- [ ] '),q:()=>pref('> '),un:()=>{ta.focus();document.execCommand('undo')},re:()=>{ta.focus();document.execCommand('redo')}};
+$('#tools').addEventListener('pointerdown',e=>e.preventDefault());
+$('#tools').addEventListener('click',e=>{const b=e.target.closest('[data-t]');if(b&&get(cur))TL[b.dataset.t]()});
+$('#done').onclick=()=>{ta.blur();app.dataset.mode='browse';if(app.dataset.pane==='ed')app.dataset.pane='list'};
+ta.addEventListener('focus',()=>{app.dataset.mode='edit'});
+const findN=()=>{app.dataset.mode='browse';$('#q').focus()};
+function stat(){const n=get(cur),w=n?(n.t.trim().match(/\S+/g)||[]).length:0;$('#stat2').textContent=wc&&n?w+' words':'';$('#stat').textContent=wc?`${notes.length} notes · ${w} words`:''}
+function renderEd(){const n=get(cur);ta.hidden=!n;$('#empty').hidden=!!n;if(n&&ta.value!==n.t)ta.value=n.t;stat()}
+function select(id,pane=true){cur=id;S.set('cur',id);if(pane){app.dataset.pane='ed';app.dataset.mode='edit'}renderAll();if(pane&&get(id))ta.focus({preventScroll:true})}
+function applyView(){app.classList.toggle('mono',mono);ta.spellcheck=spell;stat()}
+function applyTheme(){theme==='system'?root.removeAttribute('data-theme'):root.setAttribute('data-theme',theme)}
+function toast(m,undo){const t=$('#toast');t.innerHTML=esc(m)+(undo?' <button id="undo">Undo</button>':'');t.classList.add('on');if(undo)$('#undo').onclick=()=>{undo();t.classList.remove('on')};clearTimeout(tt);tt=setTimeout(()=>t.classList.remove('on'),undo?5000:2200)}
 
-/* ==========================================================
-   state (persisted to localStorage when available)
-   ========================================================== */
-const seed = () => {
-  const first = rid();
-  return {
-    active: first, theme: 'light', font: 'sans', size: 15, lh: 1.6, bar: true, info: true, spell: false,
-    tabs: [
-      { id: first, title: 'Top of mind - Oct 30', mode: 'rich', ext: 'txt', html:
-        '<p>Contrary to popular belief, Lorem Ipsum is not simply random text. It has roots in a piece of classical Latin literature from 45 BC, making it over 2000 years old. <b><i>Richard McClintock</i></b>, a Latin professor at Hampden-Sydney College in Virginia, looked up one of the more obscure Latin words, consectetur, from a Lorem Ipsum passage, and going through the cites of the word in classical literature, discovered the undoubtable source. Lorem Ipsum comes from sections 1.10.32 and 1.10.33 of "de Finibus Bonorum et Malorum" (The Extremes of Good and Evil) by Cicero, written in 45 BC. This book is a treatise on the theory of ethics, very popular during the Renaissance. The first line of Lorem Ipsum, "Lorem ipsum dolor sit amet..", comes from a line in section <a href="#">1.10.32</a>.</p>' },
-      { id: rid(), title: 'Yard shopping list', mode: 'rich', ext: 'txt', html:
-        '<h2>Yard</h2><ul><li>Mulch, 3 m³</li><li>Garden gloves</li><li>Hose nozzle</li><li>Tomato stakes</li><li>Weed barrier fabric</li></ul>' },
-      { id: rid(), title: 'Christmas dinner planning', mode: 'rich', ext: 'txt', html:
-        '<h2>Christmas dinner</h2><p>Guests: 8, one vegetarian.</p><ul><li>Main: roast chicken, 2.5 kg</li><li>Sides: potatoes, greens, something with cranberries</li><li>Dessert: decide before the 20th</li></ul>' }
-    ]
-  };
-};
-const load = () => {
-  try { const s = JSON.parse(localStorage.getItem(KEY)); if (s && s.tabs && s.tabs.length) return Object.assign(seed(), s); } catch (e) {}
-  return seed();
-};
-let state = load();
-const cur = () => state.tabs.find(t => t.id === state.active) || state.tabs[0];
-const commit = () => { const t = cur(); if (t) t.html = editor.innerHTML; };
-let saveTimer;
-const save = () => {
-  clearTimeout(saveTimer);
-  saveTimer = setTimeout(() => { commit(); try { localStorage.setItem(KEY, JSON.stringify(state)); } catch (e) {} }, 300);
-};
+/* ---------- note actions ---------- */
+function newNote(){const n={id:Date.now(),f:cf==='all'?'inbox':cf,pin:0,ts:Date.now(),t:''};notes.push(n);save();q='';$('#q').value='';select(n.id)}
+function del(){const n=get(cur);if(!n)return;const i=notes.indexOf(n);notes.splice(i,1);save();cur=(visible()[0]||{}).id??null;S.set('cur',cur);if(cur===null)app.dataset.pane='list';if(cur===null)app.dataset.mode='browse';renderAll();toast('Note deleted',()=>{notes.splice(i,0,n);save();select(n.id,false)})}
+function dup(){const n=get(cur);if(!n)return;const c={...n,id:Date.now(),ts:Date.now(),pin:0,t:n.t.replace(/^(\s*)([^\n]*)/,(m,a,b)=>a+b+' (copy)')};notes.push(c);save();select(c.id,false)}
+function pin(){const n=get(cur);if(!n)return;n.pin=n.pin?0:1;save();renderList();toast(n.pin?'Pinned':'Unpinned')}
+async function copy(){try{await navigator.clipboard.writeText(get(cur).t);toast('Copied to clipboard')}catch(e){toast('Clipboard unavailable here')}}
+const setSort=k=>{sort=k;S.set('sort',k);renderList()};
+const setTheme=t=>{theme=t;S.set('theme',t);applyTheme()};
+ta.addEventListener('input',()=>{const n=get(cur);if(!n)return;n.t=ta.value;n.ts=Date.now();clearTimeout(tm);tm=setTimeout(save,250);renderList();stat()});
+L.addEventListener('click',e=>{const b=e.target.closest('.ni');if(b)select(+b.dataset.id)});
+L.addEventListener('contextmenu',e=>{const b=e.target.closest('.ni');if(!b)return;e.preventDefault();select(+b.dataset.id,false);openMenu({x:e.clientX,y:e.clientY},[{label:'Pin / unpin',run:pin},{label:'Duplicate',run:dup},'-',{label:'Delete',run:del}])});
+$('#q').addEventListener('input',e=>{q=e.target.value;renderList()});
+$('#q').addEventListener('keydown',e=>{if(e.key==='Enter'){const v=visible()[0];if(v)select(v.id)}});
+$('#add').onclick=newNote;$('#emptynew').onclick=newNote;$('#back').onclick=()=>{const p=app.dataset.pane;app.dataset.pane=p==='ed'?'list':'folders';app.dataset.mode='browse'};
 
-/* ==========================================================
-   toast
-   ========================================================== */
-const toastEl = $('#toast'); let toastT;
-const toast = msg => {
-  toastEl.textContent = msg; toastEl.classList.add('show');
-  clearTimeout(toastT); toastT = setTimeout(() => toastEl.classList.remove('show'), 1800);
-};
+/* ---------- menu engine ---------- */
+const menus=[];
+function closeMenu(d=0){while(menus.length>d)menus.pop().remove();if(!d)$$('[aria-haspopup]').forEach(b=>b.setAttribute('aria-expanded','false'))}
+function openMenu(a,items,o={},d=0){
+ closeMenu(d);const m=document.createElement('div');m.className='menu'+(o.up?' up':'');m.setAttribute('role','menu');
+ items.forEach(it=>{if(it==='-'){m.append(document.createElement('hr'));return}
+  const b=document.createElement('button');b.className='mi'+(it.header?' hd':'');b.disabled=!!(it.disabled||it.header);b.setAttribute('role','menuitem');
+  b.innerHTML=`<span>${it.checked?'✓':''}</span><span>${esc(it.label)}</span><kbd>${it.sub?'▸':esc(it.kbd||'')}</kbd>`;
+  if(it.sub){let t;b.onmouseenter=()=>{clearTimeout(t);t=setTimeout(()=>openMenu(b,it.sub,{side:1},d+1),80)};b.onmouseleave=()=>clearTimeout(t);b.onclick=()=>openMenu(b,it.sub,{side:1},d+1)}
+  else{b.onmouseenter=()=>closeMenu(d+1);b.onclick=()=>{closeMenu();it.run&&it.run()}}
+  m.append(b)});
+ document.body.append(m);menus.push(m);if(a.setAttribute&&!d)a.setAttribute('aria-expanded','true');
+ const el=!!a.getBoundingClientRect,r=el?a.getBoundingClientRect():{left:a.x,right:a.x,top:a.y,bottom:a.y,width:0},g=o.gap??6,W=innerWidth,V=innerHeight;
+ m.style.maxHeight=Math.max(120,(o.side||!el)?V-16:o.up?r.top-g-8:V-r.bottom-g-8)+'px';
+ const w=m.offsetWidth,h=m.offsetHeight;let x,y;
+ if(o.side){x=r.right+w<=W-8?r.right:r.left-w;y=r.top-5}
+ else{x=o.center?r.left+r.width/2-w/2:r.left;y=o.up?r.top-g-h:r.bottom+g}
+ m.style.left=Math.max(8,Math.min(x,W-w-8))+'px';m.style.top=Math.max(8,Math.min(y,V-h-8))+'px'}
+const sortM=()=>[{label:'Last edited',checked:sort==='ts',run:()=>setSort('ts')},{label:'Title',checked:sort==='title',run:()=>setSort('title')}];
+const fileM=()=>[{label:'New note',kbd:'Alt+N',run:newNote},{label:'Duplicate note',disabled:!cur,run:dup},{label:'Copy note text',disabled:!cur,run:copy},'-',
+ {label:'Delete note',disabled:!cur,run:del},{label:'Move to folder',disabled:!cur,sub:folders.map(f=>({label:f.name,checked:!!get(cur)&&fo(get(cur))===f.id,run:()=>move(f.id)}))},'-',{label:'New folder',run:newFolder},{label:'Rename folder',disabled:cf==='all',run:()=>{fedit=cf;renderAll()}},{label:'Delete folder',disabled:cf==='all'||cf==='inbox',run:()=>delFolder(cf)},'-',{label:'Add sample notes',run:()=>{notes=notes.concat(seed());save();renderAll()}},'-',{label:'Close window',run:()=>hide(true)}];
+const editM=()=>[{label:'Undo',run:()=>{ta.focus();document.execCommand('undo')}},{label:'Redo',run:()=>{ta.focus();document.execCommand('redo')}},'-',
+ {label:get(cur)&&get(cur).pin?'Unpin note':'Pin note',disabled:!cur,run:pin},{label:'Select all',disabled:!cur,run:()=>{ta.focus();ta.select()}},{label:'Find in notes',kbd:'/',run:findN},'-',
+ {label:'Share… (preview only)',run:()=>toast('Share (preview only)')}];
+const viewM=()=>[{label:'Show folders',run:()=>{app.dataset.pane='folders';app.dataset.mode='browse'}},{label:'Show note list',run:()=>{app.dataset.pane='list';app.dataset.mode='browse'}},{label:'Folder',sub:foldItems()},'-',{label:'Sort by',sub:sortM()},
+ {label:'Show word count',checked:wc,run:()=>{wc=!wc;S.set('wc',wc);stat()}},{label:'Monospace font',checked:mono,run:()=>{mono=!mono;S.set('mono',mono);applyView()}},
+ {label:'Spell check',checked:spell,run:()=>{spell=!spell;S.set('spell',spell);applyView()}},
+ {label:'Markdown preview (preview only)',checked:md,run:()=>{md=!md;S.set('md',md);toast('Markdown preview (preview only)')}},'-',
+ {label:'Appearance',sub:[{label:'Light',checked:theme==='light',run:()=>setTheme('light')},{label:'Dark',checked:theme==='dark',run:()=>setTheme('dark')},{label:'Match system',checked:theme==='system',run:()=>setTheme('system')}]},
+ {label:'Zoom',sub:[{label:'Zoom in',run:()=>setZoom(zi+1)},{label:'Zoom out',run:()=>setZoom(zi-1)},{label:'Actual size',run:()=>setZoom(2)}]},{label:'Window size',sub:[{label:'Min',run:()=>preset('min')},{label:'Compact',run:()=>preset('compact')},{label:'Default',run:()=>preset('def')},{label:'Fill',run:()=>preset('fill')}]},
+ {label:'Full screen',kbd:'F11',checked:document.body.classList.contains('fs'),run:()=>fs(!document.body.classList.contains('fs'))}];
+const defs={file:fileM,edit:editM,view:viewM};
+$$('#menubar button').forEach(b=>{b.setAttribute('aria-haspopup','true');b.setAttribute('aria-expanded','false');
+ b.onclick=()=>b.getAttribute('aria-expanded')==='true'?closeMenu():openMenu(b,defs[b.dataset.m]());
+ b.onmouseenter=()=>{if(menus.length&&b.getAttribute('aria-expanded')!=='true')openMenu(b,defs[b.dataset.m]())}});
+$('#hb').onclick=e=>{const b=e.currentTarget;b.getAttribute('aria-expanded')==='true'?closeMenu():openMenu(b,[{label:'File',sub:fileM()},{label:'Edit',sub:editM()},{label:'View',sub:viewM()}])};
+$('#sortb').onclick=e=>{const b=e.currentTarget;b.getAttribute('aria-expanded')==='true'?closeMenu():openMenu(b,sortM(),{up:1,center:1,gap:14})};
+document.addEventListener('mousedown',e=>{if(menus.length&&!e.target.closest('.menu,[aria-haspopup]'))closeMenu()});
 
-/* ==========================================================
-   preferences
-   ========================================================== */
-const mq = matchMedia('(prefers-color-scheme: dark)');
-const applyTheme = () => {
-  const t = state.theme === 'system' ? (mq.matches ? 'dark' : 'light') : state.theme;
-  document.documentElement.dataset.theme = t;
-};
-mq.addEventListener && mq.addEventListener('change', applyTheme);
-const applyPrefs = () => {
-  const r = document.documentElement.style;
-  r.setProperty('--fs', state.size + 'px');
-  r.setProperty('--lh', state.lh);
-  r.setProperty('--font-doc', FONTS[state.font]);
-  $('#fmtbar').classList.toggle('is-hidden', !state.bar);
-  $('#statusinfo').classList.toggle('is-hidden', !state.info);
-  editor.spellcheck = !!state.spell;
-  applyTheme();
-};
+/* ---------- window manager ---------- */
+let R=S.get('rect',null),maxed=S.get('max',null),hidden=false,fsPrev=false;
+const dsz=()=>({w:desk.clientWidth,h:desk.clientHeight});
+const cen=(w,h)=>{const d=dsz();return{x:Math.round((d.w-w)/2),y:Math.round((d.h-h)/2),w,h}};
+const def=()=>{const d=dsz();return cen(Math.min(1100,d.w-48),Math.min(700,d.h-48))};
+function apply(){const d=dsz();if(!R)R=def();
+ if(maxed){Object.assign(win.style,{left:'0px',top:'0px',width:d.w+'px',height:d.h+'px'})}
+ else{R.w=Math.max(360,Math.min(R.w,d.w));R.h=Math.max(300,Math.min(R.h,d.h));R.x=Math.max(120-R.w,Math.min(R.x,d.w-120));R.y=Math.max(0,Math.min(R.y,d.h-40));Object.assign(win.style,{left:R.x+'px',top:R.y+'px',width:R.w+'px',height:R.h+'px'})}
+ win.classList.toggle('max',maxed);const r=maxed?{x:0,y:0,w:d.w,h:d.h}:R;$('#hud').textContent=`${Math.round(r.w)}×${Math.round(r.h)}, ${Math.round(r.x)}, ${Math.round(r.y)}`}
+const persist=()=>{S.set('rect',R);S.set('max',maxed)};
+function hide(v){hidden=v;win.classList.toggle('hide',v);$('#chip').classList.toggle('on',!v);closeMenu()}
+function fs(on){const b=document.body;if(on===b.classList.contains('fs'))return;if(on){fsPrev=maxed;maxed=true;b.classList.add('fs')}else{maxed=fsPrev;b.classList.remove('fs')}apply()}
+function preset(p){fs(false);if(p==='fill')maxed=true;else{maxed=false;R=p==='min'?cen(360,300):p==='compact'?cen(640,440):def()}apply();persist()}
+const toggleMax=()=>{if(document.body.classList.contains('fs'))return;maxed=!maxed;apply();persist()};
+function track(mv,up){const u=ev=>{removeEventListener('pointermove',mv);removeEventListener('pointerup',u);removeEventListener('pointercancel',u);up&&up(ev)};addEventListener('pointermove',mv);addEventListener('pointerup',u);addEventListener('pointercancel',u)}
+$('#top').addEventListener('pointerdown',e=>{if(e.button||e.target.closest('button,input')||document.body.classList.contains('fs'))return;
+ const sx=e.clientX,sy=e.clientY;let go=false,ox=0,oy=0;
+ track(ev=>{if(!go){if(Math.hypot(ev.clientX-sx,ev.clientY-sy)<4)return;go=true;
+   if(maxed){const f=sx/dsz().w;maxed=false;R=R||def();R.x=sx-R.w*f;R.y=Math.max(0,sy-20)}
+   ox=sx-R.x;oy=sy-R.y}
+  R.x=ev.clientX-ox;R.y=ev.clientY-oy;apply()},()=>{if(go)persist()})});
+$('#top').addEventListener('dblclick',e=>{if(!e.target.closest('button'))toggleMax()});
+$('#top').addEventListener('wheel',e=>{const lr=L.getBoundingClientRect();(L.offsetParent&&e.clientX<lr.right?L:ta).scrollTop+=e.deltaY},{passive:true});
+$$('.rz').forEach(el=>el.addEventListener('pointerdown',e=>{if(maxed)return;e.preventDefault();
+ const k=el.dataset.d,s={...R},sx=e.clientX,sy=e.clientY;
+ track(ev=>{const dx=ev.clientX-sx,dy=ev.clientY-sy;let x=s.x,y=s.y,w=s.w,hh=s.h;
+  if(k.includes('e'))w=s.w+dx;if(k.includes('s'))hh=s.h+dy;
+  if(k.includes('w')){w=Math.max(360,s.w-dx);x=s.x+s.w-w}
+  if(k.includes('n')){hh=Math.max(300,s.h-dy);y=s.y+s.h-hh}
+  R={x,y,w:Math.max(360,w),h:Math.max(300,hh)};apply()},persist)}));
+$('#wmin').onclick=()=>hide(true);$('#wx').onclick=()=>hide(true);$('#wmax').onclick=toggleMax;
+$('#chip').onclick=()=>hide(!hidden);
+$$('.presets button').forEach(b=>b.onclick=()=>preset(b.dataset.p));
+addEventListener('resize',apply);
 
-/* ==========================================================
-   tabs
-   ========================================================== */
-const renderTabs = () => {
-  tabsEl.textContent = '';
-  state.tabs.forEach(t => {
-    const el = document.createElement('div');
-    const on = t.id === state.active;
-    el.className = 'tab' + (on ? ' active' : '');
-    el.dataset.id = t.id; el.tabIndex = 0;
-    el.setAttribute('role', 'tab'); el.setAttribute('aria-selected', on);
-    const title = document.createElement('span');
-    title.className = 'title'; title.textContent = t.title;
-    el.append(title);
-    if (on) {
-      const x = document.createElement('button');
-      x.className = 'x'; x.setAttribute('aria-label', 'Close tab');
-      x.innerHTML = '<svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M2.5 2.5l7 7M9.5 2.5l-7 7"/></svg>';
-      x.addEventListener('click', e => { e.stopPropagation(); closeTab(t.id); });
-      el.append(x);
-    }
-    tabsEl.append(el);
-  });
-  const a = $('.tab.active', tabsEl); a && a.scrollIntoView({ block: 'nearest', inline: 'nearest' });
-};
+/* ---------- keyboard ---------- */
+document.addEventListener('keydown',e=>{
+ if(menus.length){const top=menus[menus.length-1];
+  if(e.key==='Escape'){e.preventDefault();closeMenu();return}
+  if(e.key==='ArrowLeft'||e.key==='ArrowRight'){const bs=$$('#menubar button'),i=bs.findIndex(b=>b.getAttribute('aria-expanded')==='true');if(i>=0){e.preventDefault();const b=bs[(i+(e.key==='ArrowRight'?1:-1)+bs.length)%bs.length];openMenu(b,defs[b.dataset.m]())}}
+  if(e.key==='ArrowDown'||e.key==='ArrowUp'){e.preventDefault();const it=[...top.querySelectorAll('.mi:not(:disabled)')],i=it.indexOf(document.activeElement),d=e.key==='ArrowDown'?1:-1;if(it.length)it[i<0?(d>0?0:it.length-1):(i+d+it.length)%it.length].focus()}
+  return}
+ if(e.key==='Escape'&&document.body.classList.contains('fs')){fs(false);return}
+ if(e.key==='F11'){e.preventDefault();fs(!document.body.classList.contains('fs'));return}
+ if(e.altKey&&e.code==='KeyN'){e.preventDefault();newNote();return}
+ if(e.key==='/'&&!e.target.closest('input,textarea')){e.preventDefault();findN()}});
 
-const loadActive = (focus = true) => {
-  const t = cur();
-  if (t.mode === 'plain') editor.textContent = t.text != null ? t.text : t.html; else editor.innerHTML = t.html;
-  applyMode(); renderTabs();
-  if (focus) { editor.focus(); caretToEnd(); }
-  scheduleStatus();
-};
-const switchTab = id => {
-  if (id === state.active) return;
-  persistPlain(); commit(); state.active = id; loadActive(); save();
-};
-const newTab = (title, html, mode) => {
-  persistPlain(); commit();
-  const n = state.tabs.filter(t => /^Untitled/.test(t.title)).length + 1;
-  const t = { id: rid(), title: title || 'Untitled ' + n, html: html || '<p><br></p>', mode: mode || 'rich', ext: 'txt' };
-  state.tabs.push(t); state.active = t.id; loadActive(); save();
-};
-const closeTab = id => {
-  const i = state.tabs.findIndex(t => t.id === id); if (i < 0) return;
-  const wasActive = id === state.active;
-  state.tabs.splice(i, 1);
-  if (!state.tabs.length) state.tabs.push({ id: rid(), title: 'Untitled 1', html: '<p><br></p>', mode: 'rich', ext: 'txt' });
-  if (wasActive) state.active = state.tabs[Math.min(i, state.tabs.length - 1)].id;
-  loadActive(wasActive); save();
-};
-const renameTab = id => {
-  const node = $(`.tab[data-id="${id}"] .title`, tabsEl); if (!node) return;
-  const t = state.tabs.find(x => x.id === id); let done = false;
-  node.contentEditable = 'true'; node.focus();
-  const r = document.createRange(); r.selectNodeContents(node);
-  const s = getSelection(); s.removeAllRanges(); s.addRange(r);
-  const finish = ok => {
-    if (done) return; done = true;
-    if (ok) t.title = node.textContent.trim() || t.title;
-    renderTabs(); save(); editor.focus();
-  };
-  node.addEventListener('blur', () => finish(true), { once: true });
-  node.addEventListener('keydown', e => {
-    if (e.key === 'Enter') { e.preventDefault(); finish(true); }
-    if (e.key === 'Escape') { e.preventDefault(); finish(false); }
-  });
-};
-tabsEl.addEventListener('click', e => { const t = e.target.closest('.tab'); if (t) switchTab(t.dataset.id); });
-tabsEl.addEventListener('auxclick', e => { if (e.button === 1) { const t = e.target.closest('.tab'); if (t) { e.preventDefault(); closeTab(t.dataset.id); } } });
-tabsEl.addEventListener('dblclick', e => { const t = e.target.closest('.tab'); if (t) renameTab(t.dataset.id); });
-tabsEl.addEventListener('keydown', e => {
-  const t = e.target.closest('.tab'); if (!t || e.target.isContentEditable) return;
-  if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); switchTab(t.dataset.id); }
-});
-$('#newTab').addEventListener('click', () => newTab());
-
-/* ==========================================================
-   formatted / plain mode + file type
-   ========================================================== */
-const persistPlain = () => { const t = cur(); if (t && t.mode === 'plain') t.text = editor.textContent; };
-const applyMode = () => {
-  const t = cur(), plain = t.mode === 'plain';
-  editor.classList.toggle('plain', plain);
-  try { editor.contentEditable = plain ? 'plaintext-only' : 'true'; } catch (e) { editor.contentEditable = 'true'; }
-  document.body.classList.toggle('is-plain', plain);
-  $('#modeLabel').textContent = plain ? 'Plain' : 'Formatted';
-  $('#extLabel').textContent = t.ext + ' file';
-};
-const toggleMode = () => {
-  const t = cur();
-  if (t.mode === 'rich') {
-    t.richBackup = editor.innerHTML;
-    t.plainOrigin = editor.innerText.replace(/\n+$/, '');
-    t.mode = 'plain'; t.text = t.plainOrigin; editor.textContent = t.plainOrigin;
-  } else {
-    const txt = editor.textContent;
-    editor.innerHTML = (t.richBackup && txt === t.plainOrigin) ? t.richBackup : textToHtml(txt);
-    t.mode = 'rich'; delete t.text;
-  }
-  commit(); applyMode(); editor.focus(); scheduleStatus(); save();
-  toast(t.mode === 'plain' ? 'Plain text mode' : 'Formatted mode');
-};
-$('#modeBtn').addEventListener('click', toggleMode);
-$('#extBtn').addEventListener('click', () => {
-  const t = cur(); t.ext = t.ext === 'txt' ? 'html' : 'txt'; applyMode(); save();
-});
-
-/* ==========================================================
-   file actions
-   ========================================================== */
-const download = () => {
-  persistPlain(); commit();
-  const t = cur(), plain = t.mode === 'plain';
-  const body = plain ? editor.textContent : editor.innerHTML;
-  let data, type;
-  if (t.ext === 'html') {
-    data = `<!doctype html>\n<meta charset="utf-8">\n<title>${esc(t.title)}</title>\n${plain ? textToHtml(body) : body}`; type = 'text/html';
-  } else { data = plain ? body : editor.innerText; type = 'text/plain'; }
-  const a = document.createElement('a');
-  a.href = URL.createObjectURL(new Blob([data], { type: type + ';charset=utf-8' }));
-  a.download = (t.title.replace(/[\\/:*?"<>|]+/g, '-').trim() || 'document') + '.' + t.ext;
-  document.body.append(a); a.click(); a.remove();
-  setTimeout(() => URL.revokeObjectURL(a.href), 1000);
-  toast('Saved ' + a.download);
-};
-const openFile = () => {
-  const inp = document.createElement('input');
-  inp.type = 'file'; inp.accept = '.txt,.md,.html,text/plain';
-  inp.onchange = async () => {
-    const f = inp.files[0]; if (!f) return;
-    const text = await f.text();
-    newTab(f.name.replace(/\.[^.]+$/, ''), textToHtml(text));
-  };
-  inp.click();
-};
-const resetDemo = () => { try { localStorage.removeItem(KEY); } catch (e) {} state = seed(); applyPrefs(); loadActive(); toast('Demo content restored'); };
-
-/* ==========================================================
-   caret position (Ln / Col) + counts
-   ========================================================== */
-const textNodes = () => {
-  const w = document.createTreeWalker(editor, NodeFilter.SHOW_TEXT), arr = []; let n, c = 0;
-  while ((n = w.nextNode())) { arr.push({ n, start: c, len: n.nodeValue.length }); c += n.nodeValue.length; }
-  return arr;
-};
-const charRect = (arr, i) => {
-  const a = arr.find(x => i >= x.start && i < x.start + x.len); if (!a) return null;
-  const r = document.createRange(); r.setStart(a.n, i - a.start); r.setEnd(a.n, i - a.start + 1);
-  return r.getClientRects()[0] || r.getBoundingClientRect();
-};
-const caretInfo = () => {
-  const sel = getSelection();
-  if (!sel.rangeCount || !sel.focusNode || !editor.contains(sel.focusNode)) return null;
-  const lh = parseFloat(getComputedStyle(editor).lineHeight) || 24;
-  const pre = document.createRange(); pre.selectNodeContents(editor); pre.setEnd(sel.focusNode, sel.focusOffset);
-  const idx = pre.toString().length;
-  const arr = textNodes();
-
-  const cr = document.createRange(); cr.setStart(sel.focusNode, sel.focusOffset); cr.collapse(true);
-  let rect = cr.getClientRects()[0];
-  if (!rect || !rect.height) {
-    rect = idx > 0 ? charRect(arr, idx - 1) : null;
-    if (!rect) { const el = sel.focusNode.nodeType === 1 ? sel.focusNode : sel.focusNode.parentElement; rect = el.getBoundingClientRect(); }
-  }
-  const top = rect.top;
-
-  // line number = distinct visual line groups from document start up to the caret
-  const tops = [...pre.getClientRects()].filter(r => r.height).map(r => r.top);
-  tops.push(top); tops.sort((a, b) => a - b);
-  let ln = 0, groupStart = -1e9;
-  tops.forEach(t => { if (t > groupStart + lh * 0.5) { ln++; groupStart = t; } });
-
-  // column = characters back to the start of this visual line
-  let j = idx;
-  while (j > 0 && idx - j < 3000) {
-    const r = charRect(arr, j - 1);
-    if (!r || Math.abs(r.top - top) > lh * 0.5) break;
-    j--;
-  }
-  return { ln, col: idx - j + 1 };
-};
-
-let raf = 0;
-const scheduleStatus = () => { cancelAnimationFrame(raf); raf = requestAnimationFrame(updateStatus); };
-const updateStatus = () => {
-  const n = editor.innerText.replace(/\n+$/, '').length;
-  $('#count').textContent = n.toLocaleString('en') + ' character' + (n === 1 ? '' : 's');
-  const c = caretInfo(); if (c) $('#pos').textContent = `Ln ${c.ln}, Col ${c.col}`;
-  updateToolbarState();
-};
-const caretToEnd = () => {
-  const arr = textNodes(), s = getSelection(), r = document.createRange();
-  if (arr.length) { const l = arr[arr.length - 1]; r.setStart(l.n, l.len); } else r.setStart(editor, 0);
-  r.collapse(true); s.removeAllRanges(); s.addRange(r);
-};
-
-/* ==========================================================
-   formatting toolbar
-   ========================================================== */
-try { document.execCommand('defaultParagraphSeparator', false, 'p'); } catch (e) {}
-const fmtbar = $('#fmtbar');
-const exec = (cmd, val) => { editor.focus(); document.execCommand(cmd, false, val); scheduleStatus(); save(); };
-const setLink = () => {
-  const sel = getSelection(); if (!sel.rangeCount) return;
-  const saved = sel.getRangeAt(0).cloneRange();
-  const url = prompt('Link URL', 'https://'); if (!url) return;
-  editor.focus(); sel.removeAllRanges(); sel.addRange(saved);
-  if (sel.isCollapsed) document.execCommand('insertHTML', false, `<a href="${esc(url)}">${esc(url)}</a>`);
-  else document.execCommand('createLink', false, url);
-  save();
-};
-fmtbar.addEventListener('mousedown', e => { if (e.target.closest('button')) e.preventDefault(); });
-fmtbar.addEventListener('click', e => {
-  const b = e.target.closest('button[data-cmd]'); if (!b) return;
-  const c = b.dataset.cmd;
-  if (c === 'link') setLink();
-  else if (c === 'clear') { exec('removeFormat'); exec('formatBlock', '<p>'); }
-  else exec(c);
-});
-const blockNow = () => {
-  try { return (document.queryCommandValue('formatBlock') || '').toLowerCase().replace(/[<>]/g, ''); } catch (e) { return ''; }
-};
-const updateToolbarState = () => {
-  if (cur().mode === 'plain') return;
-  fmtbar.querySelectorAll('[data-cmd]').forEach(b => {
-    if (['bold', 'italic', 'insertUnorderedList'].includes(b.dataset.cmd)) {
-      let on = false; try { on = document.queryCommandState(b.dataset.cmd); } catch (e) {}
-      b.classList.toggle('on', on);
-    }
-  });
-  const blk = blockNow();
-  $('#blockLabel').textContent = /^h[1-3]$/.test(blk) ? blk.toUpperCase() : 'H1';
-  $('#blockLabel').style.opacity = /^h[1-3]$/.test(blk) ? 1 : .75;
-};
-
-/* ==========================================================
-   menus
-   ========================================================== */
-let openMenuEl = null, openAnchor = null;
-const closeMenu = () => {
-  if (openMenuEl) openMenuEl.remove();
-  if (openAnchor) openAnchor.setAttribute('aria-expanded', 'false');
-  openMenuEl = openAnchor = null;
-};
-const CHECK = '<svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2.5 6.5l2.5 2.5 4.5-5.5"/></svg>';
-const openMenu = (anchor, items, opts = {}) => {
-  closeMenu();
-  const m = document.createElement('div'); m.className = 'menu'; m.setAttribute('role', 'menu');
-  items.forEach(it => {
-    if (it === '-') { const s = document.createElement('div'); s.className = 'msep'; m.append(s); return; }
-    if (it.label && it.header) { const h = document.createElement('div'); h.className = 'mlabel'; h.textContent = it.label; m.append(h); return; }
-    const b = document.createElement('button'); b.className = 'mi'; b.setAttribute('role', 'menuitem');
-    if (it.disabled) b.disabled = true;
-    const ck = document.createElement('span'); ck.className = 'ck'; if (it.checked) ck.innerHTML = CHECK;
-    const lb = document.createElement('span'); lb.textContent = it.label;
-    b.append(ck, lb);
-    if (it.kbd) { const k = document.createElement('kbd'); k.textContent = it.kbd; b.append(k); }
-    b.addEventListener('click', () => { closeMenu(); it.run && it.run(); });
-    m.append(b);
-  });
-  m.addEventListener('mousedown', e => e.preventDefault());
-  document.body.append(m);
-  const r = anchor.getBoundingClientRect();
-  let left = opts.right ? r.right - m.offsetWidth : r.left;
-  left = Math.max(8, Math.min(left, innerWidth - m.offsetWidth - 8));
-  let top;
-  if (opts.up) {                                   // grow upward, shrink + scroll if there is no room
-    const avail = Math.max(120, r.top - 16);
-    m.style.maxHeight = avail + 'px';
-    top = r.top - m.offsetHeight - 8;
-  } else {                                         // grow downward, shrink + scroll if there is no room
-    top = r.bottom + 6;
-    m.style.maxHeight = Math.max(120, innerHeight - top - 12) + 'px';
-  }
-  m.style.left = left + 'px'; m.style.top = Math.max(8, top) + 'px';
-  anchor.setAttribute('aria-expanded', 'true');
-  openMenuEl = m; openAnchor = anchor;
-};
-document.addEventListener('mousedown', e => { if (openMenuEl && !openMenuEl.contains(e.target) && !e.target.closest('[aria-haspopup]')) closeMenu(); });
-addEventListener('blur', closeMenu);
-addEventListener('resize', closeMenu);
-
-const setPref = (k, v) => { state[k] = v; applyPrefs(); save(); };
-const zoom = d => { state.size = Math.max(11, Math.min(28, d === 0 ? 15 : state.size + d)); applyPrefs(); save(); toast(state.size + ' px'); };
-
-const menuDefs = () => ({
-  File: [
-    { label: 'New tab', kbd: 'Alt+T', run: () => newTab() },
-    { label: 'Open…', run: openFile },
-    { label: 'Rename tab', kbd: 'F2', run: () => renameTab(state.active) },
-    { label: 'Save as ' + cur().ext + '…', kbd: 'Ctrl+S', run: download },
-    '-',
-    { label: 'Restore demo content', run: resetDemo },
-    '-',
-    { label: 'Close tab', kbd: 'Alt+W', run: () => closeTab(state.active) }
-  ],
-  Edit: [
-    { label: 'Undo', kbd: 'Ctrl+Z', run: () => exec('undo') },
-    { label: 'Redo', kbd: 'Ctrl+Shift+Z', run: () => exec('redo') },
-    '-',
-    { label: 'Select all', kbd: 'Ctrl+A', run: () => { editor.focus(); getSelection().selectAllChildren(editor); scheduleStatus(); } },
-    { label: 'Clear formatting', disabled: cur().mode === 'plain', run: () => { exec('removeFormat'); exec('formatBlock', '<p>'); } }
-  ],
-  View: [
-    { label: 'Theme', header: true },
-    { label: 'Light',  checked: state.theme === 'light',  run: () => setPref('theme', 'light') },
-    { label: 'Dark',   checked: state.theme === 'dark',   run: () => setPref('theme', 'dark') },
-    { label: 'System', checked: state.theme === 'system', run: () => setPref('theme', 'system') },
-    '-',
-    { label: 'Zoom in',    kbd: 'Ctrl +', run: () => zoom(1) },
-    { label: 'Zoom out',   kbd: 'Ctrl -', run: () => zoom(-1) },
-    { label: 'Reset zoom', kbd: 'Ctrl 0', run: () => zoom(0) },
-    '-',
-    { label: 'Formatting bar', checked: state.bar,  run: () => setPref('bar', !state.bar) },
-    { label: 'Status info',    checked: state.info, run: () => setPref('info', !state.info) }
-  ],
-  Settings: [
-    { label: 'Font', header: true },
-    { label: 'Sans',  checked: state.font === 'sans',  run: () => setPref('font', 'sans') },
-    { label: 'Serif', checked: state.font === 'serif', run: () => setPref('font', 'serif') },
-    { label: 'Mono',  checked: state.font === 'mono',  run: () => setPref('font', 'mono') },
-    '-',
-    { label: 'Line spacing', header: true },
-    { label: 'Compact',     checked: state.lh === 1.4,  run: () => setPref('lh', 1.4) },
-    { label: 'Comfortable', checked: state.lh === 1.6,  run: () => setPref('lh', 1.6) },
-    { label: 'Relaxed',     checked: state.lh === 1.85, run: () => setPref('lh', 1.85) },
-    '-',
-    { label: 'Spellcheck', checked: state.spell, run: () => setPref('spell', !state.spell) }
-  ]
-});
-
-const menubar = $('#menubar');
-menubar.addEventListener('click', e => {
-  const b = e.target.closest('button[data-menu]'); if (!b) return;
-  if (openAnchor === b) { closeMenu(); return; }
-  openMenu(b, menuDefs()[b.dataset.menu]);
-});
-menubar.addEventListener('mouseover', e => {         // hover-switch once a menu is open
-  const b = e.target.closest('button[data-menu]');
-  if (b && openAnchor && openAnchor !== b && openAnchor.dataset.menu) openMenu(b, menuDefs()[b.dataset.menu]);
-});
-$('#blockBtn').addEventListener('mousedown', e => e.preventDefault());
-$('#blockBtn').addEventListener('click', e => {
-  const b = e.currentTarget;
-  if (openAnchor === b) { closeMenu(); return; }
-  const blk = blockNow();
-  const set = tag => () => exec('formatBlock', tag);
-  openMenu(b, [
-    { label: 'Body',      checked: blk === 'p' || blk === 'div' || blk === '', run: set('<p>') },
-    { label: 'Heading 1', checked: blk === 'h1', run: set('<h1>') },
-    { label: 'Heading 2', checked: blk === 'h2', run: set('<h2>') },
-    { label: 'Heading 3', checked: blk === 'h3', run: set('<h3>') }
-  ], { up: true });
-});
-
-/* ==========================================================
-   update pill, window controls
-   ========================================================== */
-const upd = $('#update');
-upd.addEventListener('click', () => {
-  if (upd.classList.contains('done')) return;
-  $('#updateLabel').textContent = 'Updating…';
-  setTimeout(() => { upd.classList.add('done'); $('#updateLabel').textContent = 'Up to date'; setTimeout(() => upd.classList.add('gone'), 1500); }, 1100);
-});
-/* window controls (minimize / maximize / close) are wired in the window manager section below */
-
-/* ==========================================================
-   editor behaviour
-   ========================================================== */
-editor.addEventListener('input', () => { scheduleStatus(); save(); });
-editor.addEventListener('click', e => {
-  const a = e.target.closest('a'); if (!a) return;
-  e.preventDefault(); if (e.ctrlKey || e.metaKey) window.open(a.href, '_blank', 'noopener');
-});
-editor.addEventListener('paste', e => {                // keep pasted content clean
-  e.preventDefault();
-  const t = (e.clipboardData || window.clipboardData).getData('text/plain');
-  document.execCommand('insertText', false, t);
-});
-$('#stage').addEventListener('mousedown', e => {       // click empty space → focus at end
-  if (e.target === $('#stage')) { e.preventDefault(); editor.focus(); caretToEnd(); scheduleStatus(); }
-});
-document.addEventListener('selectionchange', scheduleStatus);
-
-document.addEventListener('keydown', e => {
-  const mod = e.ctrlKey || e.metaKey;
-  if (e.key === 'Escape') { closeMenu(); return; }
-  if (e.altKey && !mod) {
-    if (e.key.toLowerCase() === 't') { e.preventDefault(); newTab(); }
-    else if (e.key.toLowerCase() === 'w') { e.preventDefault(); closeTab(state.active); }
-    else if (e.key === 'ArrowRight' || e.key === 'ArrowLeft') {
-      e.preventDefault();
-      const i = state.tabs.findIndex(t => t.id === state.active), d = e.key === 'ArrowRight' ? 1 : -1;
-      switchTab(state.tabs[(i + d + state.tabs.length) % state.tabs.length].id);
-    }
-  }
-  if (mod && e.key.toLowerCase() === 's') { e.preventDefault(); download(); }
-  if (mod && (e.key === '=' || e.key === '+')) { e.preventDefault(); zoom(1); }
-  if (mod && e.key === '-') { e.preventDefault(); zoom(-1); }
-  if (mod && e.key === '0') { e.preventDefault(); zoom(0); }
-  if (e.key === 'F2') { e.preventDefault(); renameTab(state.active); }
-});
-addEventListener('beforeunload', () => { persistPlain(); commit(); try { localStorage.setItem(KEY, JSON.stringify(state)); } catch (e) {} });
-
-/* ==========================================================
-   window manager (desktop sandbox): drag, 8-way resize, maximize, minimize, presets
-   ========================================================== */
-const desk = $('#desktop'), win = $('#window'), hud = $('#hud'), chip = $('#appChip'), titlebar = $('.titlebar');
-const WKEY = 'ui-lab.quiet-editor.window.v1';
-const MIN_W = 420, MIN_H = 260;
-const dsize = () => ({ w: desk.clientWidth, h: desk.clientHeight });
-const defaultRect = () => {
-  const d = dsize(), w = Math.max(MIN_W, Math.min(1100, d.w - 48)), h = Math.max(MIN_H, Math.min(640, d.h - 48));
-  return { x: Math.round((d.w - w) / 2), y: Math.round((d.h - h) / 2), w, h };
-};
-const clampRect = r => {                          // keep size sane and the titlebar reachable
-  const d = dsize();
-  r.w = Math.round(Math.max(MIN_W, Math.min(r.w, d.w)));
-  r.h = Math.round(Math.max(MIN_H, Math.min(r.h, d.h)));
-  r.x = Math.round(Math.max(120 - r.w, Math.min(r.x, d.w - 120)));
-  r.y = Math.round(Math.max(0, Math.min(r.y, d.h - 44)));
-  return r;
-};
-let W = { rect: null, maxed: false, hidden: false };
-try { const s = JSON.parse(localStorage.getItem(WKEY)); if (s && s.rect) { W.rect = s.rect; W.maxed = !!s.maxed; } } catch (e) {}
-W.rect = clampRect(W.rect || defaultRect());
-
-const applyWin = () => {
-  const d = dsize(), r = W.maxed ? { x: 0, y: 0, w: d.w, h: d.h } : W.rect;
-  win.style.left = r.x + 'px'; win.style.top = r.y + 'px';
-  win.style.width = r.w + 'px'; win.style.height = r.h + 'px';
-  win.classList.toggle('maxed', W.maxed);
-  win.classList.toggle('gone', W.hidden);
-  chip.setAttribute('aria-pressed', String(!W.hidden));
-  $('#winMax').title = W.maxed ? 'Restore' : 'Maximize';
-  hud.textContent = `${r.w} × ${r.h}  ·  ${r.x}, ${r.y}` + (W.maxed ? '  ·  maximized' : '');
-};
-const saveWin = () => { try { localStorage.setItem(WKEY, JSON.stringify({ rect: W.rect, maxed: W.maxed })); } catch (e) {} };
-const toggleMax = () => { closeMenu(); W.maxed = !W.maxed; applyWin(); saveWin(); };
-const setHidden = h => { closeMenu(); W.hidden = h; applyWin(); if (!h) editor.focus(); };
-
-$('#winMin').addEventListener('click', () => setHidden(true));
-$('#winClose').addEventListener('click', () => setHidden(true));
-$('#winMax').addEventListener('click', toggleMax);
-chip.addEventListener('click', () => setHidden(!W.hidden));
-document.querySelectorAll('[data-preset]').forEach(b => b.addEventListener('click', () => {
-  closeMenu(); W.hidden = false;
-  const p = b.dataset.preset;
-  if (p === 'fill') W.maxed = true;
-  else {
-    W.maxed = false;
-    if (p === 'default') W.rect = defaultRect();
-    else { const s = p === 'min' ? { w: MIN_W, h: MIN_H } : { w: 640, h: 420 }; W.rect = clampRect({ x: W.rect.x, y: W.rect.y, w: s.w, h: s.h }); }
-  }
-  applyWin(); saveWin(); editor.focus();
-}));
-
-/* drag by the empty part of the titlebar; double-click toggles maximize */
-let drag = null;
-titlebar.addEventListener('pointerdown', e => {
-  // empty titlebar space or a tab (past a 4 px threshold, so plain tab clicks still work); never buttons or the rename field
-  if (e.button !== 0 || e.target.closest('button, [contenteditable="true"]')) return;
-  if (e.target === titlebar) e.preventDefault();
-  closeMenu();
-  drag = { sx: e.clientX, sy: e.clientY, ox: W.rect.x, oy: W.rect.y, moved: false, id: e.pointerId };
-});
-titlebar.addEventListener('pointermove', e => {
-  if (!drag) return;
-  if (!drag.moved) {
-    if (Math.hypot(e.clientX - drag.sx, e.clientY - drag.sy) < 4) return;
-    drag.moved = true; desk.classList.add('interacting');
-    try { titlebar.setPointerCapture(drag.id); } catch (err) {}
-    if (W.maxed) {                                  // un-maximize, keeping the pointer at the same proportion of the titlebar
-      const d = desk.getBoundingClientRect(), ratio = (e.clientX - d.left) / d.width;
-      W.maxed = false;
-      W.rect.x = Math.round(e.clientX - d.left - ratio * W.rect.w); W.rect.y = 0;
-      drag.sx = e.clientX; drag.sy = e.clientY; drag.ox = W.rect.x; drag.oy = W.rect.y;
-    }
-  }
-  W.rect.x = drag.ox + e.clientX - drag.sx;
-  W.rect.y = drag.oy + e.clientY - drag.sy;
-  clampRect(W.rect); applyWin();
-});
-const endDrag = () => { if (!drag) return; drag = null; desk.classList.remove('interacting'); saveWin(); };
-titlebar.addEventListener('pointerup', endDrag);
-titlebar.addEventListener('pointercancel', endDrag);
-titlebar.addEventListener('dblclick', e => { if (e.target === titlebar) toggleMax(); });
-
-/* resize from any edge or corner */
-win.querySelectorAll('.rz').forEach(h => h.addEventListener('pointerdown', e => {
-  if (e.button !== 0 || W.maxed) return;
-  e.preventDefault(); closeMenu(); h.setPointerCapture(e.pointerId);
-  const s = Object.assign({}, W.rect), sx = e.clientX, sy = e.clientY, dir = h.dataset.dir;
-  desk.classList.add('interacting');
-  const move = ev => {
-    const dx = ev.clientX - sx, dy = ev.clientY - sy, d = dsize();
-    let x = s.x, y = s.y, w = s.w, hh = s.h;
-    if (dir.includes('e')) w = s.w + dx;
-    if (dir.includes('s')) hh = s.h + dy;
-    if (dir.includes('w')) { w = s.w - dx; x = s.x + dx; }
-    if (dir.includes('n')) { hh = s.h - dy; y = s.y + dy; }
-    if (dir.includes('w') && x < 0) { w += x; x = 0; }          // stay inside the desktop
-    if (dir.includes('n') && y < 0) { hh += y; y = 0; }
-    if (dir.includes('e') && x + w > d.w) w = d.w - x;
-    if (dir.includes('s') && y + hh > d.h) hh = d.h - y;
-    if (w < MIN_W)  { if (dir.includes('w')) x = s.x + s.w - MIN_W; w = MIN_W; }   // min size: the opposite edge stays put
-    if (hh < MIN_H) { if (dir.includes('n')) y = s.y + s.h - MIN_H; hh = MIN_H; }
-    W.rect = { x: Math.round(x), y: Math.round(y), w: Math.round(w), h: Math.round(hh) };
-    applyWin();
-  };
-  const up = () => {
-    h.removeEventListener('pointermove', move); h.removeEventListener('pointerup', up); h.removeEventListener('pointercancel', up);
-    desk.classList.remove('interacting'); saveWin();
-  };
-  h.addEventListener('pointermove', move); h.addEventListener('pointerup', up); h.addEventListener('pointercancel', up);
-}));
-
-addEventListener('resize', () => { clampRect(W.rect); applyWin(); });
-
-/* narrow windows fold the four menus into one hamburger menu */
-const menuBtn = $('#menuBtn');
-menuBtn.addEventListener('click', () => {
-  if (openAnchor === menuBtn) { closeMenu(); return; }
-  const defs = menuDefs(), items = [];
-  Object.keys(defs).forEach((k, i) => { if (i) items.push('-'); items.push({ label: k, header: true }); items.push(...defs[k]); });
-  openMenu(menuBtn, items, { right: true });
-});
-
-/* ==========================================================
-   boot
-   ========================================================== */
-applyWin();
-applyPrefs();
-loadActive(true);
-})();
-</script>
-</body>
-</html>
+/* ---------- init ---------- */
+if(maxed===null)maxed=desk.clientWidth<600;
+if(!visible().some(n=>n.id===cur))cur=null;
+const ZS=[.75,.9,1,1.1,1.25,1.5,2];let zi=ZS.indexOf(S.get('zoom',1));if(zi<0)zi=2;
+function setZoom(i){zi=Math.max(0,Math.min(ZS.length-1,i));S.set('zoom',ZS[zi]);app.style.zoom=ZS[zi];$('#zv').textContent=Math.round(ZS[zi]*100)+'%'}
+$('#zin').onclick=()=>setZoom(zi+1);$('#zout').onclick=()=>setZoom(zi-1);$('#zv').onclick=()=>setZoom(2);
+renderAll();applyView();applyTheme();apply();setZoom(zi);
+})();</script>
+</body></html>

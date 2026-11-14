@@ -1,0 +1,1131 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Sound Recorder · Essential OS</title>
+<style>
+:root{
+  --bg:#fff;--bg2:#f4f4f6;--fg:#1d1d1f;--mut:#6e6e73;--line:rgba(0,0,0,.09);
+  --glass:rgba(255,255,255,.72);--glass2:rgba(250,250,252,.88);--hover:rgba(0,0,0,.055);
+  --accent:#fa2d48;--accent-soft:rgba(250,45,72,.12);
+  --wall:#dde1e8;--grid:rgba(0,0,0,.05);--tb:rgba(245,245,247,.82);
+  --shadow:0 8px 30px rgba(0,0,0,.14);--winshadow:0 24px 70px rgba(0,0,0,.3),0 0 0 .5px rgba(0,0,0,.25);
+  --font:Inter,system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  color-scheme:light;
+}
+html[data-theme=dark]{
+  --bg:#1c1c1e;--bg2:#2a2a2d;--fg:#f5f5f7;--mut:#98989d;--line:rgba(255,255,255,.1);
+  --glass:rgba(44,44,46,.72);--glass2:rgba(40,40,43,.9);--hover:rgba(255,255,255,.08);
+  --accent-soft:rgba(250,45,72,.2);--wall:#0e0f12;--grid:rgba(255,255,255,.045);--tb:rgba(30,30,33,.85);
+  --shadow:0 8px 30px rgba(0,0,0,.5);--winshadow:0 24px 70px rgba(0,0,0,.7),0 0 0 .5px rgba(255,255,255,.14);
+  color-scheme:dark;
+}
+@media (prefers-color-scheme:dark){
+  html:not([data-theme=light]){
+    --bg:#1c1c1e;--bg2:#2a2a2d;--fg:#f5f5f7;--mut:#98989d;--line:rgba(255,255,255,.1);
+    --glass:rgba(44,44,46,.72);--glass2:rgba(40,40,43,.9);--hover:rgba(255,255,255,.08);
+    --accent-soft:rgba(250,45,72,.2);--wall:#0e0f12;--grid:rgba(255,255,255,.045);--tb:rgba(30,30,33,.85);
+    --shadow:0 8px 30px rgba(0,0,0,.5);--winshadow:0 24px 70px rgba(0,0,0,.7),0 0 0 .5px rgba(255,255,255,.14);
+    color-scheme:dark;
+  }
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;height:100%;overflow:hidden;font:13px/1.4 var(--font);color:var(--fg);background:var(--wall)}
+button,input,select{font:inherit;color:inherit}
+button{background:none;border:0;padding:0;cursor:pointer}
+button:disabled{opacity:.4;cursor:default}
+:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
+.ic{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;flex:none}
+kbd{font:11px var(--font);color:var(--mut)}
+
+/* ---- desktop + window ---- */
+.desktop{position:fixed;inset:0 0 44px 0;background-color:var(--wall);
+  background-image:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);
+  background-size:32px 32px;overflow:hidden}
+body.fs .desktop{bottom:0}
+.window{position:absolute;border-radius:12px;box-shadow:var(--winshadow);background:var(--bg)}
+.window[hidden]{display:none!important}
+.window.max{left:0!important;top:0!important;width:auto!important;height:auto!important;right:0;bottom:0;border-radius:0;box-shadow:none}
+.window.max .app{border-radius:0}
+.window.max .rz,.window.mini .rz{display:none}
+.app{position:absolute;inset:0;container:app/inline-size;background:var(--bg);color:var(--fg);overflow:hidden;border-radius:12px}
+.rz{position:absolute;z-index:30}
+.rz.n{top:-3px;left:10px;right:10px;height:7px;cursor:ns-resize}
+.rz.s{bottom:-3px;left:10px;right:10px;height:7px;cursor:ns-resize}
+.rz.e{right:-3px;top:10px;bottom:10px;width:7px;cursor:ew-resize}
+.rz.w{left:-3px;top:10px;bottom:10px;width:7px;cursor:ew-resize}
+.rz.ne{top:-3px;right:-3px;width:14px;height:14px;cursor:nesw-resize}
+.rz.nw{top:-3px;left:-3px;width:14px;height:14px;cursor:nwse-resize}
+.rz.se{bottom:-3px;right:-3px;width:14px;height:14px;cursor:nwse-resize}
+.rz.sw{bottom:-3px;left:-3px;width:14px;height:14px;cursor:nesw-resize}
+
+/* ---- taskbar ---- */
+.taskbar{position:fixed;left:0;right:0;bottom:0;height:44px;display:flex;align-items:center;gap:10px;padding:0 10px;
+  background:var(--tb);backdrop-filter:blur(24px) saturate(1.6);border-top:.5px solid var(--line);z-index:900}
+body.fs .taskbar{display:none}
+.tb-chip{display:flex;align-items:center;gap:8px;height:32px;padding:0 12px;border-radius:8px;position:relative}
+.tb-chip:hover{background:var(--hover)}
+.tb-chip.on{background:var(--hover);box-shadow:inset 0 -2px 0 var(--accent)}
+.tb-chip .rd{width:8px;height:8px;border-radius:50%;background:var(--accent);display:none;animation:pulse 1.2s infinite}
+.tb-chip.rec .rd{display:block}
+.tb-sp{flex:1}
+.tb-hud{font:11px ui-monospace,SFMono-Regular,Menlo,monospace;color:var(--mut);white-space:nowrap}
+.tb-pre{display:flex;gap:2px;background:var(--hover);border-radius:8px;padding:2px}
+.tb-pre button{height:26px;padding:0 10px;border-radius:6px;font-size:12px}
+.tb-pre button:hover{background:var(--bg)}
+@keyframes pulse{50%{opacity:.35}}
+
+/* ---- chrome ---- */
+.topfade{position:absolute;left:0;right:0;top:0;height:72px;z-index:3;pointer-events:none;background:linear-gradient(var(--bg) 35%,transparent)}
+.botfade{position:absolute;left:0;right:0;bottom:0;height:120px;z-index:3;pointer-events:none;background:linear-gradient(transparent,var(--bg) 75%)}
+.top{position:absolute;left:0;right:0;top:0;height:40px;z-index:8;display:flex;align-items:center;gap:4px;padding:0 8px 0 10px;user-select:none}
+.menubar{display:flex;gap:2px}
+.mb,.burger,.wc button{height:28px;border-radius:7px;padding:0 10px;display:inline-flex;align-items:center;justify-content:center}
+.mb:hover,.mb[aria-expanded=true],.burger:hover,.burger[aria-expanded=true],.wc button:hover{background:var(--hover)}
+.burger{display:none;width:32px;padding:0}
+.top .sp{flex:1;align-self:stretch;min-width:12px}
+.wc{display:flex;gap:10px;padding-right:4px}
+.wc button{width:32px;padding:0;color:var(--mut);background:none!important}
+.wc button:hover{color:var(--fg)}
+.wc .cl:hover{color:var(--accent)}
+.wc .ic{width:20px;height:20px;stroke-width:1.4}
+
+/* ---- pill ---- */
+.pill{position:absolute;bottom:14px;left:0;right:0;margin:0 auto;width:fit-content;max-width:calc(100% - 28px);height:50px;border-radius:24px;z-index:8;
+  display:grid;grid-template-columns:auto minmax(0,auto) auto;align-items:center;gap:16px;padding:0 10px 0 12px;
+  background:var(--glass);backdrop-filter:blur(28px) saturate(1.8);-webkit-backdrop-filter:blur(28px) saturate(1.8);
+  box-shadow:var(--shadow),0 0 0 .5px var(--line)}
+.inp{display:flex;align-items:center;gap:8px;height:36px;padding:0 10px 0 8px;border-radius:18px;max-width:200px;min-width:0}
+.inp:hover,.inp[aria-expanded=true]{background:var(--hover)}
+.inp .ic{color:var(--mut)}
+.inp .col{display:flex;flex-direction:column;gap:4px;min-width:0;text-align:left}
+.inp .nm{font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:120px}
+.meter{height:3px;width:96px;border-radius:2px;background:var(--line);position:relative;overflow:hidden}
+.meter i{position:absolute;left:0;top:0;bottom:0;width:0;background:var(--accent);border-radius:2px}
+.meter b{position:absolute;top:0;bottom:0;width:2px;left:0;background:var(--fg);opacity:.55}
+.mid{display:flex;align-items:center;gap:12px;min-width:0}
+.mid canvas{flex:0 1 220px;width:220px;min-width:40px;height:34px;display:block}
+.timer{font:600 15px ui-monospace,SFMono-Regular,Menlo,monospace;font-variant-numeric:tabular-nums;min-width:74px;text-align:right}
+.pill.rec .timer{color:var(--accent)}
+.pill.paused .timer{animation:pulse 1s infinite}
+.acts{display:flex;align-items:center;gap:6px}
+.rb,.pb,.mk{border-radius:50%;display:grid;place-items:center}
+.pb,.mk{width:34px;height:34px;background:var(--hover)}
+.pb:hover,.mk:hover{background:var(--line)}
+.rb{width:38px;height:38px;background:var(--accent);box-shadow:0 2px 8px rgba(250,45,72,.4);transition:transform .12s}
+.rb:hover{transform:scale(1.06)}.rb:active{transform:scale(.95)}
+.rb i{width:14px;height:14px;border-radius:50%;background:#fff;transition:border-radius .15s,width .15s,height .15s}
+.pill.rec .rb i,.pill.cd .rb i{border-radius:4px;width:13px;height:13px}
+.pb[hidden]{display:none}
+
+/* ---- toast + countdown ---- */
+.toast{position:absolute;left:50%;bottom:80px;transform:translate(-50%,8px);z-index:9;display:flex;align-items:center;gap:12px;
+  max-width:calc(100% - 28px);padding:9px 14px;border-radius:12px;background:var(--glass2);backdrop-filter:blur(24px);
+  box-shadow:var(--shadow),0 0 0 .5px var(--line);opacity:0;pointer-events:none;transition:opacity .18s,transform .18s;font-size:12.5px}
+.toast.on{opacity:1;transform:translate(-50%,0);pointer-events:auto}
+.toast button{color:var(--accent);font-weight:600}
+.cdown{position:absolute;inset:0;z-index:7;display:none;place-items:center;pointer-events:none}
+.cdown.on{display:grid}
+.cdown span{font-size:120px;font-weight:700;color:var(--accent);animation:cdp 1s infinite;text-shadow:0 8px 40px var(--accent-soft)}
+@keyframes cdp{from{transform:scale(1.25);opacity:0}25%{opacity:1}to{transform:scale(.9);opacity:.2}}
+
+/* ---- menus (fixed, appended to body) ---- */
+.menu{position:fixed;z-index:2000;min-width:230px;max-width:340px;overflow-y:auto;padding:5px;border-radius:12px;
+  background:var(--glass2);backdrop-filter:blur(30px) saturate(1.8);-webkit-backdrop-filter:blur(30px) saturate(1.8);
+  box-shadow:0 14px 44px rgba(0,0,0,.28),0 0 0 .5px var(--line);font-size:13px;animation:mdown .12s ease-out;scrollbar-width:thin}
+.menu.up{animation-name:mup}
+@keyframes mdown{from{opacity:0;transform:translateY(-4px)}}
+@keyframes mup{from{opacity:0;transform:translateY(6px)}}
+.mi{display:flex;align-items:center;gap:8px;width:100%;min-height:28px;padding:4px 10px 4px 6px;border-radius:7px;text-align:left}
+.mi:hover:not(:disabled),.mi:focus-visible{background:var(--accent);color:#fff;outline:0}
+.mi:hover kbd,.mi:focus-visible kbd{color:rgba(255,255,255,.8)}
+.mi .ck{width:14px;flex:none;font-size:12px;text-align:center}
+.mi .lb{flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.mi .ch{opacity:.6;font-size:11px}
+.mh{padding:6px 10px 2px 26px;font-size:11px;color:var(--mut);text-transform:uppercase;letter-spacing:.04em}
+.msep{height:1px;margin:5px 8px;background:var(--line)}
+
+/* ---- content ---- */
+.scroll{--pad:30px;--top:40px;position:absolute;inset:0;overflow-y:auto;overflow-x:hidden;scrollbar-width:thin;
+  padding:calc(var(--top) + 14px) var(--pad) 150px}
+.scroll h1{margin:0;font-size:30px;line-height:1.15;font-weight:700;letter-spacing:-.02em}
+.scroll .sub{margin:4px 0 18px;color:var(--mut)}
+.live{display:none;align-items:center;gap:12px;padding:12px 14px;margin-bottom:12px;border-radius:12px;background:var(--accent-soft)}
+.live.on{display:flex}
+.live .dot{width:10px;height:10px;border-radius:50%;background:var(--accent);animation:pulse 1.1s infinite}
+.live.paused .dot{animation:none;opacity:.5}
+.live .t{font-weight:600}
+.live .m{margin-left:auto;color:var(--mut);font-size:12px}
+.list{display:flex;flex-direction:column}
+.row{display:grid;grid-template-columns:36px minmax(0,1fr) 120px 80px 64px 30px;align-items:center;gap:12px;padding:8px 10px;border-radius:10px;cursor:default}
+.row:hover{background:var(--hover)}
+.row.sel{background:var(--hover)}
+.row.pl .rname{color:var(--accent)}
+.rplay{width:36px;height:36px;border-radius:50%;background:var(--bg2);display:grid;place-items:center}
+.row.sel .rplay,.rplay:hover{background:var(--accent);color:#fff}
+.rname{font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.rname input{width:100%;font-weight:600;padding:2px 6px;border-radius:6px;border:1px solid var(--accent);background:var(--bg);outline:0}
+.rsub{color:var(--mut);font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.rcol{color:var(--mut);font-size:12px;white-space:nowrap}
+.rdur{text-align:right;font-variant-numeric:tabular-nums;color:var(--mut)}
+.rmore{width:28px;height:28px;border-radius:50%;display:grid;place-items:center;color:var(--mut)}
+.rmore:hover{background:var(--line);color:var(--fg)}
+.rexp{margin:0 0 6px;padding:6px 10px 14px 58px;border-radius:0 0 10px 10px;background:var(--hover)}
+.row.sel{border-radius:10px 10px 0 0}
+.row{scroll-margin:60px 0 150px}
+.rexp canvas{width:100%;height:84px;display:block;cursor:pointer}
+.tp{display:flex;align-items:center;gap:10px;margin-top:6px}
+.tp .tc{font:12px ui-monospace,Menlo,monospace;color:var(--mut);min-width:56px}
+.tp .tc:last-child{text-align:right}
+.tp .tb{display:flex;align-items:center;gap:6px;margin:0 auto}
+.tp .tb button{height:32px;min-width:32px;padding:0 8px;border-radius:16px;font-size:12px;color:var(--mut)}
+.tp .tb button:hover{background:var(--line);color:var(--fg)}
+.tp .tb .big{width:40px;height:40px;border-radius:50%;background:var(--accent);color:#fff;display:grid;place-items:center;padding:0}
+.tp .tb .big:hover{background:var(--accent);color:#fff;filter:brightness(1.08)}
+.tools{display:flex;flex-wrap:wrap;gap:4px;margin-top:10px}
+.tools button{display:inline-flex;align-items:center;gap:6px;height:30px;padding:0 10px;border-radius:8px;font-size:12px}
+.tools button:hover{background:var(--line)}
+.tools .del:hover{background:var(--accent-soft);color:var(--accent)}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.chip{display:inline-flex;align-items:center;gap:4px;height:24px;padding:0 4px 0 10px;border-radius:12px;background:var(--accent-soft);font-size:11.5px;font-variant-numeric:tabular-nums}
+.chip button{width:18px;height:18px;border-radius:50%;color:var(--mut);line-height:1}
+.chip button:hover{background:var(--line)}
+.empty{display:grid;place-items:center;text-align:center;gap:6px;padding:70px 0;color:var(--mut)}
+.empty .ic{width:56px;height:56px;stroke-width:1.2;opacity:.5}
+.empty b{color:var(--fg);font-size:16px}
+
+/* ---- window-width tiers (container queries only) ---- */
+@container app (max-width:980px){
+  .row{grid-template-columns:36px minmax(0,1fr) 64px 30px}
+  .rcol{display:none}
+}
+@container app (max-width:700px){
+  .mk,.inp .nm{display:none}
+  .inp{padding:0 8px}
+  .rexp{padding-left:10px}
+}
+@container app (max-width:560px){
+  .menubar{display:none}
+  .burger{display:inline-flex}
+}
+@container app (max-width:520px){
+  .scroll{--pad:16px}
+  .scroll h1{font-size:24px}
+  .meter{display:none}
+  .pill{gap:8px}
+  .tools button span{display:none}
+  .tools button{padding:0 9px}
+  .timer{min-width:66px;font-size:14px}
+}
+@container app (max-width:420px){
+  .inp{display:none}
+  .pill{grid-template-columns:minmax(0,auto) auto}
+  .tp .tb button.sk{display:none}
+}
+
+/* ---- mini mode ---- */
+.window.mini .scroll,.window.mini .botfade,.window.mini .topfade,.window.mini .toast{display:none}
+.window.mini .app{background:var(--bg2)}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+<symbol id="i-mic" viewBox="0 0 24 24"><path d="M12 3a3 3 0 0 0-3 3v6a3 3 0 0 0 6 0V6a3 3 0 0 0-3-3z"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></symbol>
+<symbol id="i-play" viewBox="0 0 24 24"><path d="M8 5v14l11-7z" fill="currentColor" stroke="none"/></symbol>
+<symbol id="i-pause" viewBox="0 0 24 24"><path d="M7 5h3.5v14H7zM13.5 5H17v14h-3.5z" fill="currentColor" stroke="none"/></symbol>
+<symbol id="i-flag" viewBox="0 0 24 24"><path d="M6 21V4M6 5h11l-2 4 2 4H6"/></symbol>
+<symbol id="i-more" viewBox="0 0 24 24"><circle cx="5" cy="12" r="1.6" fill="currentColor" stroke="none"/><circle cx="12" cy="12" r="1.6" fill="currentColor" stroke="none"/><circle cx="19" cy="12" r="1.6" fill="currentColor" stroke="none"/></symbol>
+<symbol id="i-min" viewBox="0 0 24 24"><path d="M6.5 10l5.5 5.5L17.5 10"/></symbol>
+<symbol id="i-max" viewBox="0 0 24 24"><path d="M6.5 14.5L12 9l5.5 5.5"/></symbol>
+<symbol id="i-rest" viewBox="0 0 24 24"><path d="M6.5 14.5L12 9l5.5 5.5"/></symbol>
+<symbol id="i-x" viewBox="0 0 24 24"><path d="M6.5 6.5l11 11M17.5 6.5l-11 11"/></symbol>
+<symbol id="i-burger" viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16"/></symbol>
+<symbol id="i-trash" viewBox="0 0 24 24"><path d="M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3"/></symbol>
+<symbol id="i-dl" viewBox="0 0 24 24"><path d="M12 4v11m0 0l-4-4m4 4l4-4M5 20h14"/></symbol>
+<symbol id="i-edit" viewBox="0 0 24 24"><path d="M4 20h4L19 9l-4-4L4 16z"/></symbol>
+<symbol id="i-wave" viewBox="0 0 24 24"><path d="M3 12h0M6 8v8M9 5v14M12 9v6M15 3v18M18 8v8M21 11v2"/></symbol>
+</defs></svg>
+
+<div class="desktop" id="desktop">
+ <div class="window" id="win">
+  <div class="app" id="app">
+   <div class="scroll" id="scroll">
+    <h1>Recordings</h1>
+    <p class="sub" id="sub"></p>
+    <div class="live" id="live"><span class="dot"></span><span class="t" id="liveT">Recording…</span><span class="m" id="liveM"></span></div>
+    <div class="list" id="list"></div>
+   </div>
+   <div class="cdown" id="cdown"><span id="cdn">3</span></div>
+   <div class="topfade"></div><div class="botfade"></div>
+   <div class="top" id="top">
+    <nav class="menubar" id="menubar">
+     <button class="mb" data-menu="file" aria-haspopup="menu" aria-expanded="false">File</button>
+     <button class="mb" data-menu="record" aria-haspopup="menu" aria-expanded="false">Record</button>
+     <button class="mb" data-menu="view" aria-haspopup="menu" aria-expanded="false">View</button>
+    </nav>
+    <button class="burger" id="burger" aria-haspopup="menu" aria-expanded="false" title="Menu"><svg class="ic"><use href="#i-burger"/></svg></button>
+    <div class="sp"></div>
+    <div class="wc">
+     <button id="wMin" title="Minimize"><svg class="ic"><use href="#i-min"/></svg></button>
+     <button id="wMax" title="Maximize"><svg class="ic"><use href="#i-max"/></svg></button>
+     <button id="wCl" class="cl" title="Close"><svg class="ic"><use href="#i-x"/></svg></button>
+    </div>
+   </div>
+   <div class="pill" id="pill">
+    <button class="inp" id="inp" aria-haspopup="menu" aria-expanded="false" title="Input device">
+     <svg class="ic"><use href="#i-mic"/></svg>
+     <span class="col"><span class="nm" id="inpNm">Default microphone</span><span class="meter" id="meter"><i></i><b></b></span></span>
+    </button>
+    <div class="mid"><canvas id="live-wf"></canvas><span class="timer" id="timer">0:00.0</span></div>
+    <div class="acts">
+     <button class="mk" id="mk" title="Add marker (M)"><svg class="ic"><use href="#i-flag"/></svg></button>
+     <button class="pb" id="pb" title="Pause (P)" hidden><svg class="ic"><use href="#i-pause"/></svg></button>
+     <button class="rb" id="rb" title="Record (R)" aria-label="Record"><i></i></button>
+    </div>
+   </div>
+   <div class="toast" id="toast"><span id="toastT"></span><button id="toastA" hidden></button></div>
+  </div>
+  <i class="rz n" data-d="n"></i><i class="rz s" data-d="s"></i><i class="rz e" data-d="e"></i><i class="rz w" data-d="w"></i>
+  <i class="rz ne" data-d="ne"></i><i class="rz nw" data-d="nw"></i><i class="rz se" data-d="se"></i><i class="rz sw" data-d="sw"></i>
+ </div>
+</div>
+<div class="taskbar" id="taskbar">
+ <button class="tb-chip on" id="chip"><svg class="ic"><use href="#i-mic"/></svg><span>Sound Recorder</span><span class="rd"></span></button>
+ <div class="tb-sp"></div>
+ <span class="tb-hud" id="hud"></span>
+ <div class="tb-pre" id="pre"><button data-p="min">Min</button><button data-p="compact">Compact</button><button data-p="default">Default</button><button data-p="fill">Fill</button></div>
+</div>
+<input type="file" id="file" accept="audio/*" multiple hidden>
+<script>
+(() => {'use strict';
+/* ===== 4-a: helpers, storage, db, toast ===== */
+const $ = (s, r = document) => r.querySelector(s);
+const $$ = (s, r = document) => [...r.querySelectorAll(s)];
+const NS = 'soundrecorder.';
+const lsGet = (k, d) => { try { const v = localStorage.getItem(NS + k); return v == null ? d : JSON.parse(v); } catch (e) { return d; } };
+const lsSet = (k, v) => { try { localStorage.setItem(NS + k, JSON.stringify(v)); } catch (e) {} };
+const esc = s => String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const clamp = (v, a, b) => Math.min(b, Math.max(a, v));
+const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
+const icon = n => `<svg class="ic"><use href="#i-${n}"/></svg>`;
+
+function fmtT(s, tenth = true) {
+  if (!isFinite(s) || s < 0) s = 0;
+  const m = Math.floor(s / 60), sec = Math.floor(s % 60);
+  const t = Math.floor((s * 10) % 10);
+  return m + ':' + String(sec).padStart(2, '0') + (tenth ? '.' + t : '');
+}
+function fmtTotal(s) {
+  s = Math.round(s);
+  const h = Math.floor(s / 3600), m = Math.floor(s % 3600 / 60), sec = s % 60;
+  return h ? `${h} h ${m} min` : m ? `${m} min ${sec} s` : `${sec} s`;
+}
+function fmtBytes(b) { return b < 1024 ? b + ' B' : b < 1048576 ? (b / 1024).toFixed(0) + ' KB' : (b / 1048576).toFixed(1) + ' MB'; }
+function fmtDate(t) { try { return new Date(t).toLocaleString(undefined, { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' }); } catch (e) { return ''; } }
+function stampName(t) {
+  const d = new Date(t), p = n => String(n).padStart(2, '0');
+  return `Recording ${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())} ${p(d.getHours())}.${p(d.getMinutes())}.${p(d.getSeconds())}`;
+}
+
+/* IndexedDB with in-memory fallback (works without storage) */
+let dbp = null; const mem = [];
+function db() {
+  if (dbp) return dbp;
+  dbp = new Promise((res, rej) => {
+    try {
+      const r = indexedDB.open('soundrecorder', 1);
+      r.onupgradeneeded = () => r.result.createObjectStore('rec', { keyPath: 'id' });
+      r.onsuccess = () => res(r.result);
+      r.onerror = () => rej(r.error);
+      r.onblocked = () => rej(new Error('blocked'));
+    } catch (e) { rej(e); }
+  }).catch(() => null);
+  return dbp;
+}
+async function dbAll() {
+  const d = await db(); if (!d) return mem.slice();
+  return new Promise(res => {
+    try { const q = d.transaction('rec').objectStore('rec').getAll(); q.onsuccess = () => res(q.result || []); q.onerror = () => res([]); }
+    catch (e) { res([]); }
+  });
+}
+async function dbPut(r) {
+  const i = mem.findIndex(x => x.id === r.id); i < 0 ? mem.push(r) : (mem[i] = r);
+  const d = await db(); if (!d) return;
+  return new Promise(res => {
+    try { const t = d.transaction('rec', 'readwrite'); t.objectStore('rec').put(r); t.oncomplete = res; t.onerror = res; t.onabort = res; }
+    catch (e) { res(); }
+  });
+}
+async function dbDel(id) {
+  const i = mem.findIndex(x => x.id === id); if (i >= 0) mem.splice(i, 1);
+  const d = await db(); if (!d) return;
+  return new Promise(res => {
+    try { const t = d.transaction('rec', 'readwrite'); t.objectStore('rec').delete(id); t.oncomplete = res; t.onerror = res; t.onabort = res; }
+    catch (e) { res(); }
+  });
+}
+
+/* toast (optional action button) */
+let toastTm = 0;
+function toast(msg, action, ms) {
+  const t = $('#toast'), a = $('#toastA');
+  $('#toastT').textContent = msg;
+  if (action) { a.hidden = false; a.textContent = action.label; a.onclick = () => { t.classList.remove('on'); action.run(); }; }
+  else { a.hidden = true; a.onclick = null; }
+  t.classList.add('on'); clearTimeout(toastTm);
+  toastTm = setTimeout(() => t.classList.remove('on'), ms || (action ? 6000 : 3000));
+}
+
+/* ===== 5-b: settings + recording / playback engine ===== */
+const FORMATS = [
+  ['audio/webm;codecs=opus', 'Opus · WebM', 'webm'],
+  ['audio/ogg;codecs=opus', 'Opus · Ogg', 'ogg'],
+  ['audio/mp4', 'AAC · MP4', 'm4a'],
+  ['audio/webm', 'WebM', 'webm']
+];
+const fmtSupported = () => FORMATS.filter(f => { try { return window.MediaRecorder && MediaRecorder.isTypeSupported(f[0]); } catch (e) { return false; } });
+
+const S = Object.assign({
+  deviceId: '', fmt: '', kbps: 128, ec: true, ns: true, agc: true, countdown: 0, limit: 0,
+  sort: 'new', theme: 'match', monitor: false, mono: false, vad: false
+}, lsGet('settings', {}));
+const saveS = () => lsSet('settings', S);
+
+let recs = [];            // all recordings (with blobs)
+let selId = null;         // selected recording
+let devices = [];         // audio inputs
+const R = {               // recorder state
+  st: 'idle',             // idle | countdown | rec | paused
+  stream: null, mr: null, ctx: null, an: null, chunks: [], t0: 0, acc: 0, markers: [], raw: [], lastPk: 0,
+  hist: [], level: 0, hold: 0, raf: 0, cdTm: 0, mime: ''
+};
+const elapsed = () => R.acc + (R.st === 'rec' ? (performance.now() - R.t0) / 1000 : 0);
+const curFmt = () => {
+  const sup = fmtSupported();
+  return sup.find(f => f[0] === S.fmt) || sup[0] || null;
+};
+
+async function refreshDevices() {
+  try {
+    const all = await navigator.mediaDevices.enumerateDevices();
+    devices = all.filter(d => d.kind === 'audioinput' && d.deviceId);
+  } catch (e) { devices = []; }
+  drawInput();
+}
+function inputLabel() {
+  if (!S.deviceId) return 'Default microphone';
+  const d = devices.find(x => x.deviceId === S.deviceId);
+  return d ? (d.label || 'Microphone') : 'Default microphone';
+}
+
+async function startRec() {
+  if (R.st !== 'idle') return;
+  if (!window.MediaRecorder || !navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) { toast('Recording is not supported in this browser'); return; }
+  pausePlayback();
+  if (S.countdown > 0) {
+    R.st = 'countdown'; drawState();
+    for (let n = S.countdown; n > 0; n--) {
+      $('#cdn').textContent = n; $('#cdown').classList.add('on');
+      const el = $('#cdn'); el.style.animation = 'none'; void el.offsetWidth; el.style.animation = '';
+      await new Promise(r => { R.cdTm = setTimeout(r, 1000); });
+      if (R.st !== 'countdown') { $('#cdown').classList.remove('on'); return; }
+    }
+    $('#cdown').classList.remove('on');
+  }
+  R.st = 'countdown';
+  try {
+    const audio = { echoCancellation: S.ec, noiseSuppression: S.ns, autoGainControl: S.agc };
+    if (S.deviceId) audio.deviceId = { exact: S.deviceId };
+    R.stream = await navigator.mediaDevices.getUserMedia({ audio });
+  } catch (e) {
+    R.st = 'idle'; drawState();
+    const n = e && e.name;
+    toast(n === 'NotAllowedError' ? 'Microphone access is blocked. Allow it in the site settings.' :
+      n === 'NotFoundError' ? 'No microphone found' :
+      n === 'OverconstrainedError' ? 'That input is unavailable. Using default next time.' : 'Could not open the microphone');
+    if (n === 'OverconstrainedError') { S.deviceId = ''; saveS(); }
+    return;
+  }
+  refreshDevices();
+  try {
+    const AC = window.AudioContext || window.webkitAudioContext;
+    R.ctx = new AC(); if (R.ctx.state === 'suspended') R.ctx.resume();
+    const src = R.ctx.createMediaStreamSource(R.stream);
+    R.an = R.ctx.createAnalyser(); R.an.fftSize = 1024; src.connect(R.an);   // analysis only, never routed to speakers
+  } catch (e) { R.an = null; }
+  const f = curFmt();
+  const opts = { audioBitsPerSecond: S.kbps * 1000 }; if (f) opts.mimeType = f[0];
+  try { R.mr = new MediaRecorder(R.stream, opts); } catch (e) { try { R.mr = new MediaRecorder(R.stream); } catch (e2) { stopStream(); R.st = 'idle'; drawState(); toast('Could not start the recorder'); return; } }
+  R.mime = R.mr.mimeType || (f && f[0]) || 'audio/webm';
+  R.chunks = []; R.markers = []; R.raw = []; R.hist = []; R.acc = 0; R.lastPk = 0; R.hold = 0;
+  R.mr.ondataavailable = e => { if (e.data && e.data.size) R.chunks.push(e.data); };
+  R.mr.onstop = finalizeRec;
+  R.mr.start(250);
+  R.t0 = performance.now(); R.st = 'rec';
+  drawState(); loop();
+}
+function stopStream() {
+  try { R.stream && R.stream.getTracks().forEach(t => t.stop()); } catch (e) {}
+  try { R.ctx && R.ctx.close(); } catch (e) {}
+  R.stream = null; R.ctx = null; R.an = null;
+}
+function pauseRec() {
+  if (R.st === 'rec') { R.acc = elapsed(); R.st = 'paused'; try { R.mr.pause(); } catch (e) {} }
+  else if (R.st === 'paused') { R.t0 = performance.now(); R.st = 'rec'; try { R.mr.resume(); } catch (e) {} }
+  drawState();
+}
+function stopRec() {
+  if (R.st === 'countdown') { clearTimeout(R.cdTm); R.st = 'idle'; $('#cdown').classList.remove('on'); drawState(); toast('Recording cancelled'); return; }
+  if (R.st !== 'rec' && R.st !== 'paused') return;
+  R.acc = elapsed(); R.st = 'idle';
+  try { R.mr.stop(); } catch (e) { finalizeRec(); }
+  cancelAnimationFrame(R.raf); drawState(); drawLive();
+}
+async function finalizeRec() {
+  const dur = R.acc, mime = R.mime, markers = R.markers.slice(), raw = R.raw.slice();
+  const blob = new Blob(R.chunks, { type: mime });
+  stopStream(); R.chunks = [];
+  if (!blob.size || dur < 0.2) { toast('Recording too short, discarded'); renderAll(); return; }
+  const now = Date.now();
+  const rec = { id: uid(), name: stampName(now), created: now, dur, mime, size: blob.size, blob, markers, peaks: resample(raw, 160), kbps: S.kbps };
+  recs.push(rec); selId = rec.id; await dbPut(rec);
+  renderAll(); scrollToSel();
+  toast('Saved · ' + fmtT(dur, false) + ' · ' + fmtBytes(blob.size));
+}
+function addMarker() {
+  if (R.st === 'rec' || R.st === 'paused') {
+    R.markers.push(+elapsed().toFixed(2)); drawLive(); renderLive();
+    toast('Marker added at ' + fmtT(elapsed()));
+  } else {
+    const r = sel(); if (!r) { toast('Select a recording or start recording to add markers'); return; }
+    r.markers = (r.markers || []).concat([+(au.currentTime || 0).toFixed(2)]).sort((a, b) => a - b);
+    dbPut(r); renderAll(); toast('Marker added at ' + fmtT(au.currentTime || 0));
+  }
+}
+function toggleRec() { R.st === 'idle' ? startRec() : stopRec(); }
+
+/* live loop: level, peaks, auto-stop */
+function loop() {
+  cancelAnimationFrame(R.raf);
+  const buf = new Uint8Array(R.an ? R.an.fftSize : 0);
+  const tick = () => {
+    if (R.st !== 'rec' && R.st !== 'paused') return;
+    let pk = 0;
+    if (R.an && R.st === 'rec') {
+      R.an.getByteTimeDomainData(buf);
+      for (let i = 0; i < buf.length; i++) { const v = Math.abs(buf[i] - 128) / 128; if (v > pk) pk = v; }
+    }
+    R.level = R.level * 0.7 + pk * 0.3;
+    R.hold = Math.max(R.hold - 0.01, pk);
+    const now = performance.now();
+    if (R.st === 'rec' && now - R.lastPk > 40) { R.lastPk = now; R.hist.push(pk); R.raw.push(pk); if (R.hist.length > 400) R.hist.shift(); }
+    $('#timer').textContent = fmtT(elapsed());
+    $('#liveT').textContent = (R.st === 'paused' ? 'Paused ' : 'Recording ') + fmtT(elapsed());
+    drawMeter(); drawLive();
+    if (S.limit > 0 && elapsed() >= S.limit * 60) { toast('Auto-stop after ' + S.limit + ' min'); stopRec(); return; }
+    R.raf = requestAnimationFrame(tick);
+  };
+  tick();
+}
+function resample(arr, n) {
+  const out = new Array(n).fill(0);
+  if (!arr.length) return out;
+  for (let i = 0; i < arr.length; i++) { const k = Math.min(n - 1, Math.floor(i / arr.length * n)); if (arr[i] > out[k]) out[k] = arr[i]; }
+  return out;
+}
+async function peaksFromBlob(blob) {
+  try {
+    const AC = window.AudioContext || window.webkitAudioContext; const c = new AC();
+    const buf = await c.decodeAudioData(await blob.arrayBuffer()); c.close();
+    const ch = buf.getChannelData(0), n = 160, out = new Array(n).fill(0), step = Math.max(1, Math.floor(ch.length / n));
+    for (let i = 0; i < n; i++) { let m = 0; for (let j = i * step; j < Math.min(ch.length, (i + 1) * step); j += 8) { const v = Math.abs(ch[j]); if (v > m) m = v; } out[i] = m; }
+    return { peaks: out, dur: buf.duration };
+  } catch (e) { return null; }
+}
+async function importFiles(files) {
+  let n = 0;
+  for (const f of files) {
+    if (!/^audio\//.test(f.type) && !/\.(mp3|wav|ogg|opus|m4a|flac|webm|aac)$/i.test(f.name)) continue;
+    const info = await peaksFromBlob(f);
+    if (!info) { toast('Could not decode ' + f.name); continue; }
+    const rec = { id: uid(), name: f.name.replace(/\.[^.]+$/, ''), created: f.lastModified || Date.now(), dur: info.dur, mime: f.type || 'audio/*', size: f.size, blob: f, markers: [], peaks: info.peaks, kbps: 0, imported: true };
+    recs.push(rec); await dbPut(rec); selId = rec.id; n++;
+  }
+  renderAll(); if (n) { scrollToSel(); toast(n === 1 ? 'Imported 1 file' : 'Imported ' + n + ' files'); }
+}
+
+/* ---- playback ---- */
+const au = new Audio(); au.preload = 'auto';
+let loadedId = null, loadedUrl = '', speed = 1;
+const sel = () => recs.find(r => r.id === selId) || null;
+function loadRec(r) {
+  if (loadedId === r.id) return;
+  if (loadedUrl) URL.revokeObjectURL(loadedUrl);
+  loadedUrl = URL.createObjectURL(r.blob); au.src = loadedUrl; loadedId = r.id; au.playbackRate = speed;
+}
+au.addEventListener('loadedmetadata', () => {   // MediaRecorder webm reports Infinity: force the real duration scan
+  if (au.duration === Infinity) { au.currentTime = 1e101; au.addEventListener('timeupdate', function f() { au.removeEventListener('timeupdate', f); au.currentTime = 0; }); }
+});
+function togglePlay(r) {
+  r = r || sel(); if (!r) return;
+  if (R.st === 'rec' || R.st === 'paused') { toast('Stop recording before playing'); return; }
+  if (selId !== r.id) select(r.id, true);
+  loadRec(r);
+  if (au.paused) { au.play().catch(() => toast('Playback failed')); } else au.pause();
+}
+function pausePlayback() { try { au.pause(); } catch (e) {} }
+function seekTo(sec) {
+  const r = sel(); if (!r) return; loadRec(r);
+  au.currentTime = clamp(sec, 0, r.dur - 0.05); drawSel();
+}
+function posFrac() { const r = sel(); return r && loadedId === r.id && r.dur ? clamp(au.currentTime / r.dur, 0, 1) : 0; }
+
+/* ===== 6-c: views ===== */
+const C = {};
+function refreshColors() {
+  const cs = getComputedStyle(document.documentElement);
+  ['--accent', '--mut', '--fg', '--line'].forEach(k => { C[k] = cs.getPropertyValue(k).trim() || '#888'; });
+}
+function fit(c) {
+  const dpr = window.devicePixelRatio || 1, w = Math.max(1, Math.round(c.clientWidth * dpr)), h = Math.max(1, Math.round(c.clientHeight * dpr));
+  if (c.width !== w) c.width = w; if (c.height !== h) c.height = h; return dpr;
+}
+const extFor = m => /mp4|aac/.test(m) ? 'm4a' : /ogg/.test(m) ? 'ogg' : /mpeg|mp3/.test(m) ? 'mp3' : /wav/.test(m) ? 'wav' : /flac/.test(m) ? 'flac' : 'webm';
+const labelFor = r => {
+  const m = r.mime || '';
+  const base = /opus/.test(m) ? 'Opus' : /mp4|aac/.test(m) ? 'AAC' : /mpeg/.test(m) ? 'MP3' : /wav/.test(m) ? 'WAV' : /flac/.test(m) ? 'FLAC' : /webm/.test(m) ? 'WebM' : 'Audio';
+  return r.kbps ? `${base} · ${r.kbps} kbps` : base + (r.imported ? ' · imported' : '');
+};
+
+function sorted() {
+  const a = recs.slice();
+  const f = { new: (x, y) => y.created - x.created, old: (x, y) => x.created - y.created, long: (x, y) => y.dur - x.dur, name: (x, y) => x.name.localeCompare(y.name) }[S.sort] || ((x, y) => y.created - x.created);
+  return a.sort(f);
+}
+let renaming = null;
+
+function renderAll() {
+  const list = $('#list'), arr = sorted();
+  const total = arr.reduce((s, r) => s + r.dur, 0);
+  $('#sub').textContent = arr.length ? `${arr.length} recording${arr.length > 1 ? 's' : ''} · ${fmtTotal(total)}` : 'Nothing here yet';
+  if (!arr.length) {
+    list.innerHTML = `<div class="empty">${icon('wave')}<b>No recordings yet</b><span>Press the red button or hit <kbd>R</kbd> to start. Recordings stay on this device.</span></div>`;
+    return;
+  }
+  const playing = id => loadedId === id && !au.paused;
+  list.innerHTML = arr.map(r => {
+    const on = r.id === selId, pl = playing(r.id);
+    let h = `<div class="row${on ? ' sel' : ''}${pl ? ' pl' : ''}" data-id="${r.id}">
+      <button class="rplay" data-a="play" title="${pl ? 'Pause' : 'Play'}" aria-label="${pl ? 'Pause' : 'Play'}">${icon(pl ? 'pause' : 'play')}</button>
+      <div style="min-width:0"><div class="rname">${renaming === r.id ? `<input class="rn" value="${esc(r.name)}" spellcheck="false">` : esc(r.name)}</div><div class="rsub">${esc(fmtDate(r.created))}${(r.markers || []).length ? ' · ' + r.markers.length + ' marker' + (r.markers.length > 1 ? 's' : '') : ''}</div></div>
+      <div class="rcol">${esc(labelFor(r))}</div><div class="rcol">${fmtBytes(r.size)}</div>
+      <div class="rdur">${fmtT(r.dur, false)}</div>
+      <button class="rmore" data-a="more" title="More" aria-label="More">${icon('more')}</button></div>`;
+    if (on) {
+      h += `<div class="rexp" data-id="${r.id}"><canvas class="wf" aria-label="Waveform, click to seek"></canvas>
+        <div class="tp"><span class="tc tcur">${fmtT(loadedId === r.id ? au.currentTime : 0)}</span>
+        <div class="tb"><button class="sk" data-a="back" title="Back 5 s (←)">−5 s</button>
+        <button class="big" data-a="play" title="${pl ? 'Pause' : 'Play'} (Space)" aria-label="${pl ? 'Pause' : 'Play'}">${icon(pl ? 'pause' : 'play')}</button>
+        <button class="sk" data-a="fwd" title="Forward 5 s (→)">+5 s</button>
+        <button data-a="speed" title="Playback speed">${speed}×</button></div>
+        <span class="tc">${fmtT(r.dur)}</span></div>
+        <div class="tools"><button data-a="marker" title="Add marker at playhead (M)">${icon('flag')}<span>Marker</span></button>
+        <button data-a="rename" title="Rename (F2)">${icon('edit')}<span>Rename</span></button>
+        <button data-a="dl" title="Download">${icon('dl')}<span>Download</span></button>
+        <button class="del" data-a="del" title="Delete (Del)">${icon('trash')}<span>Delete</span></button></div>
+        ${(r.markers || []).length ? '<div class="chips">' + r.markers.map((m, i) => `<span class="chip"><a data-a="goto" data-t="${m}" style="cursor:pointer">${fmtT(m)}</a><button data-a="rmmark" data-i="${i}" title="Remove marker" aria-label="Remove marker">×</button></span>`).join('') + '</div>' : ''}
+      </div>`;
+    }
+    return h;
+  }).join('');
+  drawSel();
+  if (renaming) { const i = $('.rn'); if (i) { i.focus(); i.select(); } }
+}
+
+function drawSel() {
+  const r = sel(), c = $('.rexp canvas'); if (!r || !c) return;
+  const dpr = fit(c), g = c.getContext('2d'), w = c.width, h = c.height;
+  g.clearRect(0, 0, w, h);
+  const pk = r.peaks && r.peaks.length ? r.peaks : new Array(160).fill(0.05);
+  const mx = Math.max(0.05, ...pk), bw = 3 * dpr, gap = 2 * dpr, n = Math.max(1, Math.floor(w / (bw + gap))), mid = h / 2, fr = posFrac();
+  for (let i = 0; i < n; i++) {
+    const a = Math.floor(i / n * pk.length), b = Math.max(a + 1, Math.floor((i + 1) / n * pk.length));
+    let v = 0; for (let j = a; j < b && j < pk.length; j++) v = Math.max(v, pk[j]);
+    const hh = Math.max(3 * dpr, Math.pow(v / mx, 0.8) * h * 0.92);
+    g.fillStyle = (i + 0.5) / n <= fr ? C['--accent'] : C['--mut']; g.globalAlpha = (i + 0.5) / n <= fr ? 1 : 0.55;
+    g.fillRect(i * (bw + gap), mid - hh / 2, bw, hh);
+  }
+  g.globalAlpha = 1;
+  (r.markers || []).forEach(m => {
+    const x = Math.round(m / r.dur * w);
+    g.fillStyle = C['--accent']; g.fillRect(x - dpr / 2, 0, dpr, h);
+    g.beginPath(); g.moveTo(x, 0); g.lineTo(x + 8 * dpr, 4 * dpr); g.lineTo(x, 8 * dpr); g.fill();
+  });
+  g.fillStyle = C['--fg']; g.fillRect(Math.round(fr * w) - dpr, 0, 2 * dpr, h);
+  const t = $('.tcur'); if (t) t.textContent = fmtT(loadedId === r.id ? au.currentTime : 0);
+}
+let playRaf = 0;
+function playTick() { cancelAnimationFrame(playRaf); const f = () => { drawSel(); if (!au.paused) playRaf = requestAnimationFrame(f); }; f(); }
+
+function drawLive() {
+  const c = $('#live-wf'); if (!c) return;
+  const dpr = fit(c), g = c.getContext('2d'), w = c.width, h = c.height;
+  g.clearRect(0, 0, w, h);
+  const bw = 3 * dpr, gap = 2 * dpr, n = Math.max(1, Math.floor(w / (bw + gap))), mid = h / 2;
+  const active = R.st === 'rec' || R.st === 'paused';
+  for (let i = 0; i < n; i++) {
+    const idx = R.hist.length - n + i, has = active && idx >= 0;
+    const hh = has ? Math.max(2 * dpr, Math.min(h, R.hist[idx] * 1.7 * h)) : 2 * dpr;
+    g.fillStyle = has ? C['--accent'] : C['--line'];
+    g.fillRect(i * (bw + gap), mid - hh / 2, bw, hh);
+  }
+}
+function drawMeter() {
+  const m = $('#meter'); if (!m) return;
+  const active = R.st === 'rec';
+  m.firstElementChild.style.width = (active ? clamp(R.level * 1.5, 0, 1) * 100 : 0) + '%';
+  m.lastElementChild.style.left = (active ? clamp(R.hold * 1.5, 0, 1) * 100 : 0) + '%';
+}
+function drawInput() { const n = $('#inpNm'); if (n) n.textContent = inputLabel(); }
+function renderLive() {
+  const on = R.st === 'rec' || R.st === 'paused', l = $('#live');
+  l.classList.toggle('on', on); l.classList.toggle('paused', R.st === 'paused');
+  $('#liveM').textContent = R.markers.length ? R.markers.length + ' marker' + (R.markers.length > 1 ? 's' : '') : '';
+}
+function drawState() {
+  const active = R.st === 'rec' || R.st === 'paused';
+  const p = $('#pill');
+  p.classList.toggle('rec', active); p.classList.toggle('paused', R.st === 'paused'); p.classList.toggle('cd', R.st === 'countdown');
+  const pb = $('#pb'); pb.hidden = !active;
+  pb.innerHTML = icon(R.st === 'paused' ? 'play' : 'pause'); pb.title = R.st === 'paused' ? 'Resume (P)' : 'Pause (P)';
+  const rb = $('#rb'); rb.title = active || R.st === 'countdown' ? 'Stop (R)' : 'Record (R)'; rb.setAttribute('aria-label', rb.title.replace(/ \(.\)/, ''));
+  $('#chip').classList.toggle('rec', active);
+  if (!active) $('#timer').textContent = '0:00.0';
+  renderLive(); drawMeter(); drawLive();
+}
+
+/* ---- actions on recordings ---- */
+function select(id, keepPlay) {
+  if (selId === id) return;
+  if (!keepPlay) pausePlayback();
+  pausePlayback(); selId = id; renameDone(true); renderAll();
+}
+function scrollToSel() { const e = $('.row.sel'); if (e) e.scrollIntoView({ block: 'nearest' }); }
+function startRename(id) { const r = recs.find(x => x.id === (id || selId)); if (!r) return; selId = r.id; renaming = r.id; renderAll(); }
+function renameDone(cancel) {
+  if (!renaming) return;
+  const r = recs.find(x => x.id === renaming), i = $('.rn');
+  renaming = null;
+  if (!cancel && r && i) { const v = i.value.trim(); if (v && v !== r.name) { r.name = v; dbPut(r); } }
+  if (!cancel) renderAll();
+}
+function delRec(id) {
+  id = id || selId; const i = recs.findIndex(r => r.id === id); if (i < 0) return;
+  const r = recs[i], order = sorted(), oi = order.findIndex(x => x.id === id);
+  if (loadedId === id) pausePlayback();
+  recs.splice(i, 1); dbDel(id);
+  if (selId === id) { const nx = order[oi + 1] || order[oi - 1]; selId = nx ? nx.id : null; }
+  renderAll();
+  toast('Deleted “' + r.name + '”', { label: 'Undo', run: () => { recs.push(r); dbPut(r); selId = r.id; renderAll(); scrollToSel(); } });
+}
+function delAll() {
+  if (!recs.length) { toast('Nothing to delete'); return; }
+  if (!confirm('Delete all ' + recs.length + ' recordings from this device?')) return;
+  const all = recs.slice(); pausePlayback(); recs = []; selId = null; all.forEach(r => dbDel(r.id)); renderAll();
+  toast('Deleted ' + all.length + ' recordings', { label: 'Undo', run: () => { all.forEach(r => { recs.push(r); dbPut(r); }); renderAll(); } });
+}
+function download(id) {
+  const r = recs.find(x => x.id === (id || selId)); if (!r) { toast('Select a recording first'); return; }
+  const u = URL.createObjectURL(r.blob), a = document.createElement('a');
+  a.href = u; a.download = r.name.replace(/[\\/:*?"<>|]/g, '-') + '.' + extFor(r.mime);
+  document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(u), 4000);
+  toast('Downloading ' + a.download);
+}
+function cycleSpeed() { const s = [0.75, 1, 1.25, 1.5, 2]; speed = s[(s.indexOf(speed) + 1) % s.length]; au.playbackRate = speed; renderAll(); toast('Speed ' + speed + '×'); }
+function skip(d) { const r = sel(); if (!r) return; seekTo((loadedId === r.id ? au.currentTime : 0) + d); }
+function setTheme(t) {
+  S.theme = t; saveS();
+  if (t === 'match') document.documentElement.removeAttribute('data-theme'); else document.documentElement.setAttribute('data-theme', t);
+  refreshColors(); drawSel(); drawLive();
+}
+
+/* ===== 7-d: menu engine, menus, events ===== */
+const menus = [];
+function closeMenu(depth = 0) {
+  while (menus.length > depth) {
+    const m = menus.pop(); m.el.remove();
+    if (m.anchor && m.anchor.setAttribute && depth === 0) m.anchor.setAttribute('aria-expanded', 'false');
+  }
+  if (depth === 0) $$('[aria-haspopup][aria-expanded=true]').forEach(b => b.setAttribute('aria-expanded', 'false'));
+}
+function openMenu(anchor, items, o = {}, depth = 0) {
+  closeMenu(depth);
+  const el = document.createElement('div'); el.className = 'menu' + (o.up ? ' up' : ''); el.setAttribute('role', 'menu');
+  let tm = 0;
+  items.forEach(it => {
+    if (it === '-') { const s = document.createElement('div'); s.className = 'msep'; el.appendChild(s); return; }
+    if (it.header) { const h = document.createElement('div'); h.className = 'mh'; h.textContent = it.header; el.appendChild(h); return; }
+    const b = document.createElement('button'); b.className = 'mi'; b.setAttribute('role', 'menuitem'); b.disabled = !!it.disabled;
+    b.innerHTML = `<span class="ck">${it.checked ? '✓' : ''}</span><span class="lb">${esc(it.label)}</span>` + (it.sub ? '<span class="ch">▶</span>' : it.kbd ? `<kbd>${esc(it.kbd)}</kbd>` : '');
+    if (it.sub) {
+      const open = () => openMenu(b, it.sub, { sub: true }, depth + 1);
+      b.addEventListener('mouseenter', () => { clearTimeout(tm); tm = setTimeout(open, 80); });
+      b.addEventListener('click', e => { e.stopPropagation(); open(); });
+    } else {
+      b.addEventListener('mouseenter', () => { clearTimeout(tm); tm = setTimeout(() => closeMenu(depth + 1), 80); });
+      b.addEventListener('click', () => { closeMenu(0); it.run && it.run(); });
+    }
+    el.appendChild(b);
+  });
+  document.body.appendChild(el);
+  const gap = o.gap == null ? 4 : o.gap, vw = innerWidth, vh = innerHeight;
+  let rc;
+  if (anchor && anchor.getBoundingClientRect) { rc = anchor.getBoundingClientRect(); anchor.setAttribute && anchor.setAttribute('aria-expanded', 'true'); }
+  else rc = { left: anchor.x, right: anchor.x, top: anchor.y, bottom: anchor.y, width: 0 };
+  let left, top;
+  if (o.sub) {
+    el.style.maxHeight = (vh - 16) + 'px';
+    const w = el.offsetWidth, h = el.offsetHeight;
+    left = rc.right + 2; if (left + w > vw - 8) left = rc.left - w - 2;
+    top = rc.top - 6; top = clamp(top, 8, Math.max(8, vh - h - 8));
+  } else {
+    const room = o.up ? rc.top - gap - 8 : vh - rc.bottom - gap - 8;
+    el.style.maxHeight = Math.max(120, room) + 'px';
+    const w = el.offsetWidth, h = el.offsetHeight;
+    left = o.center ? rc.left + rc.width / 2 - w / 2 : o.right ? rc.right - w : rc.left;
+    top = o.up ? rc.top - gap - h : rc.bottom + gap;
+    if (!anchor.getBoundingClientRect && top + h > vh - 8) top = Math.max(8, vh - h - 8);
+    top = Math.max(8, top);
+  }
+  left = clamp(left, 8, Math.max(8, vw - el.offsetWidth - 8));
+  el.style.left = left + 'px'; el.style.top = top + 'px';
+  menus.push({ el, anchor });
+  return el;
+}
+
+/* ---- menu definitions ---- */
+const preview = (k, label) => () => { S[k] = !S[k]; saveS(); toast(label + (S[k] ? ' on' : ' off') + ' (preview only)'); };
+function fileMenu() {
+  const has = !!sel();
+  return [
+    { label: 'Import audio…', kbd: 'Ctrl+O', run: () => $('#file').click() },
+    '-',
+    { label: 'Download selected', disabled: !has, run: () => download() },
+    { label: 'Rename', kbd: 'F2', disabled: !has, run: () => startRename() },
+    { label: 'Delete', kbd: 'Del', disabled: !has, run: () => delRec() },
+    '-',
+    { label: 'Delete all recordings…', disabled: !recs.length, run: delAll },
+    '-',
+    { label: 'Close window', run: closeWin }
+  ];
+}
+function recordMenu() {
+  const act = R.st === 'rec' || R.st === 'paused';
+  const fm = fmtSupported(), cf = curFmt();
+  const devs = [{ label: 'Default microphone', checked: !S.deviceId, run: () => { S.deviceId = ''; saveS(); drawInput(); } }]
+    .concat(devices.map(d => ({ label: d.label || 'Microphone', checked: S.deviceId === d.deviceId, run: () => { S.deviceId = d.deviceId; saveS(); drawInput(); } })));
+  const opt = (arr, key, fmtL) => arr.map(v => ({ label: fmtL(v), checked: S[key] === v, run: () => { S[key] = v; saveS(); toast(fmtL(v) + ' set'); } }));
+  return [
+    { label: act || R.st === 'countdown' ? 'Stop recording' : 'Start recording', kbd: 'R', run: toggleRec },
+    { label: R.st === 'paused' ? 'Resume' : 'Pause', kbd: 'P', disabled: !act, run: pauseRec },
+    { label: 'Add marker', kbd: 'M', run: addMarker },
+    '-',
+    { header: 'Input' },
+    { label: 'Input device', sub: devs },
+    { label: 'Format', sub: fm.length ? fm.map(f => ({ label: f[1], checked: cf && cf[0] === f[0], run: () => { S.fmt = f[0]; saveS(); toast('Format: ' + f[1]); } })) : [{ label: 'Not supported here', disabled: true }] },
+    { label: 'Quality', sub: opt([32, 64, 128, 192], 'kbps', v => v + ' kbps' + (v === 128 ? ' (default)' : '')) },
+    '-',
+    { label: 'Noise suppression', checked: S.ns, run: () => { S.ns = !S.ns; saveS(); toast('Noise suppression ' + (S.ns ? 'on' : 'off') + ' · applies to the next recording'); } },
+    { label: 'Echo cancellation', checked: S.ec, run: () => { S.ec = !S.ec; saveS(); toast('Echo cancellation ' + (S.ec ? 'on' : 'off') + ' · applies to the next recording'); } },
+    { label: 'Automatic gain', checked: S.agc, run: () => { S.agc = !S.agc; saveS(); toast('Automatic gain ' + (S.agc ? 'on' : 'off') + ' · applies to the next recording'); } },
+    '-',
+    { label: 'Countdown', sub: opt([0, 3], 'countdown', v => v ? v + ' s' : 'Off') },
+    { label: 'Auto-stop', sub: opt([0, 1, 5, 30, 60], 'limit', v => v ? v + ' min' : 'Off') },
+    '-',
+    { label: 'Monitor input', checked: S.monitor, run: preview('monitor', 'Monitor input') },
+    { label: 'Mono downmix', checked: S.mono, run: preview('mono', 'Mono downmix') },
+    { label: 'Voice-activated start', checked: S.vad, run: preview('vad', 'Voice-activated start') }
+  ];
+}
+function viewMenu() {
+  const mini = win.classList.contains('mini');
+  return [
+    { label: 'Sort by', sub: [['new', 'Newest first'], ['old', 'Oldest first'], ['long', 'Longest first'], ['name', 'Name']].map(([k, l]) => ({ label: l, checked: S.sort === k, run: () => { S.sort = k; saveS(); renderAll(); } })) },
+    '-',
+    { label: 'Appearance', sub: [['light', 'Light'], ['dark', 'Dark'], ['match', 'Match system']].map(([k, l]) => ({ label: l, checked: S.theme === k, run: () => setTheme(k) })) },
+    { label: 'Window size', sub: [['min', 'Min'], ['compact', 'Compact'], ['default', 'Default'], ['fill', 'Fill']].map(([k, l]) => ({ label: l, run: () => preset(k) })) },
+    '-',
+    { label: 'Mini mode', checked: mini, run: toggleMini },
+    { label: 'Full screen', kbd: 'F11', checked: document.body.classList.contains('fs'), run: toggleFS }
+  ];
+}
+const MENUS = { file: fileMenu, record: recordMenu, view: viewMenu };
+function burgerMenu() { return Object.keys(MENUS).map(k => ({ label: k[0].toUpperCase() + k.slice(1), sub: MENUS[k]() })); }
+function rowMenu(id, pt) {
+  select(id, true); const r = sel(); const pl = loadedId === id && !au.paused;
+  openMenu(pt, [
+    { label: pl ? 'Pause' : 'Play', kbd: 'Space', run: () => togglePlay(r) },
+    { label: 'Add marker at playhead', kbd: 'M', run: addMarker },
+    '-',
+    { label: 'Rename', kbd: 'F2', run: () => startRename(id) },
+    { label: 'Download', run: () => download(id) },
+    '-',
+    { label: 'Delete', kbd: 'Del', run: () => delRec(id) }
+  ]);
+}
+
+/* ---- menubar ---- */
+function openBar(btn) {
+  if (btn.id === 'burger') openMenu(btn, burgerMenu(), {});
+  else openMenu(btn, MENUS[btn.dataset.menu](), {});
+}
+$$('.mb').concat($('#burger')).forEach(b => {
+  b.addEventListener('click', e => {
+    e.stopPropagation();
+    if (menus.length && menus[0].anchor === b) closeMenu(0); else openBar(b);
+  });
+  b.addEventListener('mouseenter', () => { if (menus.length && menus[0].anchor !== b && menus[0].anchor.classList.contains('mb') && b.classList.contains('mb')) openBar(b); });
+});
+$('#inp').addEventListener('click', e => {
+  e.stopPropagation();
+  if (menus.length && menus[0].anchor === e.currentTarget) { closeMenu(0); return; }
+  refreshDevices().then(() => {
+    const items = [{ header: 'Input device' }, { label: 'Default microphone', checked: !S.deviceId, run: () => { S.deviceId = ''; saveS(); drawInput(); } }]
+      .concat(devices.map(d => ({ label: d.label || 'Microphone', checked: S.deviceId === d.deviceId, run: () => { S.deviceId = d.deviceId; saveS(); drawInput(); } })));
+    if (devices.length && !devices.some(d => d.label)) items.push('-', { label: 'Names appear after the first recording', disabled: true });
+    openMenu($('#inp'), items, { up: true, center: false, gap: 14 });
+  });
+});
+document.addEventListener('mousedown', e => {
+  if (!menus.length) return;
+  if (e.target.closest('.menu') || e.target.closest('[aria-haspopup]')) return;
+  closeMenu(0);
+});
+window.addEventListener('blur', () => closeMenu(0));
+
+/* ---- list + pill events ---- */
+$('#rb').addEventListener('click', toggleRec);
+$('#pb').addEventListener('click', pauseRec);
+$('#mk').addEventListener('click', addMarker);
+$('#file').addEventListener('change', e => { importFiles([...e.target.files]); e.target.value = ''; });
+let scrub = false;
+function scrubTo(e) { const c = $('.rexp canvas'), r = sel(); if (!c || !r) return; const b = c.getBoundingClientRect(); seekTo(clamp((e.clientX - b.left) / b.width, 0, 1) * r.dur); }
+$('#list').addEventListener('pointerdown', e => {
+  if (e.target.closest('canvas.wf')) { scrub = true; e.target.setPointerCapture && e.target.setPointerCapture(e.pointerId); scrubTo(e); }
+});
+$('#list').addEventListener('pointermove', e => { if (scrub) scrubTo(e); });
+window.addEventListener('pointerup', () => { scrub = false; });
+$('#list').addEventListener('click', e => {
+  const row = e.target.closest('.row'), exp = e.target.closest('.rexp');
+  const id = row ? row.dataset.id : exp ? exp.dataset.id : null; if (!id) return;
+  const a = e.target.closest('[data-a]'), act = a && a.dataset.a;
+  if (e.target.closest('.rn')) return;
+  if (act === 'more') { e.stopPropagation(); rowMenu(id, a); return; }
+  const r = recs.find(x => x.id === id);
+  if (act === 'play') { togglePlay(r); return; }
+  if (act === 'back') return skip(-5);
+  if (act === 'fwd') return skip(5);
+  if (act === 'speed') return cycleSpeed();
+  if (act === 'marker') return addMarker();
+  if (act === 'rename') return startRename(id);
+  if (act === 'dl') return download(id);
+  if (act === 'del') return delRec(id);
+  if (act === 'goto') return seekTo(+a.dataset.t);
+  if (act === 'rmmark') { r.markers.splice(+a.dataset.i, 1); dbPut(r); renderAll(); return; }
+  if (row) select(id);
+});
+$('#list').addEventListener('dblclick', e => { const n = e.target.closest('.rname'); if (n && !e.target.closest('.rn')) startRename(n.closest('.row').dataset.id); });
+$('#list').addEventListener('contextmenu', e => { const row = e.target.closest('.row'); if (!row) return; e.preventDefault(); rowMenu(row.dataset.id, { x: e.clientX, y: e.clientY }); });
+$('#list').addEventListener('keydown', e => {
+  if (!e.target.classList.contains('rn')) return;
+  if (e.key === 'Enter') { e.preventDefault(); renameDone(false); }
+  if (e.key === 'Escape') { e.stopPropagation(); renameDone(true); renderAll(); }
+});
+$('#list').addEventListener('focusout', e => { if (e.target.classList && e.target.classList.contains('rn')) setTimeout(() => { if (renaming) renameDone(false); }, 0); });
+$('#scroll').addEventListener('scroll', () => closeMenu(0), { passive: true });
+$('#top').addEventListener('wheel', e => { if (!e.target.closest('.menu')) $('#scroll').scrollTop += e.deltaY; }, { passive: true });
+au.addEventListener('play', () => { renderAll(); playTick(); });
+au.addEventListener('pause', () => { if (!renaming) renderAll(); drawSel(); });
+au.addEventListener('ended', () => { au.currentTime = 0; if (!renaming) renderAll(); });
+au.addEventListener('seeked', drawSel);
+
+/* ---- keyboard ---- */
+document.addEventListener('keydown', e => {
+  const t = e.target, typing = t && /^(INPUT|TEXTAREA|SELECT)$/.test(t.tagName);
+  if (e.key === 'F11') { e.preventDefault(); toggleFS(); return; }
+  if (menus.length) {
+    const top = menus[menus.length - 1].el, items = [...top.querySelectorAll('.mi:not(:disabled)')];
+    const bar = menus[0].anchor && menus[0].anchor.classList && menus[0].anchor.classList.contains('mb');
+    if (e.key === 'Escape') { e.preventDefault(); menus.length > 1 ? closeMenu(menus.length - 1) : closeMenu(0); return; }
+    if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
+      e.preventDefault(); const i = items.indexOf(document.activeElement);
+      items[(i + (e.key === 'ArrowDown' ? 1 : -1) + items.length) % items.length].focus(); return;
+    }
+    if (e.key === 'ArrowRight') {
+      e.preventDefault(); const a = document.activeElement;
+      if (a && a.classList.contains('mi') && a.querySelector('.ch')) { a.click(); const m = menus[menus.length - 1].el.querySelector('.mi:not(:disabled)'); m && m.focus(); }
+      else if (bar) { const bs = $$('.mb'), i = bs.indexOf(menus[0].anchor); openBar(bs[(i + 1) % bs.length]); const f = menus[0].el.querySelector('.mi:not(:disabled)'); f && f.focus(); }
+      return;
+    }
+    if (e.key === 'ArrowLeft') {
+      e.preventDefault();
+      if (menus.length > 1) { const p = menus[menus.length - 1].anchor; closeMenu(menus.length - 1); p && p.focus && p.focus(); }
+      else if (bar) { const bs = $$('.mb'), i = bs.indexOf(menus[0].anchor); openBar(bs[(i - 1 + bs.length) % bs.length]); const f = menus[0].el.querySelector('.mi:not(:disabled)'); f && f.focus(); }
+      return;
+    }
+    return;
+  }
+  if (typing) return;
+  if (e.key === 'Escape') {
+    if (R.st === 'countdown') return stopRec();
+    if (document.body.classList.contains('fs')) return toggleFS();
+    return;
+  }
+  const k = e.key.toLowerCase();
+  if ((e.ctrlKey || e.metaKey) && k === 'o') { e.preventDefault(); $('#file').click(); return; }
+  if (e.ctrlKey || e.metaKey || e.altKey) return;
+  if (k === 'r') { e.preventDefault(); toggleRec(); }
+  else if (k === 'p') pauseRec();
+  else if (k === 'm') addMarker();
+  else if (e.key === ' ') { e.preventDefault(); togglePlay(); }
+  else if (e.key === 'Delete') delRec();
+  else if (e.key === 'F2') { e.preventDefault(); startRename(); }
+  else if (e.key === 'ArrowLeft') skip(-5);
+  else if (e.key === 'ArrowRight') skip(5);
+  else if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
+    const o = sorted(); if (!o.length) return; e.preventDefault();
+    const i = o.findIndex(r => r.id === selId), n = clamp((i < 0 ? 0 : i + (e.key === 'ArrowDown' ? 1 : -1)), 0, o.length - 1);
+    select(o[n].id); scrollToSel();
+  }
+});
+
+/* ===== 8-win: window manager + boot ===== */
+const desk = $('#desktop'), win = $('#win');
+const MINW = 360, MINH = 300, MINI_H = 112;
+const W = Object.assign({ x: 0, y: 0, w: 0, h: 0, max: false }, lsGet('win', {}));
+let miniPrev = null, fsPrev = false;
+const area = () => ({ w: desk.clientWidth, h: desk.clientHeight });
+function defRect() {
+  const a = area(), w = Math.min(1100, a.w - 48), h = Math.min(700, a.h - 48);
+  return { x: Math.round((a.w - w) / 2), y: Math.round((a.h - h) / 2), w, h };
+}
+function applyWin() {
+  const a = area();
+  if (!W.w || !W.h) Object.assign(W, defRect());
+  const mini = win.classList.contains('mini');
+  W.w = clamp(W.w, Math.min(MINW, a.w), Math.max(MINW, a.w));
+  W.h = mini ? MINI_H : clamp(W.h, Math.min(MINH, a.h), Math.max(MINH, a.h));
+  W.x = clamp(W.x, 120 - W.w, Math.max(0, a.w - 120));
+  W.y = clamp(W.y, 0, Math.max(0, a.h - 40));
+  win.classList.toggle('max', W.max);
+  if (W.max) { win.style.left = win.style.top = win.style.width = win.style.height = ''; }
+  else { win.style.left = W.x + 'px'; win.style.top = W.y + 'px'; win.style.width = W.w + 'px'; win.style.height = W.h + 'px'; }
+  $('#wMax').innerHTML = icon(W.max ? 'rest' : 'max'); $('#wMax').title = W.max ? 'Restore' : 'Maximize';
+  hud();
+  requestAnimationFrame(() => { drawLive(); drawSel(); });
+}
+function hud() {
+  const b = win.getBoundingClientRect();
+  $('#hud').textContent = `${Math.round(b.width)}×${Math.round(b.height)} · x ${Math.round(b.left)} · y ${Math.round(b.top)}`;
+}
+function saveWin() { if (!win.classList.contains('mini')) lsSet('win', { x: W.x, y: W.y, w: W.w, h: W.h, max: W.max }); }
+function setMax(m) { W.max = m; applyWin(); saveWin(); }
+function preset(p) {
+  if (win.classList.contains('mini')) toggleMini();
+  win.hidden = false; $('#chip').classList.add('on');
+  if (p === 'fill') { setMax(true); return; }
+  const a = area(), d = defRect();
+  const s = p === 'min' ? { w: MINW, h: MINH } : p === 'compact' ? { w: 640, h: 440 } : { w: d.w, h: d.h };
+  W.max = false; W.w = Math.min(s.w, a.w); W.h = Math.min(s.h, a.h);
+  W.x = Math.round((a.w - W.w) / 2); W.y = Math.round((a.h - W.h) / 2);
+  applyWin(); saveWin();
+}
+function toggleFS() {
+  const b = document.body;
+  if (!b.classList.contains('fs')) { fsPrev = W.max; b.classList.add('fs'); setMax(true); }
+  else { b.classList.remove('fs'); setMax(fsPrev); }
+  applyWin();
+}
+function toggleMini() {
+  if (!win.classList.contains('mini')) {
+    if (document.body.classList.contains('fs')) toggleFS();
+    miniPrev = { x: W.x, y: W.y, w: W.w, h: W.h, max: W.max };
+    W.max = false; W.w = Math.max(MINW, Math.min(W.w, 640)); win.classList.add('mini');
+    applyWin();
+  } else {
+    win.classList.remove('mini');
+    if (miniPrev) Object.assign(W, miniPrev);
+    applyWin(); saveWin();
+  }
+}
+function showWin(v) { win.hidden = !v; $('#chip').classList.toggle('on', v); if (v) applyWin(); }
+function closeWin() { if (R.st === 'rec' || R.st === 'paused') { stopRec(); } pausePlayback(); showWin(false); }
+
+/* drag + resize */
+let drag = null;
+$('#top').addEventListener('pointerdown', e => {
+  if (e.button !== 0 || !e.target.closest('.top') || e.target.closest('button,input')) return;
+  const b = win.getBoundingClientRect();
+  drag = { sx: e.clientX, sy: e.clientY, ox: W.x, oy: W.y, moved: false, ratio: (e.clientX - b.left) / b.width };
+});
+$$('.rz').forEach(h => h.addEventListener('pointerdown', e => {
+  if (e.button !== 0) return; e.preventDefault();
+  drag = { rz: h.dataset.d, sx: e.clientX, sy: e.clientY, ox: W.x, oy: W.y, ow: W.w, oh: W.h, moved: true };
+}));
+window.addEventListener('pointermove', e => {
+  if (!drag) return;
+  const dx = e.clientX - drag.sx, dy = e.clientY - drag.sy;
+  if (!drag.moved) {
+    if (Math.hypot(dx, dy) < 4) return;
+    drag.moved = true;
+    if (W.max) {                                    // un-maximize under the pointer
+      if (document.body.classList.contains('fs')) toggleFS();
+      W.max = false; win.classList.remove('max');
+      W.x = Math.round(e.clientX - W.w * drag.ratio); W.y = 0; drag.ox = W.x; drag.oy = W.y; drag.sx = e.clientX; drag.sy = e.clientY;
+      applyWin(); return;
+    }
+  }
+  const a = area();
+  if (!drag.rz) { W.x = drag.ox + dx; W.y = drag.oy + dy; }
+  else {
+    const d = drag.rz; let x = drag.ox, y = drag.oy, w = drag.ow, h = drag.oh;
+    if (d.includes('e')) w = clamp(drag.ow + dx, MINW, a.w);
+    if (d.includes('s')) h = clamp(drag.oh + dy, MINH, a.h);
+    if (d.includes('w')) { w = clamp(drag.ow - dx, MINW, a.w); x = drag.ox + drag.ow - w; }
+    if (d.includes('n')) { h = clamp(drag.oh - dy, MINH, a.h); y = drag.oy + drag.oh - h; }
+    W.x = x; W.y = Math.max(0, y); W.w = w; W.h = h;
+  }
+  applyWin();
+});
+window.addEventListener('pointerup', () => { if (drag && drag.moved) saveWin(); drag = null; });
+$('#top').addEventListener('dblclick', e => { if (e.target.closest('button,input')) return; if (win.classList.contains('mini')) return; if (document.body.classList.contains('fs')) return toggleFS(); setMax(!W.max); });
+$('#wMax').addEventListener('click', () => { if (win.classList.contains('mini')) toggleMini(); else setMax(!W.max); });
+$('#wMin').addEventListener('click', () => showWin(false));    // minimize keeps recording + playback alive
+$('#wCl').addEventListener('click', closeWin);
+$('#chip').addEventListener('click', () => showWin(win.hidden));
+$$('#pre button').forEach(b => b.addEventListener('click', () => preset(b.dataset.p)));
+window.addEventListener('resize', () => { closeMenu(0); applyWin(); });
+if (window.ResizeObserver) new ResizeObserver(() => { hud(); drawLive(); drawSel(); }).observe(win);
+
+/* boot */
+(async function boot() {
+  setTheme(S.theme);
+  refreshColors();
+  applyWin();
+  const f = curFmt(); if (f && S.fmt !== f[0]) S.fmt = f[0];
+  drawState(); drawInput();
+  try { recs = await dbAll(); } catch (e) { recs = []; }
+  recs.forEach(r => { if (!r.markers) r.markers = []; });
+  renderAll();
+  try { navigator.mediaDevices.addEventListener('devicechange', refreshDevices); } catch (e) {}
+  refreshDevices();
+  window.__sr = { R, S, get recs() { return recs; }, W };   // handy for tests
+})();
+
+})();
+</script>
+</body>
+</html>

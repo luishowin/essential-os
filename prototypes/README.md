@@ -20,26 +20,40 @@ The status of every prototype is tracked in
 
 | Prototype | What it explores | Where |
 |---|---|---|
+| **Beam** | File transfer between nearby devices, with a send and receive queue. | [`apps/beam/`](apps/beam/) |
 | **Calculator** | A quiet utility with keyboard-first entry and a compact window. | [`apps/calculator/`](apps/calculator/) |
 | **Calendar** | Month and day views, event sheets and a restrained toolbar. | [`apps/calendar/`](apps/calendar/) |
+| **Camera** | Photo and video capture, gallery, ring light and exposure controls. | [`apps/camera/`](apps/camera/) |
 | **Clock** | World clock, timers and the desktop-widget treatment. | [`apps/clock/`](apps/clock/) |
 | **Color Picker** | Palette, sliders and live preview in a small window. | [`apps/color-picker/`](apps/color-picker/) |
 | **Docs** | A document editor with a menu bar and a bottom command pill. | [`apps/docs/`](apps/docs/) |
 | **Files** | Browser, sidebar and list/grid views. | [`apps/files/`](apps/files/) |
 | **Fonts** | Type specimen browsing and font management. | [`apps/fonts/`](apps/fonts/) |
 | **Glyphs** | Character and glyph inspection. | [`apps/glyphs/`](apps/glyphs/) |
+| **Health** | Pulse: today, training, trends and profile views. | [`apps/health/`](apps/health/) |
+| **Help** | In-system help, the status legend and a catalogue of the mockups. | [`apps/help/`](apps/help/) |
 | **IDE** | A code editor shell for the platform. | [`apps/ide/`](apps/ide/) |
-| **Notes** | The Quiet Editor writing surface. | [`apps/notes/`](apps/notes/) |
+| **Maps** | Meridian: map browsing, layers, places and live coordinates. | [`apps/maps/`](apps/maps/) |
+| **Notes** | A writing surface with a note list, formatting bar and zoom. | [`apps/notes/`](apps/notes/) |
 | **Photos** | Library, albums and a full-window viewer. | [`apps/photos/`](apps/photos/) |
 | **Settings** | System settings navigation and panels. | [`apps/settings/`](apps/settings/) |
 | **Sheets** | A spreadsheet grid with formula bar and sheets. | [`apps/sheets/`](apps/sheets/) |
 | **Software** | The application store and update surface. | [`apps/software/`](apps/software/) |
+| **Sound Recorder** | Single-file recording, live level and a recordings list. | [`apps/sound-recorder/`](apps/sound-recorder/) |
 | **Task Manager** | Processes, resource graphs and per-app detail. | [`apps/task-manager/`](apps/task-manager/) |
+| **TV** | Essential TV: library, live channels and a channel studio. | [`apps/tv/`](apps/tv/) |
+| **Weather** | Current conditions, hourly and daily forecast. | [`apps/weather/`](apps/weather/) |
 | **Desktop shell** | Window chrome, taskbar, presets, drag and resize behaviour. | [`desktop/`](desktop/) |
 | **Keyboard** | The SLATE laptop keyboard layout study. | [`hardware/keyboard/`](hardware/keyboard/) |
+| **Battery glyphs** | Battery states in context, from empty to charging. | [`hardware/battery-glyphs/`](hardware/battery-glyphs/) |
 
 Iterations worth keeping are under `iterations/` inside each prototype. The
 file at the prototype root is the current direction.
+
+One exception to self-containment: **Maps** loads its basemap tiles from CARTO
+(OpenStreetMap data) over the network. The interface itself is still one file
+with no build step; without a connection it shows the map background and
+controls only.
 
 ---
 

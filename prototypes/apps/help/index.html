@@ -1,0 +1,432 @@
+<!doctype html>
+<html lang="en" data-theme-pref="system">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light dark">
+<title>Help · Essential OS</title>
+<style>
+:root{--bg:#fbfbfc;--fg:#1d1d1f;--mut:#6e6e73;--line:rgba(0,0,0,.09);--glass:rgba(255,255,255,.72);--card:#fff;--hov:rgba(0,0,0,.06);--acc:#fa2d48;--desk:#e8e8ed;--grid:rgba(0,0,0,.05);--sh:0 20px 60px rgba(0,0,0,.22),0 2px 8px rgba(0,0,0,.1);--font:Inter,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;color-scheme:light}
+@media(prefers-color-scheme:dark){:root:not([data-theme=light]){--bg:#1c1c1e;--fg:#f2f2f4;--mut:#98989f;--line:rgba(255,255,255,.1);--glass:rgba(44,44,48,.72);--card:#2a2a2d;--hov:rgba(255,255,255,.08);--desk:#0f0f11;--grid:rgba(255,255,255,.05);--sh:0 20px 60px rgba(0,0,0,.6),0 2px 8px rgba(0,0,0,.4);color-scheme:dark}}
+html[data-theme=dark]{--bg:#1c1c1e;--fg:#f2f2f4;--mut:#98989f;--line:rgba(255,255,255,.1);--glass:rgba(44,44,48,.72);--card:#2a2a2d;--hov:rgba(255,255,255,.08);--desk:#0f0f11;--grid:rgba(255,255,255,.05);--sh:0 20px 60px rgba(0,0,0,.6),0 2px 8px rgba(0,0,0,.4);color-scheme:dark}
+*{box-sizing:border-box}
+html,body{height:100%;margin:0}
+body{font:15px/1.5 var(--font);color:var(--fg);background:var(--desk);overflow:hidden;-webkit-font-smoothing:antialiased}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer;padding:0}
+svg.i{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;flex:none}
+.desktop{position:fixed;inset:0 0 44px 0;background-image:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);background-size:32px 32px;overflow:hidden}
+body.fs .desktop{bottom:0}body.fs .tb{display:none}
+.window{position:absolute;border-radius:12px;overflow:hidden;background:var(--bg);box-shadow:var(--sh);border:1px solid var(--line);min-width:360px;min-height:300px}
+.window.max{border-radius:0;border:0}
+.app{position:absolute;inset:0;container:app/inline-size;overflow:hidden}
+.rz{position:absolute;z-index:6}.window.max .rz{display:none}
+.rz[data-d=n]{top:-3px;left:12px;right:12px;height:7px;cursor:ns-resize}.rz[data-d=s]{bottom:-3px;left:12px;right:12px;height:7px;cursor:ns-resize}
+.rz[data-d=e]{right:-3px;top:12px;bottom:12px;width:7px;cursor:ew-resize}.rz[data-d=w]{left:-3px;top:12px;bottom:12px;width:7px;cursor:ew-resize}
+.rz[data-d=ne]{top:-3px;right:-3px;width:14px;height:14px;cursor:nesw-resize}.rz[data-d=sw]{bottom:-3px;left:-3px;width:14px;height:14px;cursor:nesw-resize}
+.rz[data-d=nw]{top:-3px;left:-3px;width:14px;height:14px;cursor:nwse-resize}.rz[data-d=se]{bottom:-3px;right:-3px;width:14px;height:14px;cursor:nwse-resize}
+/* chrome */
+.top{position:absolute;top:0;left:0;right:0;height:40px;z-index:4;display:flex;align-items:center;padding:0 8px;gap:4px;user-select:none}
+.mb{display:flex;gap:2px}
+.mb button,.wc button{height:28px;padding:0 10px;border-radius:7px;display:inline-flex;align-items:center;font-size:13px;font-weight:500}
+.mb button:hover,.mb button[aria-expanded=true]{background:var(--hov)}
+.wc{display:flex;gap:10px;padding-right:10px}.wc button{width:34px;height:32px;padding:0;justify-content:center;color:var(--mut);background:none}.wc button:hover{color:var(--fg);background:none}.wc svg.i{width:22px;height:22px;stroke-width:1.5}
+.drag{flex:1;height:100%;cursor:default}
+.hamb{display:none!important}
+.topfade,.botfade{position:absolute;left:0;right:0;z-index:2;pointer-events:none}
+.topfade{top:50px;height:28px;background:linear-gradient(var(--bg),transparent)}
+.botfade{bottom:50px;height:28px;background:linear-gradient(transparent,var(--bg))}
+.side{position:absolute;left:0;top:50px;bottom:50px;width:230px;padding:16px 10px 24px;overflow-y:auto;overflow-x:hidden;z-index:1}
+.side h6{margin:0 14px 8px;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--mut);font-weight:600}
+.side button{display:block;width:100%;text-align:left;padding:7px 14px;margin-bottom:2px;border-radius:99px;font-size:14px;color:var(--mut);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.side button:hover{background:var(--hov);color:var(--fg)}.side button.on{background:var(--hov);color:var(--fg);font-weight:600}
+.hidenav .side{display:none}.hidenav .scroll{left:0}
+.scroll{position:absolute;inset:50px 0 50px 230px;overflow:auto;padding:24px 36px 40px;scroll-behavior:smooth}
+.scroll[data-size=s]{--fs:14px}.scroll[data-size=m]{--fs:16px}.scroll[data-size=l]{--fs:18px}
+article{max-width:680px;margin:0 auto;font-size:var(--fs,16px)}
+.eyebrow{font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--acc);font-weight:600;margin:0 0 6px}
+h1{font-size:2em;line-height:1.15;margin:0 0 10px;letter-spacing:-.02em}
+h2{font-size:1.1em;margin:1.6em 0 .4em}
+article p,article li{color:var(--fg);opacity:.88}
+article a{color:var(--acc);text-decoration:none}article a:hover{text-decoration:underline}
+.tag{display:inline-block;font-size:11px;font-weight:600;padding:2px 8px;border-radius:99px;border:1px solid var(--line);color:var(--mut);margin:0 6px 10px 0}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px 16px;margin:12px 0}
+.kb{display:grid;grid-template-columns:auto 1fr;gap:6px 18px;font-size:.95em}
+kbd{font:600 11px var(--font);padding:2px 6px;border-radius:5px;border:1px solid var(--line);background:var(--card);border-bottom-width:2px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px;margin:12px 0}
+.grid a{display:block;background:var(--card);border:1px solid var(--line);border-radius:10px;padding:9px 12px;font-size:.9em;color:var(--fg)!important}.grid a small{display:block;color:var(--mut)}
+.res{display:block;width:100%;text-align:left;padding:12px 14px;margin:8px 0;border-radius:12px;background:var(--card);border:1px solid var(--line)}
+.res:hover{border-color:var(--acc)}.res small{display:block;color:var(--mut);margin-top:2px}
+mark{background:rgba(250,45,72,.2);color:inherit;border-radius:3px}
+.pill{position:absolute;bottom:14px;left:0;right:0;margin:0 auto;width:fit-content;max-width:calc(100% - 28px);height:50px;z-index:4;display:grid;grid-template-columns:auto minmax(0,auto) auto;align-items:center;gap:6px;padding:0 8px;border-radius:24px;background:var(--glass);backdrop-filter:blur(28px) saturate(1.8);-webkit-backdrop-filter:blur(28px) saturate(1.8);box-shadow:0 8px 30px rgba(0,0,0,.14),0 0 0 1px var(--line)}
+.pill .g{display:flex;gap:2px}.pill button{width:34px;height:34px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center}
+.pill button:hover:not(:disabled){background:var(--hov)}.pill button:disabled{opacity:.3;cursor:default}
+.pill .topics{display:none}
+.pill label{display:flex;align-items:center;gap:8px;height:36px;padding:0 12px;border-radius:18px;background:var(--hov);color:var(--mut);min-width:0}
+.pill input{flex:1 1 200px;min-width:0;border:0;outline:0;background:none;font:inherit;color:var(--fg)}
+.toast{position:absolute;left:50%;bottom:80px;transform:translateX(-50%);z-index:5;background:var(--fg);color:var(--bg);padding:7px 14px;border-radius:99px;font-size:13px;opacity:0;pointer-events:none;transition:opacity .2s}.toast.on{opacity:1}
+/* menus */
+.hm{position:fixed;z-index:1000;min-width:200px;padding:5px;border-radius:12px;background:var(--glass);backdrop-filter:blur(28px) saturate(1.8);-webkit-backdrop-filter:blur(28px) saturate(1.8);box-shadow:0 12px 40px rgba(0,0,0,.25),0 0 0 1px var(--line);overflow:auto;animation:hmin .12s ease-out}
+.hm.up{animation-name:hmup}
+@keyframes hmin{from{opacity:0;transform:translateY(-4px)}}@keyframes hmup{from{opacity:0;transform:translateY(6px)}}
+.hm-i{display:flex;align-items:center;gap:6px;width:100%;text-align:left;padding:6px 10px 6px 6px;border-radius:7px;font-size:13px}
+.hm-i:hover,.hm-i:focus-visible{background:var(--acc);color:#fff;outline:0}.hm-i:disabled{opacity:.4}
+.hm-c{width:14px;text-align:center;font-size:11px}.hm-l{flex:1;white-space:nowrap}.hm-k{opacity:.6;font-size:12px;padding-left:18px}
+.hm-h{padding:5px 10px;font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--mut);font-weight:600}
+.hm hr{border:0;border-top:1px solid var(--line);margin:5px 4px}
+/* taskbar */
+.tb{position:fixed;left:0;right:0;bottom:0;height:44px;container:tb/inline-size;background:var(--glass);backdrop-filter:blur(28px);-webkit-backdrop-filter:blur(28px);border-top:1px solid var(--line);z-index:50}
+.tbi{height:100%;display:flex;align-items:center;gap:6px;padding:0 10px}
+.chip{display:inline-flex;align-items:center;gap:8px;height:30px;padding:0 12px;border-radius:8px;font-size:13px;font-weight:500}
+.chip[aria-pressed=true]{background:var(--hov);box-shadow:inset 0 -2px 0 var(--acc)}.chip:hover{background:var(--hov)}
+.sp{flex:1}.hud{font:12px ui-monospace,monospace;color:var(--mut);padding:0 8px}
+.pre{height:28px;padding:0 10px;border-radius:7px;font-size:12px;color:var(--mut)}.pre:hover{background:var(--hov);color:var(--fg)}
+@container tb (max-width:620px){.hud{display:none}}@container tb (max-width:420px){.pre[data-p=compact],.pre[data-p=def]{display:none}}
+/* responsive: keyed to WINDOW width */
+@container app (max-width:980px){.side{width:214px}.scroll{left:214px;padding-left:28px;padding-right:28px}}
+@container app (max-width:700px){.side{display:none}.scroll{left:0}.pill .topics{display:inline-flex}}
+@container app (max-width:560px){.mb button:not(.hamb){display:none}.hamb{display:inline-flex!important}}
+@container app (max-width:520px){.scroll{padding-left:18px;padding-right:18px}h1{font-size:1.7em}}
+@container app (max-width:420px){.pill [data-a=fwd]{display:none}}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important;scroll-behavior:auto!important}}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute"><defs>
+<symbol id="i-back" viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></symbol>
+<symbol id="i-fwd" viewBox="0 0 24 24"><path d="M9 5l7 7-7 7"/></symbol>
+<symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="6.5"/><path d="M16 16l4.5 4.5"/></symbol>
+<symbol id="i-menu" viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16"/></symbol>
+<symbol id="i-down" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></symbol><symbol id="i-up" viewBox="0 0 24 24"><path d="M6 15l6-6 6 6"/></symbol>
+<symbol id="i-max" viewBox="0 0 24 24"><rect x="6" y="6" width="12" height="12" rx="2"/></symbol>
+<symbol id="i-x" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></symbol>
+<symbol id="i-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 3v2M12 19v2M3 12h2M19 12h2M5.6 5.6L7 7M17 17l1.4 1.4M5.6 18.4L7 17M17 7l1.4-1.4"/></symbol>
+<symbol id="i-list" viewBox="0 0 24 24"><path d="M9 6h11M9 12h11M9 18h11M4 6h.01M4 12h.01M4 18h.01"/></symbol>
+<symbol id="i-help" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M9.5 9.5a2.5 2.5 0 115 0c0 1.7-2.5 2-2.5 3.8M12 17h.01"/></symbol>
+</defs></svg>
+
+<div class="desktop" id="desk">
+ <div class="window" id="win">
+  <div class="app" id="app">
+   <div class="side" id="side"></div>
+   <div class="scroll" id="scr" data-size="m"><article id="art"></article></div>
+   <div class="topfade"></div><div class="botfade"></div>
+   <header class="top" id="top">
+    <nav class="mb" id="mb">
+     <button data-m="file" aria-haspopup="true" aria-expanded="false">File</button>
+     <button data-m="go" aria-haspopup="true" aria-expanded="false">Go</button>
+     <button data-m="view" aria-haspopup="true" aria-expanded="false">View</button>
+     <button class="hamb" data-m="all" aria-haspopup="true" aria-expanded="false" aria-label="Menu"><svg class="i"><use href="#i-menu"/></svg></button>
+    </nav>
+    <div class="drag"></div>
+    <div class="wc"><button data-a="min" aria-label="Minimize"><svg class="i"><use href="#i-down"/></svg></button><button data-a="max" aria-label="Maximize"><svg class="i"><use href="#i-up"/></svg></button><button data-a="close" aria-label="Close"><svg class="i"><use href="#i-x"/></svg></button></div>
+   </header>
+   <div class="pill">
+    <div class="g"><button data-a="topics" class="topics" aria-label="Topics"><svg class="i"><use href="#i-list"/></svg></button><button data-a="back" aria-label="Previous topic" disabled><svg class="i"><use href="#i-back"/></svg></button><button data-a="fwd" aria-label="Next topic" disabled><svg class="i"><use href="#i-fwd"/></svg></button></div>
+    <label><svg class="i"><use href="#i-search"/></svg><input id="q" type="search" placeholder="Search help" autocomplete="off" spellcheck="false"></label>
+    <div class="g"><button data-a="theme" aria-label="Appearance"><svg class="i"><use href="#i-sun"/></svg></button></div>
+   </div>
+   <div class="toast" id="toast"></div>
+  </div>
+  <i class="rz" data-d="n"></i><i class="rz" data-d="s"></i><i class="rz" data-d="e"></i><i class="rz" data-d="w"></i><i class="rz" data-d="ne"></i><i class="rz" data-d="nw"></i><i class="rz" data-d="se"></i><i class="rz" data-d="sw"></i>
+ </div>
+</div>
+<footer class="tb"><div class="tbi">
+ <button class="chip" id="chip" aria-pressed="true"><svg class="i"><use href="#i-help"/></svg>Help</button>
+ <span class="sp"></span><span class="hud" id="hud"></span>
+ <button class="pre" data-p="min">Min</button><button class="pre" data-p="compact">Compact</button><button class="pre" data-p="def">Default</button><button class="pre" data-p="fill">Fill</button>
+</div></footer>
+
+<script>
+(() => {'use strict';
+const $=(s,r=document)=>r.querySelector(s), $$=(s,r=document)=>[...r.querySelectorAll(s)];
+const store={get(k,d){try{const v=localStorage.getItem('help.'+k);return v==null?d:JSON.parse(v)}catch(e){return d}},set(k,v){try{localStorage.setItem('help.'+k,JSON.stringify(v))}catch(e){}}};
+const SITE='https://luishowin.github.io/essential-os/', REPO='https://github.com/luishowin/essential-os';
+const APPS=['Beam','Calculator','Calendar','Camera','Clock','Color Picker','Docs','Files','Fonts','Glyphs','Health','Help','IDE','Maps','Notes','Photos','Settings','Sheets','Software','Sound Recorder','Task Manager','TV','Weather'];
+const slug=n=>n.toLowerCase().replace(/ /g,'-');
+const T=[
+{id:'start',s:'Getting Started',t:'Welcome to Essential OS',tag:['ok','Prototype'],b:`<p>This is the Help app for Essential OS: a computer meant to be yours to understand, adapt and rebuild. Start here, then step through the topics with the arrows in the bar below, or pick one from the sidebar.</p>
+<p>Press <kbd>/</kbd> to search. Results filter as you type and <kbd>Enter</kbd> opens the first one.</p>
+<p>Every page carries an honest status label: <b>Implemented</b>, <b>Prototype</b>, <b>Planned</b> or <b>Research</b>. If something is a direction and not shipped, Help says so.</p>
+<div class="card"><b>Tip.</b> The <i>Go</i> and <i>View</i> menus hold everything narrow layouts hide, so nothing is out of reach at any window size.</div>`},
+{id:'what',s:'About Essential',t:'What is Essential OS?',tag:['pr','Direction + early build'],b:`<p>An open-source personal computing environment built to be understood, adapted and rebuilt. It joins five things that are usually fragmented: a Linux foundation, integrated applications, a consistent desktop, modular system components and optional intelligent services.</p>
+<p>It is <b>not</b> a distribution with a custom theme. Hardware, software, design, security and ownership are meant to reinforce one another.</p>
+<h2>Two names to know</h2><p><b>Ida</b> is the optional intelligent layer. <b>SLATE</b> is the eventual hardware. Neither is the operating system itself.</p>
+<p><a href="${SITE}" target="_blank" rel="noopener">Read the project journal</a></p>`},
+{id:'apps',s:'App Suite',t:'Applications',tag:['pr','Mockups'],b:`<p>The suite is a direction: Files, Notes, Calendar, Photos, Music, Calculator and more as they mature. What exists today are <b>interface mockups</b>: real interaction in the browser, mocked data and no system integration.</p>
+<div class="grid">${APPS.map(a=>`<a href="${SITE}prototypes/apps/${slug(a)}/" target="_blank" rel="noopener">${a}<small>Prototype</small></a>`).join('')}</div>
+<p>Plus the <a href="${SITE}prototypes/desktop/" target="_blank" rel="noopener">desktop shell</a>, the <a href="${SITE}prototypes/hardware/keyboard/" target="_blank" rel="noopener">SLATE keyboard study</a> and the <a href="${SITE}prototypes/hardware/battery-glyphs/" target="_blank" rel="noopener">battery glyph study</a>.</p>
+<h2>Two interfaces per app</h2><p>A <b>human interface</b> (consistent, accessible, no manual) and a <b>machine interface</b> (documented, versioned, permission-controlled APIs), so an agent never has to screen-scrape.</p>`},
+{id:'window',s:'Windows & Shortcuts',t:'Windows & shortcuts',tag:['ok','Prototype'],b:`<p>Drag the empty part of the top bar to move the window; drag any edge or corner to resize (minimum 360 × 300). Double-click the bar to maximize. Dragging a maximized window pulls it free under your pointer.</p>
+<p>The taskbar has presets (Min, Compact, Default, Fill) and a live readout of size and position. Your window rectangle is remembered between visits.</p>
+<div class="card kb"><kbd>/</kbd><span>Focus search</span><kbd>Alt ←  /  →</kbd><span>Previous / next topic</span><kbd>F11</kbd><span>Full screen on and off</span><kbd>Esc</kbd><span>Leave full screen, close menu, clear search</span><kbd>← → ↑ ↓</kbd><span>Move through menus</span></div>`},
+{id:'ida',s:'Ida and Sam',t:'Ida and Sam',tag:['ok','Ida Core: implemented'],b:`<p><b>Ida</b> is the optional assistant: a launcher growing into a system agent. Ida Core (Rust, v0.0.1–v0.0.3) already has a find / launch / ask panel, a capability registry, a trust path and a bounded planner. It is replaceable: use another compatible agent, another model, or none.</p>
+<p><b>Sam</b> is the native search service. It is deterministic: no generative model, fixed intent handlers, every result names its source and freshness, and out-of-domain questions are handed off instead of guessed. Sam works with no Ida present.</p>
+<p>The guiding idea: <i>actualise intents as fast as you can type</i>. Preview aggressively, commit conservatively.</p>
+<p><span class="tag pr">Sam: Fedora prototype</span> <a href="https://github.com/luishowin/sam" target="_blank" rel="noopener">Sam repository</a> · <a href="https://github.com/luishowin/ida" target="_blank" rel="noopener">Ida repository</a></p>`},
+{id:'trust',s:'Trust & Permissions',t:'Trust and permissions',tag:['pl','Design target'],b:`<p><b>AI is the tool. The user is the architect and overseer.</b> The system decides; the agent proposes.</p>
+<ul><li>Deterministic checks establish facts; AI interprets and explains.</li><li>Uncertainty is stated, never smoothed over.</li><li>Destructive, private or system-wide changes need stronger authorisation.</li><li>Local processing is preferred; sending anything outside is explicit.</li><li>Security is managed in Settings: no extra app sprawl.</li></ul>
+<p>Honest limit: AI is not an infallible antivirus and not the security boundary. Most unexplained events are bugs or misconfiguration.</p>`},
+{id:'recovery',s:'Ownership & Recovery',t:'Ownership and recovery',tag:['pl','Planned'],b:`<p>Modify, replace, break, recover. The goal is to regenerate the intended system from one configuration entry point, backed by version-controlled files and reproducible package sources.</p>
+<div class="card"><b>Back up your data.</b> A configuration file rebuilds software, not your life. Documents, photos, credentials and private data still need real backups.</div>`},
+{id:'status',s:'What\u2019s Real',t:'What is real?',tag:['ok','Updated Nov 2026'],b:`<p>Early stage. The project journal separates the states like this:</p>
+<h2><span class="tag ok">Implemented</span></h2><p>Ida Core: panel, capability registry, trust path, ephemeral context, planner, verification.</p>
+<h2><span class="tag pr">Prototype</span></h2><p>Essential Desktop (Fedora + KDE Plasma), Ida interaction runtime, local action model (Ollama + FunctionGemma), Sam, and 17 interface studies.</p>
+<h2><span class="tag pl">Planned</span></h2><p>Ida Pro / Max tiers, semantic index, provider-agnostic model router.</p>
+<h2><span class="tag pl">Research</span></h2><p>Small action models, embeddings and retrieval, quantisation, local-vs-external split.</p>
+<p>Open question: GNOME or KDE Plasma as the desktop base. <a href="${REPO}/blob/main/docs/status.md" target="_blank" rel="noopener">Full status record</a></p>`},
+{id:'slate',s:'SLATE Hardware',t:'SLATE hardware',tag:['pl','Concept'],b:`<p>A direction, not a product. Thin, light, modular and repairable, with physical feedback (key feel, acoustics, status LEDs) and software that is quiet at rest and serious when asked.</p>
+<div class="card kb"><b>Mass</b><span>~999 g target</span><b>Display</b><span>≤ 13″ target</span><b>Build</b><span>Repairable, upgradeable</span></div>
+<p>These are design targets, not finished specifications. Target year: 2030.</p>`},
+{id:'faq',s:'Common Questions',t:'FAQ',tag:['ok','Prototype'],b:`<h2>Can I install Essential OS?</h2><p>Not yet. There is no installable release. Ida Core is the released piece.</p>
+<h2>Do I need Ida?</h2><p>No. Basic operation never depends on an AI agent.</p>
+<h2>Are the app mockups real software?</h2><p>No. Data, files and system integration are mocked.</p>
+<h2>Why no screenshots of a desktop?</h2><p>There is no finished desktop to show honestly.</p>
+<h2>Where do I follow along or contribute?</h2><p><a href="${REPO}" target="_blank" rel="noopener">The essential-os record</a> on GitHub (MIT licence).</p>`}
+];
+const X={
+start:`<h2>How this help is organised</h2>
+<p>Topics run from the broad to the specific. The first few explain what Essential OS is and what exists today. The middle ones cover how the pieces behave: windows, the assistant, trust. The last ones are the honest ones: what is real, what is only a design target, and the questions people ask most.</p>
+<h2>Reading the status labels</h2>
+<p>A label under a page title tells you how much weight to put on it. <b>Implemented</b> means code exists and runs. <b>Prototype</b> means a working study that is not a finished product. <b>Planned</b> means decided but not built. <b>Research</b> means an open question being explored.</p>
+<h2>Moving around</h2>
+<p>The arrows in the bar below step through the topics in order. The sidebar jumps anywhere. Search looks through every page at once, so a single word like “backup” or “ida” is often the quickest route.</p>
+<h2>If you get lost</h2>
+<p>Return to this page from the sidebar at any time. Nothing in Help changes your system; it only reads. Closing the window and reopening it from the taskbar brings you back to the same topic.</p>
+<h2>Making it comfortable</h2>
+<p>Under <i>View</i> you can switch between light and dark appearance, pick a text size, and hide the sidebar. Those choices are remembered in this browser.</p>`,
+what:`<h2>The problem it answers</h2>
+<p>Most personal computers are assembled from parts that were never designed to agree: a kernel from one place, a desktop from another, apps with their own conventions, settings scattered across a dozen panels. Essential OS starts from the opposite end. It asks what a coherent personal computer would look like if it were designed as one thing and stayed open to change.</p>
+<h2>Five parts, one intent</h2>
+<p>A Linux foundation gives it a solid base. Integrated applications give it daily usefulness. A consistent desktop makes it learnable. Modular system components keep it adaptable. Optional intelligent services make it faster to use without making it dependent on them.</p>
+<h2>What “yours” means</h2>
+<p>It means you can read how it works, change what you dislike, replace what you outgrow, and recover when you break something. It also means the system should never require an account, a subscription or a particular company's agent just to function.</p>
+<h2>What it is not</h2>
+<p>It is not a finished operating system you can install today. It is not a theme over an existing distribution. It is not an AI product with a computer attached. The intelligent layer is optional and replaceable by design.</p>
+<h2>Who it is for</h2>
+<p>People who want a computer they can understand and shape, from curious beginners to developers who want to rebuild parts of it. The aim is that the default experience needs no manual, while the deeper layers stay open for anyone who wants them.</p>`,
+apps:`<h2>One family, not a pile</h2>
+<p>Applications share spacing, controls, menus, shortcuts and tone, so learning one teaches you the rest. The prototypes you can open from this page are studies of that idea: each is a single browser page with believable interaction and made-up data.</p>
+<h2>What a mockup can and cannot show</h2>
+<p>It can show layout, flow, density and feel. It cannot show real file access, real sync or real performance. When an app here looks finished, remember that the hard parts underneath do not exist yet.</p>
+<h2>Human and machine, side by side</h2>
+<p>Every app is meant to expose two surfaces. People get a clear, consistent interface. Agents and scripts get documented, versioned, permission-controlled interfaces, so they never need to guess at pixels or scrape the screen.</p>
+<h2>Why that matters</h2>
+<p>If an assistant can only click buttons like a person, it is slow and brittle. If apps publish what they can do, the assistant can ask for exactly that, and the system can check whether it is allowed. The same interface serves automation and accessibility tools.</p>
+<h2>Keeping apps replaceable</h2>
+<p>The built-in apps are defaults, not locks. The intent is that you can swap an app for another that speaks the same interfaces and keep the rest of your setup intact.</p>`,
+window:`<h2>The three controls</h2>
+<p>At the top right are three plain icons: a down chevron to minimize, an up chevron to maximize, and a cross to close. Minimizing and closing both hide the window; the taskbar button brings it back.</p>
+<h2>Moving and resizing</h2>
+<p>Grab the empty part of the top bar to move the window. Grab any edge or corner to resize it. The window will not go smaller than 360 by 300, and it always keeps part of its top bar on screen so you can pull it back.</p>
+<h2>Presets</h2>
+<p>The taskbar offers four sizes. Min hides the window. Compact gives a small centred window. Default restores the standard size. Fill maximizes it. Choosing a preset also leaves full screen if you were in it.</p>
+<h2>Full screen</h2>
+<p>F11 hides the taskbar and fills the whole display. Press F11 or Esc to return to your previous window size.</p>
+<h2>Small windows</h2>
+<p>The layout responds to the window, not the screen. As you shrink it, the sidebar tucks away and the topic list moves into a button in the bottom bar, then the menus fold into a single menu button. Nothing is removed; it only moves somewhere closer to hand.</p>
+<h2>What is remembered</h2>
+<p>Window size and position, theme, text size, sidebar state and your last topic are kept in this browser only. Clearing site data resets them.</p>`,
+ida:`<h2>Two different jobs</h2>
+<p>Sam answers questions. Ida acts on intentions. Keeping them separate means a simple lookup never needs a language model, and a bigger task can bring one in only when it helps.</p>
+<h2>How Sam behaves</h2>
+<p>Sam is deterministic. The same question gives the same answer, every result names where it came from and how fresh it is, and if a question is outside what the computer itself can answer, Sam says so and hands it on instead of inventing something.</p>
+<h2>How Ida behaves</h2>
+<p>Ida is a find, launch and ask panel today, with a registry of what the system can do, a trust step before anything runs, and a planner that works within limits. It is meant to grow towards a system agent, but each step is gated by what you have allowed.</p>
+<h2>Preview first, commit later</h2>
+<p>The working rule is to preview aggressively and commit conservatively. Ida may show you what a change would do before doing it. Anything destructive, private or system-wide asks for stronger confirmation.</p>
+<h2>Replaceable by design</h2>
+<p>You can use a different agent, a different model, or none at all. The system exposes capabilities through documented interfaces, so Ida is one client among possible others, not a requirement.</p>
+<h2>Local first</h2>
+<p>Small local models handle simple actions where they can. Anything that leaves your machine is a deliberate, visible choice, never a quiet default.</p>
+<h2>Current limits</h2>
+<p>Ida Core is real and runs. Larger tiers, a semantic index and a model router are planned, not built. Treat anything beyond Ida Core as direction.</p>`,
+trust:`<h2>The basic rule</h2>
+<p>The system decides and the agent proposes. An assistant can suggest a change, prepare it and explain it, but permission lives in the system, where you can see and revoke it.</p>
+<h2>Facts versus interpretation</h2>
+<p>Deterministic checks establish what is true: does this file exist, is this process running, what changed. AI is used to interpret and explain those facts, never to replace them. When the two disagree, the check wins.</p>
+<h2>Saying what is uncertain</h2>
+<p>A trustworthy assistant states when it is unsure, names what it could not check, and does not smooth over gaps to sound confident.</p>
+<h2>Levels of caution</h2>
+<p>Reading public, local information is low risk. Changing your files or settings needs a clear confirmation. Anything that touches private data, spends money, deletes things, or alters the system as a whole needs stronger authorisation each time.</p>
+<h2>One place for security</h2>
+<p>Permissions and security are managed in Settings, so there is no extra security app to learn, and no hidden second place where a rule might be overridden.</p>
+<h2>An honest limit</h2>
+<p>AI is not a virus scanner and not the security boundary. Most strange behaviour on a computer turns out to be a bug or a misconfiguration, so the first step is to check the facts before suspecting anything exotic.</p>`,
+recovery:`<h2>The goal</h2>
+<p>You should be able to modify, replace, break and recover your system without fear. The intended route back is one configuration entry point that describes the system you want, backed by version-controlled files and reproducible package sources.</p>
+<h2>What can be rebuilt</h2>
+<p>Software, settings, layouts and the choices that make a setup yours can be described in files and recreated. That means a new machine, or a repaired one, can return to the same state without hours of remembering.</p>
+<h2>What cannot</h2>
+<p>A configuration describes how the system is set up. It does not contain your documents, photos, messages, passwords or anything else that exists only on your machine. Those need real backups, kept somewhere other than the computer itself.</p>
+<h2>A sensible backup habit</h2>
+<p>Keep more than one copy, keep at least one away from the machine, and test restoring something occasionally. A backup you have never restored is a hope, not a backup.</p>
+<h2>Undo by default</h2>
+<p>The intent is that changes made by the system or an agent can be inspected and rolled back, so experimenting is safe and mistakes are small.</p>
+<h2>Status</h2>
+<p>This is a planned direction. The tooling that makes full recovery routine has not shipped.</p>`,
+status:`<h2>Why this page exists</h2>
+<p>Projects like this are easy to oversell. A mockup looks like software, a roadmap sounds like a product. This page is the corrective: it says plainly what exists, what is early, and what is only hoped for.</p>
+<h2>How to check a claim</h2>
+<p>Look for the label under the page title, then follow the link to the project record. If a statement has no label and no source, treat it as intent, not fact.</p>
+<h2>What “prototype” really means here</h2>
+<p>A prototype is something you can run or click that demonstrates an idea. It may use fake data, skip error handling, or work on only one setup. It is useful for judging a direction. It is not something to rely on.</p>
+<h2>What is not claimed</h2>
+<p>There is no installable release, no finished desktop, no shipping hardware and no guarantee of the dates in the roadmap. Target dates are targets.</p>
+<h2>How it gets updated</h2>
+<p>The project record is the source of truth and Help follows it. When the two disagree, the record is right and Help is stale.</p>
+<h2>Open questions</h2>
+<p>Which desktop base to build on is still undecided. How much can run on small local models, and where external services are worth using, are active research questions rather than settled design.</p>`,
+slate:`<h2>What it is for</h2>
+<p>SLATE is a thought experiment in hardware that matches the software's values: understandable, repairable, quiet at rest, and serious when asked. It is a design direction, not an announced product.</p>
+<h2>Shape and weight</h2>
+<p>The targets are thin and light, around a kilogram, with a screen of roughly thirteen inches or less. They are ambitions to design toward and will move as real constraints appear.</p>
+<h2>Repairable and upgradeable</h2>
+<p>Parts should be replaceable by their owner with ordinary tools, and documentation should say how. A computer you can repair is a computer you can keep.</p>
+<h2>Physical feedback</h2>
+<p>Keys that feel deliberate, sound that is considered, and small status lights that tell you something real, instead of a screen doing all the talking. The keyboard study in the prototypes explores this.</p>
+<h2>Quiet by default</h2>
+<p>The machine should stay out of the way until you need it. Notifications, animations and background activity are meant to earn their place.</p>
+<h2>What it is not</h2>
+<p>It is not a specification, a price, a ship date you can plan around, or a promise. If it ever becomes a product, its real figures will replace these targets.</p>`,
+faq:`<h2>Can I try it on my own computer?</h2>
+<p>There is no installable release of the operating system. You can run the interface prototypes in a browser and read the code of the pieces that exist.</p>
+<h2>Is my data safe in the prototypes?</h2>
+<p>The prototypes use made-up data and do not read your files. Settings like theme and window size are stored in your browser only.</p>
+<h2>Does it need an internet connection?</h2>
+<p>The design preference is local first, so basic operation should not depend on a network. Where something does go outside your machine, it is meant to be an explicit choice.</p>
+<h2>Does it replace Linux?</h2>
+<p>No. It builds on a Linux foundation. The work is in how the pieces are combined, presented and made open to change.</p>
+<h2>Why a separate search service?</h2>
+<p>Because most questions a computer gets asked have exact answers that do not need a language model, and a deterministic service is faster, cheaper and easier to trust.</p>
+<h2>Will there be one assistant?</h2>
+<p>There is one default, Ida, but it is meant to be replaceable. You can bring another compatible agent or use none.</p>
+<h2>How do I report a mistake in Help?</h2>
+<p>Use the project record on GitHub. If Help and the record disagree, the record is the one to trust, and a correction here is welcome.</p>`
+};
+T.forEach(t=>{if(X[t.id])t.b+=X[t.id]});
+T.forEach((t,i)=>{t.n=String(i+1).padStart(3,'0');const d=document.createElement('div');d.innerHTML=t.b;t.x=(t.t+' '+d.textContent).replace(/\s+/g,' ')});
+const art=$('#art'),scr=$('#scr'),side=$('#side'),q=$('#q'),app=$('#app'),win=$('#win'),desk=$('#desk');
+let cur=store.get('topic','start');
+if(!T.some(t=>t.id===cur))cur='start';
+const idx=()=>T.findIndex(t=>t.id===cur);
+function toast(m){const e=$('#toast');e.textContent=m;e.classList.add('on');clearTimeout(toast.t);toast.t=setTimeout(()=>e.classList.remove('on'),1600)}
+function renderSide(){side.innerHTML='<h6>Topics</h6>';T.forEach(t=>{const b=document.createElement('button');b.dataset.id=t.id;b.className=t.id===cur?'on':'';b.textContent=t.s;b.onclick=()=>go(t.id);side.appendChild(b)})}
+function show(id){cur=id;const t=T.find(x=>x.id===id);art.innerHTML=`<h1></h1><span class="tag ${t.tag[0]}"></span>`+t.b;$('h1',art).textContent=t.t;$('.tag',art).textContent=t.tag[1];$$('.on',side).forEach(e=>e.classList.remove('on'));const s=$(`[data-id=${id}]`,side);if(s)s.classList.add('on');scr.scrollTo({top:0,behavior:'instant'});store.set('topic',id);nav()}
+function go(id){q.value='';show(id)}
+function nav(){$('[data-a=back]').disabled=idx()<=0;$('[data-a=fwd]').disabled=idx()>=T.length-1}
+function step(d){const n=idx()+d;if(n<0||n>=T.length)return;q.value='';show(T[n].id)}
+const esc=s=>s.replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));
+function search(){const v=q.value.trim().toLowerCase();if(!v){show(cur);return}
+ const hits=T.filter(t=>t.x.toLowerCase().includes(v));
+ art.innerHTML=`<p class="eyebrow">Search</p><h1></h1>`;$('h1',art).textContent=hits.length?hits.length+(hits.length>1?' results':' result'):'Nothing found';
+ if(!hits.length)art.insertAdjacentHTML('beforeend','<p>Try a shorter word, like “ida”, “backup” or “slate”. Anything outside this computer’s own help is handed off, not guessed.</p>');
+ hits.forEach(t=>{const i=t.x.toLowerCase().indexOf(v),sn=t.x.slice(Math.max(0,i-40),i+90);const b=document.createElement('button');b.className='res';b.dataset.id=t.id;
+  b.innerHTML='<b></b><small></small>';b.firstChild.textContent=t.t;b.lastChild.innerHTML=esc(sn).replace(new RegExp(v.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')+'','ig'),m=>'<mark>'+m+'</mark>');b.onclick=()=>go(t.id);art.appendChild(b)});
+ scr.scrollTop=0}
+q.addEventListener('input',search);
+q.addEventListener('keydown',e=>{if(e.key==='Enter'){const f=$('.res',art);if(f)go(f.dataset.id)}if(e.key==='Escape'){if(q.value){q.value='';search();e.stopPropagation()}else q.blur()}});
+
+/* menu engine */
+let menus=[];
+function closeMenu(d=0){while(menus.length>d)menus.pop().el.remove();$$('[aria-haspopup][aria-expanded=true]').forEach(b=>{if(!menus.length)b.setAttribute('aria-expanded','false')})}
+function openMenu(anchor,items,o={}){const depth=o.depth||0;closeMenu(depth);
+ const el=document.createElement('div');el.className='hm'+(o.up?' up':'');el.setAttribute('role','menu');
+ items.forEach(it=>{if(it==='-'){el.appendChild(document.createElement('hr'));return}
+  const b=document.createElement(it.header?'div':'button');b.className='hm-i'+(it.header?' hm-h':'');
+  if(it.header){b.textContent=it.label;el.appendChild(b);return}
+  b.setAttribute('role','menuitem');b.disabled=!!it.disabled;
+  b.innerHTML='<span class="hm-c"></span><span class="hm-l"></span><span class="hm-k"></span>';
+  b.children[0].textContent=it.checked?'✓':'';b.children[1].textContent=it.label;b.children[2].textContent=it.sub?'›':(it.kbd||'');
+  if(it.sub){b.setAttribute('aria-haspopup','true');let tm;b.onmouseenter=()=>{tm=setTimeout(()=>openMenu(b,it.sub,{depth:depth+1,side:true}),80)};b.onmouseleave=()=>clearTimeout(tm);b.onclick=()=>openMenu(b,it.sub,{depth:depth+1,side:true})}
+  else{b.onmouseenter=()=>closeMenu(depth+1);b.onclick=()=>{closeMenu();it.run&&it.run()}}
+  el.appendChild(b)});
+ document.body.appendChild(el);
+ const vw=innerWidth,vh=innerHeight,r=anchor.getBoundingClientRect?anchor.getBoundingClientRect():{left:anchor.x,right:anchor.x,top:anchor.y,bottom:anchor.y,width:0};
+ const gap=o.gap??(o.up?14:4);let w=el.offsetWidth,h;
+ if(o.side){el.style.maxHeight=(vh-16)+'px';h=el.offsetHeight;let x=r.right-4;if(x+w>vw-8)x=r.left-w+4;el.style.left=Math.max(8,x)+'px';el.style.top=Math.max(8,Math.min(r.top-5,vh-h-8))+'px'}
+ else if(o.up){el.style.maxHeight=Math.max(120,r.top-gap-8)+'px';h=el.offsetHeight;let x=o.center?r.left+r.width/2-w/2:r.left;el.style.left=Math.max(8,Math.min(x,vw-w-8))+'px';el.style.top=(r.top-gap-h)+'px'}
+ else{el.style.maxHeight=Math.max(120,vh-r.bottom-gap-8)+'px';let x=o.right?r.right-w:r.left;el.style.left=Math.max(8,Math.min(x,vw-w-8))+'px';el.style.top=(r.bottom+gap)+'px'}
+ menus.push({el,anchor});return el}
+document.addEventListener('mousedown',e=>{if(menus.length&&!e.target.closest('.hm,[aria-haspopup]'))closeMenu()});
+
+/* settings: theme, text size, sidebar */
+let pref=store.get('theme','system'),size=store.get('size','m'),sb=store.get('sidebar',true);
+function applyPrefs(){if(pref==='system')delete document.documentElement.dataset.theme;else document.documentElement.dataset.theme=pref;scr.dataset.size=size;app.classList.toggle('hidenav',!sb)}
+const setTheme=v=>{pref=v;store.set('theme',v);applyPrefs()},setSize=v=>{size=v;store.set('size',v);applyPrefs()};
+const fsToggle=()=>fs();
+function defs(){
+ const topics=T.map(t=>({label:t.s,checked:t.id===cur,run:()=>go(t.id)}));
+ const file=[{label:'Open Essential OS website',run:()=>window.open(SITE,'_blank','noopener')},{label:'Open project record (GitHub)',run:()=>window.open(REPO,'_blank','noopener')},{label:'Ida repository',run:()=>window.open('https://github.com/luishowin/ida','_blank','noopener')},'-',{label:'Search help',kbd:'/',run:()=>q.focus()},'-',{label:'Close Help',run:()=>vis(false)}];
+ const goM=[{label:'Previous topic',kbd:'Alt ←',disabled:idx()<=0,run:()=>step(-1)},{label:'Next topic',kbd:'Alt →',disabled:idx()>=T.length-1,run:()=>step(1)},'-',{header:1,label:'Topics'},...topics];
+ const view=[{label:'Sidebar',checked:sb,run:()=>{sb=!sb;store.set('sidebar',sb);applyPrefs()}},{label:'Text size',sub:[['Small','s'],['Normal','m'],['Large','l']].map(([l,v])=>({label:l,checked:size===v,run:()=>setSize(v)}))},'-',{header:1,label:'Appearance'},...[['Match system','system'],['Light','light'],['Dark','dark']].map(([l,v])=>({label:l,checked:pref===v,run:()=>setTheme(v)})),'-',{label:'Full screen',kbd:'F11',checked:document.body.classList.contains('fs'),run:fsToggle}];
+ return{file,go:goM,view,all:[{label:'File',sub:file},{label:'Go',sub:goM},{label:'View',sub:view}]}}
+$('#mb').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;const open=b.getAttribute('aria-expanded')==='true';closeMenu();if(open)return;$$('#mb button').forEach(x=>x.setAttribute('aria-expanded','false'));b.setAttribute('aria-expanded','true');openMenu(b,defs()[b.dataset.m])});
+$('#mb').addEventListener('mouseover',e=>{const b=e.target.closest('button');if(!b||!menus.length||b.getAttribute('aria-expanded')==='true'||b.closest('.hm'))return;if(!$$('#mb [aria-expanded=true]').length)return;$$('#mb button').forEach(x=>x.setAttribute('aria-expanded','false'));b.setAttribute('aria-expanded','true');openMenu(b,defs()[b.dataset.m])});
+$('.pill').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;const a=b.dataset.a;
+ if(a==='back')step(-1);if(a==='fwd')step(1);
+ if(a==='topics')openMenu(b,[{header:1,label:'Topics'},...T.map(t=>({label:t.s,checked:t.id===cur,run:()=>go(t.id)}))],{up:true});
+ if(a==='theme')openMenu(b,defs().view.slice(3,7),{up:true,right:true})});
+$('.wc').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;const a=b.dataset.a;if(a==='min'||a==='close')vis(false);if(a==='max')toggleMax()});
+
+/* window manager */
+const MINW=360,MINH=300;
+const D=()=>({w:desk.clientWidth,h:desk.clientHeight});
+function defR(){const d=D(),w=Math.min(1100,d.w-48),h=Math.min(700,d.h-48);return{x:Math.round((d.w-w)/2),y:Math.round((d.h-h)/2),w,h}}
+let R=store.get('rect',null)||defR(),maxed=store.get('max',false),fsPrev=null;
+function clamp(r){const d=D();r.w=Math.max(MINW,Math.min(r.w,d.w));r.h=Math.max(MINH,Math.min(r.h,d.h));r.x=Math.max(120-r.w,Math.min(r.x,d.w-120));r.y=Math.max(0,Math.min(r.y,d.h-40));return r}
+function apply(){const s=win.style;if(maxed){win.classList.add('max');s.left=s.top='0';s.width=s.height='100%'}else{clamp(R);win.classList.remove('max');s.left=R.x+'px';s.top=R.y+'px';s.width=R.w+'px';s.height=R.h+'px'}
+ $('#hud').textContent=`${win.offsetWidth} × ${win.offsetHeight}  ·  x ${maxed?0:Math.round(R.x)}  y ${maxed?0:Math.round(R.y)}`;
+}
+function save(){store.set('rect',R);store.set('max',maxed&&!document.body.classList.contains('fs'))}
+function toggleMax(){maxed=!maxed;apply();save()}
+function vis(v){win.style.display=v?'':'none';$('#chip').setAttribute('aria-pressed',String(v));closeMenu();if(v)apply()}
+$('#chip').onclick=()=>vis(win.style.display==='none');
+function fs(on){const b=document.body,is=b.classList.contains('fs');if(on===undefined)on=!is;if(on===is)return;if(on){fsPrev=maxed;maxed=true;b.classList.add('fs')}else{b.classList.remove('fs');maxed=fsPrev;}apply()}
+$$('.pre').forEach(b=>b.onclick=()=>{const p=b.dataset.p;if(document.body.classList.contains('fs'))fs(false);
+ if(p==='min'){vis(false);return}vis(true);
+ if(p==='fill'){maxed=true}else{maxed=false;const d=defR();if(p==='compact'){const w=Math.min(640,D().w-24),h=Math.min(440,D().h-24);R={x:Math.round((D().w-w)/2),y:Math.round((D().h-h)/2),w,h}}else R=d}
+ apply();save()});
+win.addEventListener('pointerdown',e=>{if(e.button!==0)return;const rz=e.target.closest('.rz');
+ if(rz&&!maxed)return startRz(e,rz.dataset.d);
+ if(e.target.closest('.top')&&!e.target.closest('button'))startDrag(e)});
+function startDrag(e){let sx=e.clientX,sy=e.clientY,r0={...R},moved=false;
+ const mv=ev=>{if(!moved){if(Math.hypot(ev.clientX-sx,ev.clientY-sy)<4)return;moved=true;closeMenu();
+  if(maxed){if(document.body.classList.contains('fs'))return;const ratio=ev.clientX/D().w;maxed=false;R=store.get('rect',null)||defR();R.x=ev.clientX-R.w*ratio;R.y=Math.max(0,ev.clientY-20);r0={...R};sx=ev.clientX;sy=ev.clientY}}
+  R.x=r0.x+ev.clientX-sx;R.y=r0.y+ev.clientY-sy;apply()};
+ const up=()=>{removeEventListener('pointermove',mv);removeEventListener('pointerup',up);if(moved)save()};
+ addEventListener('pointermove',mv);addEventListener('pointerup',up)}
+function startRz(e,d){e.preventDefault();const sx=e.clientX,sy=e.clientY,r0={...R},dk=D();
+ const mv=ev=>{const dx=ev.clientX-sx,dy=ev.clientY-sy;let{x,y,w,h}=r0;
+  if(d.includes('e'))w=Math.min(Math.max(MINW,r0.w+dx),dk.w-r0.x);
+  if(d.includes('s'))h=Math.min(Math.max(MINH,r0.h+dy),dk.h-r0.y);
+  if(d.includes('w')){w=Math.max(MINW,r0.w-dx);x=r0.x+r0.w-w}
+  if(d.includes('n')){h=Math.max(MINH,r0.h-dy);y=Math.max(0,r0.y+r0.h-h);h=r0.y+r0.h-y}
+  R={x,y,w,h};apply()};
+ const up=()=>{removeEventListener('pointermove',mv);removeEventListener('pointerup',up);save()};
+ addEventListener('pointermove',mv);addEventListener('pointerup',up)}
+$('#top').addEventListener('dblclick',e=>{if(!e.target.closest('button')&&!e.target.closest('.mb'))toggleMax()});
+$('#top').addEventListener('wheel',e=>{scr.scrollTop+=e.deltaY},{passive:true});
+addEventListener('resize',()=>{apply()});
+if(window.ResizeObserver)new ResizeObserver(()=>{$('#hud').textContent=`${win.offsetWidth} × ${win.offsetHeight}  ·  x ${maxed?0:Math.round(R.x)}  y ${maxed?0:Math.round(R.y)}`}).observe(win);
+
+/* keyboard */
+addEventListener('keydown',e=>{
+ if(menus.length){const top=menus[menus.length-1].el,items=$$('.hm-i:not(:disabled)',top),i=items.indexOf(document.activeElement);
+  if(e.key==='Escape'){closeMenu(menus.length-1);if(!menus.length)closeMenu();e.preventDefault();return}
+  if(e.key==='ArrowDown'){(items[(i+1)%items.length]||items[0]).focus();e.preventDefault();return}
+  if(e.key==='ArrowUp'){(items[(i-1+items.length)%items.length]||items[items.length-1]).focus();e.preventDefault();return}
+  if(e.key==='ArrowRight'&&document.activeElement.hasAttribute('aria-haspopup')){document.activeElement.click();setTimeout(()=>{const m=menus[menus.length-1].el;const f=$('.hm-i:not(:disabled)',m);f&&f.focus()},0);e.preventDefault();return}
+  if(e.key==='ArrowLeft'&&menus.length>1){closeMenu(menus.length-1);e.preventDefault();return}
+  if(e.key==='ArrowLeft'||e.key==='ArrowRight'){const bs=$$('#mb button:not(.hamb)').filter(b=>getComputedStyle(b).display!=='none'),cb=bs.findIndex(b=>b.getAttribute('aria-expanded')==='true');if(cb>-1){const n=bs[(cb+(e.key==='ArrowRight'?1:-1)+bs.length)%bs.length];closeMenu();n.setAttribute('aria-expanded','true');openMenu(n,defs()[n.dataset.m]);e.preventDefault()}}
+  return}
+ if(e.key==='Escape'||e.key==='F11'){if(document.body.classList.contains('fs')){fs(false);e.preventDefault();return}if(e.key==='F11'){fs(true);e.preventDefault()}return}
+ if(e.altKey&&e.key==='ArrowLeft'){step(-1);e.preventDefault()}
+ if(e.altKey&&e.key==='ArrowRight'){step(1);e.preventDefault()}
+ if(e.key==='/'&&document.activeElement!==q){q.focus();e.preventDefault()}
+});
+
+renderSide();applyPrefs();apply();show(cur);nav();
+})();
+</script>
+</body>
+</html>

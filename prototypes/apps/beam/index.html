@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Beam – file transfer</title>
+<style>
+:root{--bg:#f6f6f8;--fg:#1b1b1f;--mut:#76767f;--line:rgba(0,0,0,.09);--glass:rgba(255,255,255,.72);--card:#fff;--acc:#31e865;--ok:#1faa59;--warn:#e8890c;--bad:#e5243b;--grid:rgba(0,0,0,.05);--dsk:#dcdde3;font-family:Inter,system-ui,sans-serif}
+html[data-theme=dark]{--bg:#17171a;--fg:#f1f1f4;--mut:#9a9aa5;--line:rgba(255,255,255,.1);--glass:rgba(40,40,46,.72);--card:#222227;--grid:rgba(255,255,255,.04);--dsk:#0d0d10}
+*{box-sizing:border-box}html,body{height:100%;margin:0;overflow:hidden;color:var(--fg)}
+body{background:var(--dsk);font-size:14px}
+button,input,select{font:inherit;color:inherit}
+.desktop{position:fixed;inset:0 0 44px 0;background-image:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);background-size:32px 32px}
+.window{position:absolute;border-radius:12px;overflow:hidden;background:var(--bg);box-shadow:0 20px 60px rgba(0,0,0,.35),0 0 0 1px var(--line)}
+.window.hide{display:none}.window.max{border-radius:0}
+.app{position:absolute;inset:0;container:app/inline-size;overflow:hidden}
+.rz{position:absolute;z-index:30}
+.rz.n{top:-3px;left:10px;right:10px;height:7px;cursor:ns-resize}.rz.s{bottom:-3px;left:10px;right:10px;height:7px;cursor:ns-resize}
+.rz.e{right:-3px;top:10px;bottom:10px;width:7px;cursor:ew-resize}.rz.w{left:-3px;top:10px;bottom:10px;width:7px;cursor:ew-resize}
+.rz.ne{top:-3px;right:-3px;width:14px;height:14px;cursor:nesw-resize}.rz.nw{top:-3px;left:-3px;width:14px;height:14px;cursor:nwse-resize}
+.rz.se{bottom:-3px;right:-3px;width:14px;height:14px;cursor:nwse-resize}.rz.sw{bottom:-3px;left:-3px;width:14px;height:14px;cursor:nesw-resize}
+.top{position:absolute;top:0;left:0;right:0;height:40px;z-index:10;display:flex;align-items:center;padding:0 8px;gap:2px;user-select:none}
+.topfade,.botfade{position:absolute;left:0;right:0;pointer-events:none;z-index:5}
+.topfade{top:0;height:64px;background:linear-gradient(var(--bg) 40%,transparent)}
+.botfade{bottom:0;height:96px;background:linear-gradient(transparent,var(--bg) 70%)}
+.mb{background:none;border:0;padding:6px 10px;border-radius:8px;cursor:pointer}
+.mb:hover,.mb[aria-expanded=true]{background:var(--line)}
+.sp{flex:1;align-self:stretch}.wc{display:flex;gap:6px;padding-right:6px}
+.wc button{width:32px;height:28px;border:0;background:none;border-radius:7px;cursor:pointer;color:var(--mut);display:grid;place-items:center}.wc svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+.wc button:hover{background:var(--line);color:var(--fg)}
+.hb{display:none}
+.scroll{position:absolute;inset:0;overflow:auto;--pad:20px;padding:56px var(--pad) 100px}
+.wrap{max-width:820px;margin:0 auto;display:grid;gap:16px}
+.seg{display:grid;grid-template-columns:repeat(3,1fr);gap:4px;background:var(--line);padding:4px;border-radius:14px}
+.seg button{border:0;background:none;padding:10px 6px;border-radius:10px;cursor:pointer;display:flex;gap:8px;align-items:center;justify-content:center;font-weight:600;color:var(--mut)}
+.seg button.on{background:var(--card);color:var(--fg);box-shadow:0 1px 4px rgba(0,0,0,.12)}
+.seg svg{width:18px;height:18px}
+.card{background:var(--card);border-radius:16px;padding:14px 16px;box-shadow:0 0 0 1px var(--line)}
+.card h3{margin:0 0 10px;font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--mut)}
+.peer{display:flex;align-items:center;gap:12px;padding:10px;border-radius:12px;cursor:pointer;border:1.5px solid transparent}
+.peer:hover{background:var(--bg)}.peer.on{border-color:var(--acc);background:color-mix(in srgb,var(--acc) 7%,transparent)}
+.av{width:38px;height:38px;border-radius:50%;background:var(--bg);display:grid;place-items:center;font-weight:700}
+.peer small,.mut{color:var(--mut)}.peer b{display:block}
+.form{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.form label{display:grid;gap:4px;font-size:12px;color:var(--mut)}.form .full{grid-column:1/-1}
+.form input,.form select{padding:9px 11px;border-radius:10px;border:1px solid var(--line);background:var(--bg);color:var(--fg)}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}.stats[hidden]{display:none}
+.stat{background:var(--card);border-radius:14px;padding:12px 14px;box-shadow:0 0 0 1px var(--line);min-width:0}
+.stat small{color:var(--mut);display:block;font-size:11px;text-transform:uppercase;letter-spacing:.05em}
+.stat b{font-size:20px;font-variant-numeric:tabular-nums;white-space:nowrap}
+.stat b.sm{font-size:14px;display:flex;align-items:center;gap:6px;line-height:1.5}
+.badge{display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:600;padding:2px 8px;border-radius:99px;background:color-mix(in srgb,var(--ok) 15%,transparent);color:var(--ok)}
+.badge.bad{background:color-mix(in srgb,var(--bad) 15%,transparent);color:var(--bad)}
+.badge svg{width:12px;height:12px}
+.item{display:grid;grid-template-columns:36px 1fr auto;gap:12px;align-items:center;padding:10px 0;border-top:1px solid var(--line)}
+.item:first-of-type{border-top:0}
+.fi{width:36px;height:36px;border-radius:10px;background:var(--bg);display:grid;place-items:center;color:var(--mut)}.fi svg{width:18px;height:18px}
+.nm{font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.bar{height:6px;border-radius:9px;background:var(--line);margin:7px 0;overflow:hidden}
+.bar i{display:block;height:100%;background:var(--acc);border-radius:9px;transition:width .2s linear}
+.item.done .bar i{background:var(--ok)}.item.reconnecting .bar i{background:var(--warn)}
+.meta{display:flex;flex-wrap:wrap;gap:4px 12px;font-size:12px;color:var(--mut);font-variant-numeric:tabular-nums}
+.st{font-size:12px;font-weight:600}.st.reconnecting{color:var(--warn)}.st.done{color:var(--ok)}
+.x{border:0;background:none;color:var(--mut);cursor:pointer;font-size:18px;border-radius:8px;width:28px;height:28px}.x:hover{background:var(--line)}
+.empty{text-align:center;padding:30px 10px;color:var(--mut);border:2px dashed var(--line);border-radius:16px}
+.pill{position:absolute;bottom:14px;left:0;right:0;margin:0 auto;width:max-content;max-width:calc(100% - 28px);height:50px;border-radius:24px;display:grid;grid-template-columns:auto auto auto;align-items:center;gap:10px;padding:0 7px;z-index:20;background:var(--glass);backdrop-filter:blur(28px) saturate(1.8);-webkit-backdrop-filter:blur(28px) saturate(1.8);box-shadow:0 8px 30px rgba(0,0,0,.18),0 0 0 1px var(--line)}
+.pb{border:0;border-radius:18px;height:36px;padding:0 16px;cursor:pointer;font-weight:600;display:flex;align-items:center;gap:8px;background:var(--line)}
+.pb svg{width:16px;height:16px}.pb.pri{background:var(--acc);color:#04210e}.pb:disabled{opacity:.4;cursor:default}
+.pt{max-width:280px;padding:0 6px;text-align:center;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--mut);font-size:13px}
+.tgl{display:flex;align-items:center;gap:8px;cursor:pointer;font-size:13px}
+.tgl i{width:34px;height:20px;border-radius:99px;background:var(--line);position:relative;transition:.2s}
+.tgl i:after{content:"";position:absolute;top:2px;left:2px;width:16px;height:16px;border-radius:50%;background:#fff;transition:.2s;box-shadow:0 1px 3px rgba(0,0,0,.3)}
+.tgl.on i{background:var(--ok)}.tgl.on i:after{left:16px}
+.menu{position:fixed;z-index:1000;min-width:210px;padding:6px;border-radius:12px;background:var(--glass);backdrop-filter:blur(28px) saturate(1.8);-webkit-backdrop-filter:blur(28px) saturate(1.8);box-shadow:0 10px 40px rgba(0,0,0,.28),0 0 0 1px var(--line);overflow:auto;animation:mu .12s}
+@keyframes mu{from{opacity:0;transform:translateY(4px)}}
+.mi{display:flex;justify-content:space-between;gap:20px;padding:7px 10px;border-radius:7px;cursor:pointer;white-space:nowrap}
+.mi:hover{background:var(--acc);color:#04210e}.mi.dis{opacity:.4;pointer-events:none}.mi.hd{font-size:11px;color:var(--mut);pointer-events:none;text-transform:uppercase;letter-spacing:.05em}
+.mi.hd:hover{background:none}.msep{height:1px;background:var(--line);margin:5px 4px}
+.toast{position:absolute;left:50%;bottom:80px;transform:translateX(-50%);background:var(--fg);color:var(--bg);padding:8px 14px;border-radius:12px;z-index:40;font-size:13px;opacity:0;pointer-events:none;transition:.25s;max-width:90%;text-align:center}
+.toast.on{opacity:1}
+.drop:after{content:"Drop files to queue";position:absolute;inset:8px;z-index:50;display:grid;place-items:center;font-size:20px;font-weight:700;border:3px dashed var(--acc);border-radius:16px;background:color-mix(in srgb,var(--bg) 88%,transparent)}
+.tb{position:fixed;left:0;right:0;bottom:0;height:44px;display:flex;align-items:center;gap:10px;padding:0 10px;background:var(--glass);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-top:1px solid var(--line);z-index:60;font-size:12px}
+.chip{border:0;background:var(--line);border-radius:8px;padding:6px 12px;cursor:pointer;font-weight:600;display:flex;gap:6px;align-items:center}.chip svg{width:14px;height:14px;color:var(--acc)}
+.hud{font-variant-numeric:tabular-nums;color:var(--mut);margin-left:auto}
+.pre{border:1px solid var(--line);background:none;border-radius:7px;padding:4px 9px;cursor:pointer;font-size:12px}.pre:hover{background:var(--line)}
+body.fs .tb{display:none}body.fs .desktop{bottom:0}
+@container app (max-width:980px){.stats{grid-template-columns:repeat(2,1fr)}}
+@container app (max-width:700px){.pt{display:none}.pill{grid-template-columns:auto auto}.tgl span{display:none}.pill .sp2{display:block}}
+@container app (max-width:560px){.mbs{display:none}.hb{display:block}.seg button span{display:none}.form{grid-template-columns:1fr}.item{grid-template-columns:1fr auto}.fi{display:none}}
+@container app (max-width:520px){.scroll{--pad:12px}.pb span{display:none}.pb{padding:0 12px}.stat b{font-size:17px}}
+@media (max-width:640px){.pre.hm{display:none}}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style></head><body>
+<svg width="0" height="0" style="position:absolute"><defs>
+<symbol id="i-wifi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M2 9a15 15 0 0 1 20 0M5.5 12.5a10 10 0 0 1 13 0M9 16a5 5 0 0 1 6 0"/><circle cx="12" cy="19.5" r="1" fill="currentColor"/></symbol>
+<symbol id="i-lan" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="9" y="3" width="6" height="5" rx="1"/><rect x="2" y="16" width="6" height="5" rx="1"/><rect x="16" y="16" width="6" height="5" rx="1"/><path d="M12 8v4M5 16v-4h14v4"/></symbol>
+<symbol id="i-hot" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="2.5"/><path d="M7.8 7.8a6 6 0 0 0 0 8.4M16.2 7.8a6 6 0 0 1 0 8.4M4.9 4.9a10 10 0 0 0 0 14.2M19.1 4.9a10 10 0 0 1 0 14.2"/></symbol>
+<symbol id="i-globe" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9.5"/><path d="M2.5 12h19M12 2.5c3 3 3 16 0 19M12 2.5c-3 3-3 16 0 19"/></symbol>
+<symbol id="i-file" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M6 2.5h8l5 5v14H6z"/><path d="M14 2.5v5h5"/></symbol>
+<symbol id="i-send" viewBox="0 0 24 24" fill="currentColor"><path d="M3 11.5 21 3l-8.5 18-2-7.5z"/></symbol>
+<symbol id="i-pause" viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="4" width="4" height="16" rx="1"/><rect x="14" y="4" width="4" height="16" rx="1"/></symbol>
+<symbol id="i-lock" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></symbol>
+<symbol id="i-open" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 7-2.6"/></symbol>
+<symbol id="i-plus" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></symbol>
+</defs></svg>
+
+<div class="desktop" id="desk">
+ <div class="window" id="win"><div class="app" id="app">
+  <div class="scroll" id="sc"><div class="wrap">
+   <div class="card" id="panel"></div>
+   
+   <div class="card" id="queue"></div>
+  </div></div>
+  <div class="topfade"></div><div class="botfade"></div>
+  <div class="top" id="top">
+   <span class="mbs"><button class="mb" data-mn="file" aria-haspopup="true">File</button><button class="mb" data-mn="xfer" aria-haspopup="true">Transfer</button><button class="mb" data-mn="view" aria-haspopup="true">View</button></span>
+   <button class="mb hb" data-mn="all" aria-haspopup="true" aria-label="Menu">☰</button>
+   <div class="sp"></div>
+   <div class="wc"><button id="wMin" aria-label="Minimise"><svg viewBox="0 0 24 24"><path d="M5 10l7 5 7-5"/></svg></button><button id="wMax" aria-label="Maximise"><svg viewBox="0 0 24 24"><path d="M5 14l7-5 7 5"/></svg></button><button id="wClose" aria-label="Close"><svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div>
+  </div>
+  <div class="pill">
+   <div style="display:flex;gap:6px"><label class="pb"><svg><use href="#i-plus"/></svg><span>Add files</span><input type="file" id="file" multiple hidden></label><button class="pb" id="route" aria-haspopup="true" aria-label="Transfer route"></button></div>
+   <div class="pt" id="pt"></div>
+   <div style="display:flex;gap:10px;align-items:center">
+    
+    <button class="pb pri" id="go"><svg><use href="#i-send"/></svg><span>Send</span></button>
+   </div>
+  </div>
+  <div class="toast" id="toast"></div>
+  <i class="rz n" data-d="n"></i><i class="rz s" data-d="s"></i><i class="rz e" data-d="e"></i><i class="rz w" data-d="w"></i>
+  <i class="rz ne" data-d="ne"></i><i class="rz nw" data-d="nw"></i><i class="rz se" data-d="se"></i><i class="rz sw" data-d="sw"></i>
+ </div></div>
+</div>
+<div class="tb">
+ <button class="chip" id="chip"><svg><use href="#i-send"/></svg>Beam</button>
+ <span class="hud" id="hud"></span>
+ <button class="pre hm" data-p="min">Min</button><button class="pre hm" data-p="compact">Compact</button><button class="pre" data-p="def">Default</button><button class="pre" data-p="fill">Fill</button>
+</div>
+
+<script>
+(() => {'use strict';
+const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
+const NS='beam.';
+const ld=(k,d)=>{try{const v=localStorage.getItem(NS+k);return v?JSON.parse(v):d}catch(e){return d}};
+const sv=(k,v)=>{try{localStorage.setItem(NS+k,JSON.stringify(v))}catch(e){}};
+const fmt=b=>{const u=['B','KB','MB','GB','TB'];let i=0;while(b>=1024&&i<4){b/=1024;i++}return b.toFixed(i?(b<10?2:1):0)+' '+u[i]};
+const esc=s=>s.replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const S=Object.assign({mode:'lan',proto:'sftp',peer:0,host:'',user:'',auto:true,theme:'sys'},ld('s',{}));
+let Q=ld('q',[]);if(S.mode==='wifi')S.mode='lan';
+const PEERS={lan:[['Pixel 8','192.168.1.23','P'],['MacBook Air','192.168.1.41','M'],['Living-room PC','192.168.1.7','L']],
+ hotspot:[["Tom's iPhone 13 mini",'192.168.43.58','T']]};
+const PROTO={sftp:['SFTP (SSH)',1,'SSH · ed25519',4.2],ftps:['FTPS (explicit TLS)',1,'TLS 1.3',4.6],p2p:['WebRTC P2P (via relay)',1,'DTLS-SRTP',6.8],ftp:['Plain FTP',0,'Unencrypted',5.4]};
+const fp='4F:A2:9C:1B';
+const save=()=>{sv('s',S);sv('q',Q)};
+function sec(){
+ if(S.mode==='remote'){const p=PROTO[S.proto];return{ok:!!p[1],t:p[1]?'Encrypted':'Not encrypted',d:p[2]}}
+ return{ok:true,t:'Encrypted',d:'TLS 1.3 · '+fp+(S.mode==='hotspot'?' · WPA3 hotspot':'')}}
+function rate(){return S.mode==='lan'?38:S.mode==='hotspot'?11:PROTO[S.proto][3]}
+
+/* ---------- toast ---------- */
+let tt;function toast(m){const t=$('#toast');t.textContent=m;t.classList.add('on');clearTimeout(tt);tt=setTimeout(()=>t.classList.remove('on'),2600)}
+
+/* ---------- panel ---------- */
+function routeUI(){const m={lan:['lan','LAN'],hotspot:['hot','Hotspot'],remote:['globe','Remote']}[S.mode];$('#route').innerHTML=`<svg><use href="#i-${m[0]}"/></svg><span>${m[1]}</span><b>▴</b>`}
+function panel(){
+ routeUI();
+ const p=$('#panel');
+ if(S.mode==='remote'){
+  p.innerHTML=`<h3>Remote server / peer</h3><div class="form">
+  <label class="full">Host or share code<input id="fHost" placeholder="files.example.org or ABCD-1234" value="${esc(S.host)}"></label>
+  <label>Protocol<select id="fProto">${Object.entries(PROTO).map(([k,v])=>`<option value="${k}"${k===S.proto?' selected':''}>${v[0]}</option>`).join('')}</select></label>
+  <label>Username<input id="fUser" placeholder="optional" value="${esc(S.user)}"></label>
+  <div class="full mut" id="pNote"></div></div>`;
+  $('#fHost').oninput=e=>{S.host=e.target.value;save();ui()};
+  $('#fUser').oninput=e=>{S.user=e.target.value;save()};
+  $('#fProto').onchange=e=>{S.proto=e.target.value;save();note();ui()};note();
+ }else{
+  const L=PEERS[S.mode];if(S.peer>=L.length)S.peer=0;
+  p.innerHTML=`<h3>${S.mode==='lan'?'Local Send nodes active on this LAN':'Devices on this hotspot'}</h3>`+L.map((d,i)=>`<div class="peer${i===S.peer?' on':''}" data-i="${i}"><div class="av">${d[2]}</div><div><b>${d[0]}</b><small>${d[1]} · ${S.mode==='lan'?'discovered via mDNS':'gateway subnet'}</small></div></div>`).join('');
+  $$('.peer').forEach(e=>e.onclick=()=>{S.peer=+e.dataset.i;save();panel();ui()});
+ }
+}
+function note(){const n=$('#pNote');if(!n)return;const p=PROTO[S.proto];
+ n.innerHTML=p[1]?`<span class="badge">${p[2]}</span> Encrypted in transit. Server key is pinned after first connect.`:`<span class="badge bad">Unencrypted</span> Plain FTP sends files and password in clear text. Use SFTP or FTPS.`}
+
+/* ---------- queue ---------- */
+const eta=s=>{if(!isFinite(s)||s<0)return'–';return s<60?Math.ceil(s)+'s':Math.floor(s/60)+'m '+Math.ceil(s%60)+'s'};
+const STL={queued:'Queued',sending:'Sending',reconnecting:'Reconnecting…',paused:'Paused',done:'Complete'};
+function ui(){
+ const tot=Q.reduce((a,f)=>a+f.size,0),dn=Q.reduce((a,f)=>a+f.sent,0),sc=sec();
+ 
+ 
+ 
+ 
+ const q=$('#queue');
+ if(!Q.length){if(!$('#demo'))q.innerHTML='<div class="empty">No files yet.<br>Add files or drop them here.<br><br><button class="pb pri" id="demo" style="margin:0 auto">Emulate a transfer</button></div>'}
+ else q.innerHTML='<h3>Queue · '+Q.length+'</h3>'+Q.map((f,i)=>{const pc=f.size?f.sent/f.size*100:100,act=f.st==='sending';
+  return `<div class="item ${f.st}"><div class="fi"><svg><use href="#i-file"/></svg></div><div style="min-width:0"><div class="nm">${esc(f.name)}</div><div class="bar"><i style="width:${pc}%"></i></div>
+  <div class="meta"><span>${fmt(f.sent)} / ${fmt(f.size)}</span>${act?`<span>${fmt(spd)}/s</span><span>ETA ${eta((f.size-f.sent)/Math.max(spd,1))}</span>`:''}<span class="st ${f.st}">${STL[f.st]}${f.st==='reconnecting'?' · resume at '+fmt(f.sent):''}</span><span>${sc.ok?sc.d.split(' · ')[0]:'Unencrypted'}</span></div></div>
+  <button class="x" data-r="${i}" aria-label="Remove">×</button></div>`}).join('');
+ $$('.x').forEach(b=>b.onclick=()=>{Q.splice(+b.dataset.r,1);save();ui()});
+ const dm=$('#demo');if(dm)dm.onclick=demo;
+ const left=Q.filter(f=>f.st!=='done').length;
+ $('#pt').textContent=Q.length?`${Q.length} file${Q.length>1?'s':''} · ${fmt(tot)} · ${modeName()}`:'Ready · '+modeName();
+ const g=$('#go');g.disabled=!left;
+ const gh=`<svg><use href="#i-${running?'pause':'send'}"/></svg><span>${running?'Pause':(Q.some(f=>f.sent>0&&f.st!=='done')?'Resume':'Send')}</span>`;if(g.dataset.h!==gh){g.dataset.h=gh;g.innerHTML=gh}
+ 
+}
+function modeName(){return S.mode==='lan'?'LAN':S.mode==='hotspot'?'Hotspot':(PROTO[S.proto][0])}
+function add(list){[...list].forEach(f=>Q.push({name:f.name,size:f.size,sent:0,st:'queued'}));save();ui();if(list.length)toast(list.length+' file(s) queued')}
+
+/* ---------- transfer engine (simulated) ---------- */
+let running=false,spd=0,drop=0;
+const TICK=200;
+function tick(){
+ const f=Q.find(x=>x.st!=='done');
+ if(!running||!f){spd*=.8;if(spd<1)spd=0;ui();return}
+ if(drop>0){drop-=TICK/1000;f.st='reconnecting';spd=0;if(drop<=0){f.st='sending';toast('Reconnected · resuming from '+fmt(f.sent))}ui();return}
+ f.st='sending';
+ if(Math.random()<.008)return loseConn();
+ const r=rate()*1048576*(.7+Math.random()*.6)*TICK/1000;
+ f.sent=Math.min(f.size,f.sent+r);spd=spd*.7+(r*1000/TICK)*.3;
+ if(f.sent>=f.size){f.st='done';toast(f.name+' delivered')}
+ if(!Q.some(x=>x.st!=='done')){running=false;spd=0}
+ if(Math.random()<.2)save();ui();
+}
+function loseConn(){const f=Q.find(x=>x.st!=='done');if(!f)return;spd=0;
+ if(S.auto){drop=2+Math.random()*2;f.st='reconnecting';toast('Connection lost · auto-resuming')}
+ else{running=false;f.st='paused';toast('Connection lost · paused at '+fmt(f.sent))}save();ui()}
+function toggleGo(){
+ if(running){running=false;Q.forEach(f=>{if(f.st==='sending'||f.st==='reconnecting')f.st='paused'});drop=0;save();ui();return}
+ if(S.mode==='remote'&&!S.host.trim()){toast('Enter a host or share code first');$('#fHost')&&$('#fHost').focus();return}
+ if(!sec().ok&&!confirm('Plain FTP is not encrypted. Send anyway?'))return;
+ running=true;ui()}
+function demo(){
+ if(S.mode==='remote'&&!S.host.trim()){S.host='demo.beam.local';panel()}
+ const k=S.mode==='lan'?1:S.mode==='hotspot'?.4:.12;
+ Q=Q.filter(f=>f.st!=='done');
+ [['Holiday-4K.mp4',1288490189],['Project-assets.zip',356515840],['Meeting-notes.pdf',8388608]].forEach(f=>Q.push({name:f[0],size:Math.round(f[1]*k),sent:0,st:'queued'}));
+ running=true;drop=0;save();ui();toast('Emulated transfer started');
+ setTimeout(()=>{if(running)loseConn()},5000)}
+setInterval(tick,TICK);
+
+/* ---------- menus ---------- */
+let menus=[];
+function closeMenu(d=0){while(menus.length>d)menus.pop().remove();$$('[aria-expanded]').forEach(b=>b.setAttribute('aria-expanded','false'))}
+function openMenu(anchor,items,o={}){
+ closeMenu(o.depth||0);
+ const m=document.createElement('div');m.className='menu';
+ items.forEach(it=>{
+  if(it==='-'){m.insertAdjacentHTML('beforeend','<div class="msep"></div>');return}
+  const e=document.createElement('div');e.className='mi'+(it.header?' hd':'')+(it.disabled?' dis':'');
+  e.innerHTML=`<span>${it.checked?'✓ ':''}${esc(it.label)}</span><span>${it.kbd||''}</span>`;
+  if(it.run)e.onclick=()=>{closeMenu();it.run()};
+  m.appendChild(e)});
+ document.body.appendChild(m);
+ const r=anchor.getBoundingClientRect?anchor.getBoundingClientRect():{left:anchor.x,right:anchor.x,top:anchor.y,bottom:anchor.y};
+ m.style.maxHeight=(innerHeight-60)+'px';
+ const w=m.offsetWidth,h=m.offsetHeight;
+ let x=Math.min(r.left,innerWidth-w-8),y=o.up?r.top-h-8:r.bottom+4;
+ m.style.left=Math.max(8,x)+'px';m.style.top=Math.max(8,Math.min(y,innerHeight-h-8))+'px';
+ menus.push(m);if(anchor.setAttribute)anchor.setAttribute('aria-expanded','true')}
+const setM=m=>{S.mode=m;save();panel();ui()};
+const M={
+ file:()=>[{label:'Add files…',kbd:'Ctrl+O',run:()=>$('#file').click()},'-',{label:'Clear finished',run:()=>{Q=Q.filter(f=>f.st!=='done');save();ui()}},{label:'Clear all',run:()=>{running=false;Q=[];save();ui()}}],
+ xfer:()=>[{label:running?'Pause':'Send / Resume',kbd:'Space',run:toggleGo},{label:'Emulate file transfer',run:demo},{label:'Auto-resume',checked:S.auto,run:()=>{S.auto=!S.auto;save();ui()}},'-',
+  {label:'Route',header:1},{label:'LAN',checked:S.mode==='lan',run:()=>setM('lan')},{label:'Hotspot',checked:S.mode==='hotspot',run:()=>setM('hotspot')},{label:'Remote (SFTP/FTPS/P2P/FTP)',checked:S.mode==='remote',run:()=>setM('remote')},'-',
+  {label:'Simulate connection drop',run:()=>{if(running)loseConn();else toast('Start a transfer first')}}],
+ view:()=>[{label:'Appearance',header:1},...['sys:Match system','light:Light','dark:Dark'].map(s=>{const[k,l]=s.split(':');return{label:l,checked:S.theme===k,run:()=>{S.theme=k;save();theme()}}}),'-',{label:'Full screen',kbd:'F11',run:fs}]};
+M.all=()=>[{label:'File',header:1},...M.file(),'-',{label:'Transfer',header:1},...M.xfer(),'-',{label:'View',header:1},...M.view()];
+$$('[data-mn]').forEach(b=>{
+ b.onclick=()=>{b.getAttribute('aria-expanded')==='true'?closeMenu():openMenu(b,M[b.dataset.mn]())};
+ b.onmouseenter=()=>{if(menus.length&&b.getAttribute('aria-expanded')!=='true')openMenu(b,M[b.dataset.mn]())}});
+document.addEventListener('mousedown',e=>{if(menus.length&&!e.target.closest('.menu,[aria-haspopup]'))closeMenu()});
+function theme(){const d=S.theme==='dark'||(S.theme==='sys'&&matchMedia('(prefers-color-scheme:dark)').matches);document.documentElement.dataset.theme=d?'dark':'light'}
+matchMedia('(prefers-color-scheme:dark)').addEventListener('change',theme);
+
+/* ---------- events ---------- */
+$('#route').onclick=e=>{const b=e.currentTarget;if(b.getAttribute('aria-expanded')==='true')return closeMenu();openMenu(b,[{label:'Send over',header:1},{label:'LAN',checked:S.mode==='lan',run:()=>setM('lan')},{label:'Wi-Fi Hotspot',checked:S.mode==='hotspot',run:()=>setM('hotspot')},{label:'Remote (SFTP · FTPS · P2P · FTP)',checked:S.mode==='remote',run:()=>setM('remote')}],{up:true})};
+$('#go').onclick=toggleGo;
+
+$('#file').onchange=e=>{add(e.target.files);e.target.value=''};
+const app=$('#app');let dc=0;
+app.addEventListener('dragenter',e=>{e.preventDefault();dc++;app.classList.add('drop')});
+app.addEventListener('dragover',e=>e.preventDefault());
+app.addEventListener('dragleave',()=>{if(--dc<=0){dc=0;app.classList.remove('drop')}});
+app.addEventListener('drop',e=>{e.preventDefault();dc=0;app.classList.remove('drop');add(e.dataTransfer.files)});
+document.addEventListener('keydown',e=>{
+ if(e.key==='Escape'){closeMenu();if(document.body.classList.contains('fs'))fs()}
+ if(e.key==='F11'){e.preventDefault();fs()}
+ if((e.ctrlKey||e.metaKey)&&e.key==='o'){e.preventDefault();$('#file').click()}
+ if(e.key===' '&&!e.target.closest('input,select,button')){e.preventDefault();toggleGo()}});
+
+/* ---------- window manager ---------- */
+const win=$('#win'),desk=$('#desk'),MINW=360,MINH=300;
+let R=ld('rect',null),prev=null,prevMax=false;
+const dsz=()=>({w:desk.clientWidth,h:desk.clientHeight});
+function defRect(){const d=dsz(),w=Math.min(1100,d.w-48),h=Math.min(700,d.h-48);return{x:(d.w-w)/2,y:(d.h-h)/2,w,h,max:false}}
+function clamp(){const d=dsz();R.w=Math.max(MINW,Math.min(R.w,d.w));R.h=Math.max(MINH,Math.min(R.h,d.h));R.x=Math.max(-R.w+80,Math.min(R.x,d.w-80));R.y=Math.max(0,Math.min(R.y,d.h-40))}
+function apply(){const d=dsz();
+ if(R.max){Object.assign(win.style,{left:0,top:0,width:d.w+'px',height:d.h+'px'})}else{clamp();Object.assign(win.style,{left:R.x+'px',top:R.y+'px',width:R.w+'px',height:R.h+'px'})}
+ win.classList.toggle('max',!!R.max);
+ const r=win.getBoundingClientRect();$('#hud').textContent=`${Math.round(r.width)}×${Math.round(r.height)} · x ${Math.round(r.left)} · y ${Math.round(r.top)}`;
+ sv('rect',R)}
+function maxToggle(){R.max=!R.max;apply()}
+$('#wMax').onclick=maxToggle;
+$('#wMin').onclick=()=>win.classList.add('hide');
+$('#wClose').onclick=()=>win.classList.add('hide');
+$('#chip').onclick=()=>win.classList.toggle('hide');
+$('#top').addEventListener('dblclick',e=>{if(!e.target.closest('button'))maxToggle()});
+let drag=null;
+$('#top').addEventListener('pointerdown',e=>{if(e.target.closest('button'))return;
+ drag={mode:'move',sx:e.clientX,sy:e.clientY,moved:false,r:{...R}};e.preventDefault()});
+$$('.rz').forEach(h=>h.addEventListener('pointerdown',e=>{if(R.max)return;drag={mode:'rz',d:h.dataset.d,sx:e.clientX,sy:e.clientY,moved:true,r:{...R}};e.preventDefault();e.stopPropagation()}));
+addEventListener('pointermove',e=>{if(!drag)return;
+ const dx=e.clientX-drag.sx,dy=e.clientY-drag.sy;
+ if(drag.mode==='move'){
+  if(!drag.moved&&Math.hypot(dx,dy)<4)return;
+  if(!drag.moved&&R.max){const w=drag.r.w||defRect().w,pr=prev||defRect();R={x:e.clientX-pr.w*(e.clientX/dsz().w),y:0,w:pr.w,h:pr.h,max:false};drag.r={...R};drag.sx=e.clientX;drag.sy=e.clientY;drag.moved=true;apply();return}
+  if(!drag.moved)prev={...R};
+  drag.moved=true;R.x=drag.r.x+dx;R.y=drag.r.y+dy;apply()}
+ else{const d=drag.d,o=drag.r;let{x,y,w,h}=o;
+  if(d.includes('e'))w=Math.max(MINW,o.w+dx);if(d.includes('s'))h=Math.max(MINH,o.h+dy);
+  if(d.includes('w')){w=Math.max(MINW,o.w-dx);x=o.x+o.w-w}if(d.includes('n')){h=Math.max(MINH,o.h-dy);y=o.y+o.h-h}
+  R={x,y,w,h,max:false};apply()}});
+addEventListener('pointerup',()=>{drag=null});
+addEventListener('resize',apply);
+function preset(p){const d=dsz();
+ if(p==='fill')R={...R,max:true};
+ else if(p==='def')R=defRect();
+ else{const w=p==='min'?MINW:640,h=p==='min'?MINH:440;R={x:(d.w-w)/2,y:(d.h-h)/2,w,h,max:false}}
+ win.classList.remove('hide');apply()}
+$$('[data-p]').forEach(b=>b.onclick=()=>preset(b.dataset.p));
+function fs(){const on=!document.body.classList.contains('fs');
+ if(on){prevMax=!!R.max;R.max=true;document.body.classList.add('fs')}
+ else{document.body.classList.remove('fs');R.max=prevMax}
+ apply()}
+
+/* ---------- boot ---------- */
+if(!R||typeof R.w!=='number')R=defRect();
+theme();apply();panel();
+// resume interrupted transfers after reload
+Q.forEach(f=>{if(f.st==='sending'||f.st==='reconnecting')f.st=S.auto?'reconnecting':'paused'});
+if(S.auto&&Q.some(f=>f.st==='reconnecting')){running=true;drop=1.5;toast('Resuming interrupted transfer…')}
+ui();
+})();
+</script></body></html>
