@@ -107,3 +107,6 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
   the published support routes and the Sprite boundary.
 - Private vulnerability reporting is enabled on the repository, so the published
   advisory form is a working private route.
+- The Sprite Worker normalises non-breaking hyphens and narrow no-break spaces
+  in replies, and the prompt and fact sheet now ask for a linked chapter name
+  rather than an unlinked reference.
