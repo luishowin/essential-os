@@ -106,6 +106,9 @@ unless it is.
   mockups, not shipped software.
   → [`prototypes/`](prototypes/) and the
   [build tracker](docs/status.md)
+- A **public site guide** (Sprite), answering from a published fact sheet through
+  a Worker-held key. It is a guide to the record, not a product assistant.
+  → [`site/`](site/) and [ADR 0011](docs/decisions/0011-sprite-as-site-guide.md)
 
 ### Being explored
 
@@ -180,7 +183,8 @@ status.md      what has actually been built, with status and links
 prototypes/    hosted single-file application, desktop, hardware and UI studies
 skills/        the Essential OS app skill for Claude
 contract/      language-neutral interface schemas and conformance fixtures
-site/          the one-page project site
+site/          the one-page project site, the Sprite guide and its fact sheet
+worker/        the Cloudflare proxy that holds the Fireworks key
 src/           why there is no implementation here
 ```
 
@@ -191,6 +195,22 @@ src/           why there is no implementation here
 - Sam: <https://github.com/luishowin/sam> (documentation-led; no implementation yet)
 - Essential Desktop: the Fedora/Plasma assembly (working tree, private)
 - Early intent-router experiments: `Labs/jev-routing-test` (TypeScript)
+
+---
+
+## Support and feedback
+
+- **Money:** [GitHub Sponsors](https://github.com/sponsors/luishowin). It funds
+  time and inference credits. It does not buy roadmap priority, influence, a
+  support contract or a reply.
+- **Bugs, requests and hardware offers:** [GitHub
+  Issues](https://github.com/luishowin/essential-os/issues/new/choose), using the
+  forms. Best effort, no service-level agreement.
+- **Security:** a [private
+  advisory](https://github.com/luishowin/essential-os/security/advisories/new),
+  never a public issue. See [`SECURITY.md`](SECURITY.md).
+- **Compute, testing, critique, documentation and translation:** listed in
+  [chapter 011](https://luishowin.github.io/essential-os/#011-support).
 
 ---
 

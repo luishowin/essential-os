@@ -1,6 +1,6 @@
 # Website, support and public communication
 
-**Status:** Planned · **Date:** 2026-10-27
+**Status:** Active · **Date:** 2026-10-27 · **Updated:** 2026-11-14
 
 ## Website job
 
@@ -83,3 +83,57 @@ secret keys.
 Acknowledge when practical, link to the issue, state what is known and do not
 speculate. If the issue is upstream, identify the upstream project and avoid
 silently owning maintenance that another team controls.
+
+## What the site publishes today
+
+Chapter [011, Support the project](../../site/index.html), is the public version
+of this policy. It links to:
+
+| Need | Route |
+| --- | --- |
+| Money | [GitHub Sponsors](https://github.com/sponsors/luishowin) |
+| Bug | [`bug_report.yml`](../../.github/ISSUE_TEMPLATE/bug_report.yml) |
+| Suggestion or request | [`suggestion.yml`](../../.github/ISSUE_TEMPLATE/suggestion.yml) |
+| Hardware, VM or compute offer | [`hardware_report.yml`](../../.github/ISSUE_TEMPLATE/hardware_report.yml) |
+| Security | [private advisory](https://github.com/luishowin/essential-os/security/advisories/new), never a public issue |
+
+**.github/FUNDING.yml** points at the same Sponsors account. The [security
+policy](../../SECURITY.md) states scope, the private route and the best-effort
+response expectation.
+
+Money is the only route with a boundary written into the page: sponsorship funds
+time and inference credits, in that order. It does not buy roadmap priority,
+influence, a support contract, a guaranteed reply, or a say in decisions.
+
+Non-money offers published as real today: build or run Ida Core and report
+results; lend a Fedora or KDE test machine or VM; GPU time for model evaluations
+once the suite exists; donated inference credits; UX critique using the
+twenty-six interface studies; documentation, translations and issue triage.
+
+## Sprite, the site guide
+
+The site loads a vendored copy of [Sprite](https://github.com/luishowin/sprite)
+at `site/sprite/`. Its answers come from a Cloudflare Worker
+(`worker/sprite-proxy.js`) that holds the Fireworks key and reads
+`site/sprite.md` for facts. The reasoning, limits and alternatives are recorded
+in [ADR 0011](../decisions/0011-sprite-as-site-guide.md).
+
+Operational rules that belong to this policy:
+
+- Sprite must not invent status, dates, prices, specifications or releases. When
+  `site/sprite.md` does not cover a question, it says so.
+- The offline state says the brain is unreachable. It does not fall back to
+  another site's dialogue.
+- Chat history stays in `sessionStorage`; the Worker keeps no conversation
+  store.
+- The Worker is a public key-bearing endpoint. Set a Fireworks spend alert. If
+  abuse appears, add a per-IP limiter or a custom domain with WAF rate limiting.
+- `site/sprite.md` must be updated whenever a status claim on the site changes.
+
+## Private vulnerability reporting
+
+Private vulnerability reporting is **enabled** on the repository (2026-11-14),
+so the advisory link in `SECURITY.md` and on the support chapter works. Keep it
+enabled. If it is ever disabled, both documents fall back to a public issue
+titled `Private security contact request` with no technical detail.
+

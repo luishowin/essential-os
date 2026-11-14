@@ -264,3 +264,59 @@ a system component.
 fixture, whether the replaced Notes direction or the new one should become the
 real editor, and how the growing set of studies is kept from drifting apart as
 the shared pattern is copied by hand.
+
+## 2026-11-14 · Sprite, support routes and a key-holding Worker
+
+**What.** The project site gained a working guide and a public support chapter.
+**Sprite**, the MIT-licensed character and chat widget from
+[`luishowin/sprite`](https://github.com/luishowin/sprite), now sits bottom-right
+on every chapter. A dedicated Cloudflare Worker holds the Fireworks key, and the
+facts Sprite may use live in [`site/sprite.md`](../../site/sprite.md), not in the
+Worker. Chapter 011 sets out money (GitHub Sponsors), compute and hardware
+offers, UX research, documentation and translation, and the route for requests,
+suggestions and bugs.
+
+Upstream Sprite gained the minimum needed to serve a site other than
+beben.design: `offline`, `offlineText`, `greeting`, `chips`, `pillTexts` and
+`linkHosts` options; Escape to close with focus returned to the launcher;
+external links in a new tab; and an honest offline status when the proxy cannot
+be reached. The vendored copy is pinned at commit `716538b`. Site values live in
+`site/sprite-config.js`.
+
+The repository also gained issue forms for bugs, suggestions and hardware or
+compute offers, a `hardware` label, `SECURITY.md`, `.github/FUNDING.yml`, and
+[ADR 0011](../decisions/0011-sprite-as-site-guide.md).
+
+**Why.** The site explains a long project but had no way to answer "is this real
+yet?" in place, and the planning record's support policy was invisible from the
+site. Sprite already solved the character, motion, accessibility and panel work,
+so writing a second chat shell would have duplicated it and drifted. The
+important part was not the face but the honesty: a guide that invents a release
+date or upgrades a mockup would undermine the record. The support chapter turns
+an existing policy into routes a person can actually use.
+
+**How.** One vendored CSS file and one JavaScript file, loaded after a config
+file. The Worker locks CORS to the Pages origin and local preview ports, caps
+history, message size and output tokens, and returns no upstream error detail.
+It fetches `site/sprite.md` at runtime and caches it for five minutes, so a
+correction is a git push rather than a Cloudflare edit. When the brain is
+unreachable, Sprite says so and points at the chapters; it never falls back to
+another site's dialogue.
+
+**What changed in the record.** The site navigation (eleven chapters), the site
+styles and scripts, the new support chapter, the Sprite fact sheet and config,
+the Worker and its deploy notes, the repository root security and funding files,
+the issue forms, ADR 0011, the README status and map, and
+`docs/planning/website-and-support.md`, which moves from Planned to Active.
+
+**What did not change.** No operating system was released. There is still no
+installer, no GPU pool, no test-machine programme, no eval suite and no
+commercial support. Sponsorship does not buy influence or priority. No
+analytics were added; chat history stays in the browser session and the Worker
+keeps no conversation store. The interface studies remain browser mockups.
+
+**Open.** The Worker code and the `FIREWORKS_API_KEY` secret must be applied in
+Cloudflare before the live guide can answer. Fireworks spend and Worker abuse
+need a budget alert and, if traffic warrants it, a per-IP limiter or a custom
+domain with WAF rate limiting. `site/sprite.md` now has to be kept in step with
+the site, and the vendored Sprite copy follows commits until upstream has tags.

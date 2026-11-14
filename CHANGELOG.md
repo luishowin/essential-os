@@ -51,6 +51,17 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 - `docs/planning/agent-workflow.md` and
   `docs/planning/release-and-support-policy.md`: the agent workflow and
   release/support policy documents.
+- `site/sprite/`, `site/sprite-config.js` and `site/sprite.md`: the vendored
+  Sprite guide, its Essential OS configuration and its fact sheet.
+- `worker/sprite-proxy.js` and `worker/README.md`: the Cloudflare proxy that
+  holds the Fireworks key, locks CORS, caps cost and fetches the fact sheet.
+- Chapter 011, "Support the project": GitHub Sponsors, compute and hardware
+  offers, UX research, documentation and translation, issue routes and the
+  security boundary.
+- `.github/ISSUE_TEMPLATE/`: bug, suggestion and hardware/compute forms plus
+  contact links, and a `hardware` label.
+- `SECURITY.md` and `.github/FUNDING.yml`.
+- ADR 0011: Sprite is the site guide, with a Worker-held brain.
 
 ### Changed
 
@@ -89,3 +100,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
   the prototype files so the tracker links resolve.
 - The duplicate specification PDF at the repository root was removed; the
   authoritative copy remains in `docs/specifications/`.
+- The site gains an eleventh chapter and a fixed guide. The Sprite launcher is
+  lifted above the chapter pill below 920 px; the open panel stays anchored to
+  the viewport. Vendored Sprite CSS loads before site CSS so site overrides win.
+- `docs/planning/website-and-support.md` moves from Planned to Active and records
+  the published support routes and the Sprite boundary.
+- Private vulnerability reporting is enabled on the repository, so the published
+  advisory form is a working private route.

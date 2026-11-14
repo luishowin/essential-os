@@ -54,6 +54,7 @@ Consequences
 | [0008](0008-llm-is-translator-not-executor.md) | The LLM is a translator and planner, not the executor | Accepted |
 | [0009](0009-desktop-base-open.md) | The desktop base is an open question | Open |
 | [0010](0010-sam-separate-os-search-service.md) | Sam is a separate OS search service, not an Ida tier | Accepted |
+| [0011](0011-sprite-as-site-guide.md) | Sprite is the site guide, with a Worker-held brain | Accepted |
 
 ## Decision template
 
