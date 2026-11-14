@@ -56,11 +56,13 @@
     function open() {
       nav.classList.add("is-open");
       btn.setAttribute("aria-expanded", "true");
+      document.body.classList.add("nav-open");
     }
     function close(focusBtn) {
       if (!nav.classList.contains("is-open")) return;
       nav.classList.remove("is-open");
       btn.setAttribute("aria-expanded", "false");
+      document.body.classList.remove("nav-open");
       if (focusBtn) btn.focus();
     }
     function toggle() {

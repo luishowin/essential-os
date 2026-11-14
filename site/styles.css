@@ -493,3 +493,72 @@ a:focus-visible, button:focus-visible {
   .alsoin__grid { grid-template-columns: 1fr; }
   .stage__out .k { min-width: 4.4rem; }
 }
+
+/* ── Support ────────────────────────────────────────────────────────── */
+.support-feature {
+  display: grid; grid-template-columns: minmax(0, 1fr) auto;
+  gap: 1.5rem; align-items: start;
+  border: 1px solid var(--line-strong); border-radius: 12px;
+  background: var(--panel); padding: 1.4rem 1.5rem;
+  margin: 1.8rem 0 2rem;
+}
+.support-feature h3 {
+  font-family: var(--serif);
+  font-size: clamp(1.2rem, 3vw, 1.5rem);
+  margin-bottom: 0.6rem;
+}
+.support-feature__act { margin: 0; align-self: center; }
+.support-cta {
+  display: inline-flex; align-items: center; gap: 0.5rem;
+  border: 1px solid var(--line-strong); border-radius: 999px;
+  padding: 0.65rem 1.1rem; color: var(--fg); text-decoration: none;
+  font-size: 0.82rem; letter-spacing: 0.04em; white-space: nowrap;
+  transition: border-color 0.2s, color 0.2s;
+}
+.support-cta:hover { border-color: var(--muted); color: var(--muted); }
+
+.support-offers { margin-top: 1.2rem; }
+
+.support-links {
+  list-style: none; margin: 1.2rem 0; padding: 0;
+  display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0.6rem;
+}
+.support-links li {
+  border: 1px solid var(--line); border-radius: 10px; background: var(--panel);
+  padding: 1rem 1.1rem; display: flex; flex-direction: column; gap: 0.35rem;
+}
+.support-links a { color: var(--fg); text-decoration: none; font-size: 0.95rem; }
+.support-links a:hover { color: var(--muted); }
+.support-links li > span { color: var(--muted); font-size: 0.82rem; line-height: 1.45; }
+
+.support-note {
+  border-left: 2px solid var(--muted);
+  padding: 0.2rem 0 0.2rem 1rem;
+  margin: 1.8rem 0 1rem;
+  font-size: 0.92rem;
+}
+.support-note a { color: var(--fg); }
+.support-note a:hover { color: var(--muted); }
+
+@media (max-width: 720px) {
+  .support-feature { grid-template-columns: 1fr; }
+  .support-feature__act { align-self: start; }
+  .support-links { grid-template-columns: 1fr; }
+}
+
+/* ── Sprite placement ───────────────────────────────────────────────── */
+/* The chapter pill is fixed bottom-centre. Sprite's launcher is fixed
+   bottom-right, so on narrower screens they collide. Lift only the
+   launcher; the open panel stays anchored to the viewport. */
+@media (max-width: 920px) {
+  #sprite-widget .sprite-pill { margin-bottom: 4.5rem; }
+}
+@media (max-width: 480px) {
+  #sprite-widget .sprite-pill { margin-bottom: 4.75rem; }
+}
+
+/* The chapter menu opens upward over the page. Hide the launcher while it is
+   open, and keep the widget below the menu if the chat panel is also open. */
+body.nav-open #sprite-widget { z-index: 20; }
+body.nav-open #sprite-widget .sprite-pill { opacity: 0; pointer-events: none; }
+

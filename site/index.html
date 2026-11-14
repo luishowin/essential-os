@@ -13,6 +13,7 @@
   <meta name="twitter:card" content="summary" />
   <meta name="color-scheme" content="dark light" />
   <meta name="theme-color" content="#0a0a0b" />
+  <link rel="stylesheet" href="sprite/sprite.css?v=1" />
   <link rel="stylesheet" href="styles.css" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -47,6 +48,7 @@
       <li><a href="#008-machine"><span class="ch__num">008</span><span class="ch__label">The machine</span></a></li>
       <li><a href="#009-roadmap"><span class="ch__num">009</span><span class="ch__label">The roadmap</span></a></li>
       <li><a href="#010-built"><span class="ch__num">010</span><span class="ch__label">Built so far</span></a></li>
+      <li><a href="#011-support"><span class="ch__num">011</span><span class="ch__label">Support the project</span></a></li>
     </ol>
   </nav>
   <noscript><style>.chapters__toggle{display:none}.chapters{position:static;transform:none;margin:2rem auto;max-width:var(--measure)}.chapters ol{display:block;position:static;max-height:none}</style></noscript>
@@ -786,6 +788,109 @@
       </p>
     </section>
 
+    <!-- ── 011 ──────────────────────────────────────────────────────── -->
+    <section class="block chapter" id="011-support" aria-labelledby="h-011">
+      <p class="chap__num" aria-hidden="true">011</p>
+      <h2 id="h-011">Support the project</h2>
+      <p class="status__stamp">November 2026 · How to help</p>
+      <p>
+        Essential OS is one person's long-term project, worked on in public. Money
+        is one route among several, and not the most useful one. Each route below
+        is honest about when it helps, and none of it buys influence over the
+        direction.
+      </p>
+
+      <div class="support-feature">
+        <div>
+          <h3>Sponsor the work</h3>
+          <p>
+            GitHub Sponsors is the only money route. It pays for hours and for the
+            inference credits behind Ida and this site's assistant, in that order.
+          </p>
+          <p class="caption">
+            Sponsorship does not buy roadmap priority, a support contract, a
+            guaranteed reply, or a say in decisions. The project stays a project.
+          </p>
+        </div>
+        <p class="support-feature__act">
+          <a class="support-cta" href="https://github.com/sponsors/luishowin">Sponsor on GitHub <span aria-hidden="true">&#x2197;</span></a>
+        </p>
+      </div>
+
+      <h3 class="sub">Compute, hardware and time</h3>
+      <ul class="alsoin__grid support-offers">
+        <li>
+          <h4>Run Ida Core, send a report</h4>
+          <p>Build Ida Core (v0.0.3) from source, use it for a while, and report install friction, behaviour and hardware notes.</p>
+          <span class="tag tag--impl">Implemented</span>
+        </li>
+        <li>
+          <h4>Lend a test machine or VM</h4>
+          <p>A Fedora or KDE machine, GPU optional, for build, packaging and compatibility testing. Temporary access is enough.</p>
+          <span class="tag tag--plan">Needed</span>
+        </li>
+        <li>
+          <h4>GPU time for model evals</h4>
+          <p>Run local model and quantisation evaluations once the eval suite exists, and send comparable results rather than impressions.</p>
+          <span class="tag tag--plan">Planned</span>
+        </li>
+        <li>
+          <h4>Donate inference credits</h4>
+          <p>Fireworks credits for the Ida and Sprite proxies. This is an ongoing bill, not a one-off launch cost.</p>
+          <span class="tag tag--impl">Ongoing</span>
+        </li>
+        <li>
+          <h4>UX critique and research</h4>
+          <p>Use the twenty-six interface studies, join a walkthrough, and send reasoned critique. Specific findings beat scores.</p>
+          <span class="tag tag--proto">Prototype</span>
+        </li>
+        <li>
+          <h4>Docs, translations, triage</h4>
+          <p>Documentation, the eight target languages, or help keeping the issue queue useful. Small, regular help is welcome.</p>
+          <span class="tag tag--plan">Open</span>
+        </li>
+      </ul>
+
+      <h3 class="sub">Requests, suggestions and bugs</h3>
+      <p>
+        All three go to GitHub Issues, in public, so the answer helps the next
+        person. A GitHub account is free. Choose the form that fits:
+      </p>
+      <ul class="support-links">
+        <li>
+          <a href="https://github.com/luishowin/essential-os/issues/new?template=bug_report.yml">Report a bug <span aria-hidden="true">&#x2197;</span></a>
+          <span>A mockup, the site or Ida Core is broken.</span>
+        </li>
+        <li>
+          <a href="https://github.com/luishowin/essential-os/issues/new?template=suggestion.yml">Suggest a change <span aria-hidden="true">&#x2197;</span></a>
+          <span>A request, a design critique or a direction worth considering.</span>
+        </li>
+        <li>
+          <a href="https://github.com/luishowin/essential-os/issues/new?template=hardware_report.yml">Offer hardware or a report <span aria-hidden="true">&#x2197;</span></a>
+          <span>A test machine, a VM, GPU time or a hardware observation.</span>
+        </li>
+      </ul>
+      <p class="caption">
+        A useful bug report says what you ran, what you expected, what happened,
+        the steps to reproduce it, your OS and desktop version, your GPU or model
+        if relevant, and the exact error text. Screenshots help when the problem
+        is visual.
+      </p>
+
+      <p class="support-note">
+        <strong>Security.</strong> Do not open a public issue for a vulnerability,
+        and do not include exploit details in one. Use GitHub's
+        <a href="https://github.com/luishowin/essential-os/security/advisories/new">private advisory form</a>.
+        If that form is unavailable, open an issue titled "Private security contact
+        request" with no technical detail and wait for a private channel.
+      </p>
+      <p class="caption">
+        Issues are read on a best-effort basis. There is no service-level agreement,
+        no commercial support and no promise that a request will be built. Using
+        the work, reading the record and telling someone about it are all useful.
+      </p>
+    </section>
+
     <!-- ── Closing ──────────────────────────────────────────────────── -->
     <section class="closing" aria-labelledby="closing">
       <h2 id="closing" class="visually-hidden">Closing</h2>
@@ -795,6 +900,8 @@
         <a href="https://github.com/luishowin/essential-os">essential-os record</a>
         <span aria-hidden="true"> · </span>
         <a href="https://github.com/luishowin/ida">Ida implementation</a>
+        <span aria-hidden="true"> · </span>
+        <a href="#011-support">Support the project</a>
       </p>
     </section>
   </main>
@@ -804,6 +911,17 @@
     <p class="footer__meta">MIT · an ongoing personal project · <span id="year"></span></p>
   </footer>
 
-  <script src="main.js?v=3"></script>
+  <script>
+    // Fail closed. Sprite's built-in defaults belong to beben.design, so if
+    // sprite-config.js fails to load the widget must not inherit them.
+    window.SPRITE_CONFIG = {
+      apiUrl: "",
+      offline: false,
+      offlineText: "I can't reach my brain right now, but the site still works."
+    };
+  </script>
+  <script src="sprite-config.js?v=1"></script>
+  <script src="sprite/sprite.js?v=1"></script>
+  <script src="main.js?v=4"></script>
 </body>
 </html>
