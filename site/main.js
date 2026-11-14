@@ -192,3 +192,91 @@
     cycle();
   }
 })();
+
+// ── The stack: small simulated panels ────────────────────────────────
+// Illustrative only. Nothing here talks to a real system.
+(function () {
+  "use strict";
+  function esc(s) { return String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;"); }
+  function line(k, v, cls) {
+    return '<div class="row-l"><span class="k">' + esc(k) + '</span><span class="' + (cls || "") + '">' + v + "</span></div>";
+  }
+  function bind(stage, attr, render) {
+    var out = stage.querySelector(".stage__out");
+    var chips = Array.prototype.slice.call(stage.querySelectorAll(".chip"));
+    function pick(val) {
+      chips.forEach(function (c) {
+        var on = c.getAttribute(attr) === val;
+        if (c.hasAttribute("aria-selected")) c.setAttribute("aria-selected", String(on));
+        else c.setAttribute("aria-pressed", String(on));
+      });
+      out.innerHTML = render(val, out, function (v) { pick(v); });
+      wire(out);
+    }
+    function wire(scope) {
+      var btn = scope.querySelector("[data-commit]");
+      if (btn) btn.addEventListener("click", function () {
+        scope.querySelector("[data-state]").innerHTML = "committed (simulated)";
+        btn.remove();
+      });
+    }
+    chips.forEach(function (c) { c.addEventListener("click", function () { pick(c.getAttribute(attr)); }); });
+    pick(chips[0].getAttribute(attr));
+  }
+
+  var sam = document.querySelector('[data-stage="sam"]');
+  if (sam) bind(sam, "data-q", function (q) {
+    var d = {
+      mem:  line("answer", "Firefox 1.9 GB, Files 410 MB, Ida 96 MB") + line("source", "/proc/meminfo · process table", "dimline") + line("fresh", "2 s ago", "dimline"),
+      wifi: line("answer", "Connected · home-5G · −52 dBm") + line("source", "NetworkManager", "dimline") + line("fresh", "1 s ago", "dimline"),
+      file: line("answer", "~/Documents/Taxes/tax-2026.pdf") + line("source", "local file index", "dimline") + line("fresh", "indexed 6 min ago", "dimline"),
+      poem: line("answer", "Outside this computer's domain. Handing off.") + line("source", "none: not guessed", "dimline") + line("to", "Ida, if present", "dimline")
+    };
+    return d[q];
+  });
+
+  var trust = document.querySelector('[data-stage="trust"]');
+  if (trust) bind(trust, "data-a", function (a) {
+    if (a === "read") return line("intent", "list today's events") + line("level", "read", "ok") + line("preview", "3 events") + hr() + line("result", "runs immediately", "ok");
+    if (a === "modify") return line("intent", "move standup to 10:00") + line("level", "modify", "ok") + line("preview", "09:00 → 10:00") + hr() + line("state", '<span data-state>waiting for confirm</span>') + '<button class="stage__act" type="button" data-commit>Confirm</button>';
+    return line("intent", "delete all notes") + line("level", "destructive", "ok") + line("preview", "412 notes affected") + hr() + line("state", '<span data-state>blocked: needs stronger authorisation</span>', "dimline") + line("note", "a partial phrase never executes this", "dimline");
+    function hr() { return "<hr />"; }
+  });
+
+  var doors = document.querySelector('[data-stage="doors"]');
+  if (doors) bind(doors, "data-d", function (d) {
+    if (d === "human") return line("Today", "") + line("09:00", "Standup") + line("12:30", "Lunch with Amara") + line("15:00", "Design review");
+    return line("request", "GET calendar/v1/events?day=today") + line("scope", "calendar.read · granted", "ok") + line("returns", "3 events, no pixels scraped") + line("write", "calendar.write · needs approval", "dimline");
+  });
+
+  var rec = document.querySelector('[data-stage="recover"]');
+  if (rec) {
+    var out = rec.querySelector(".stage__out");
+    var reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    function idle() {
+      out.innerHTML = line("state", "healthy", "ok") + line("config", "essential.conf · rev 41", "dimline") +
+        '<button class="stage__act stage__act--ghost" type="button" id="brk">Break something</button>';
+      out.querySelector("#brk").addEventListener("click", broken);
+    }
+    function broken() {
+      out.innerHTML = line("state", "desktop will not start") + line("cause", "an experiment removed the compositor", "dimline") +
+        '<button class="stage__act" type="button" id="rb">Rebuild from config</button>';
+      out.querySelector("#rb").addEventListener("click", rebuild);
+    }
+    function rebuild() {
+      var steps = ["read essential.conf rev 41", "resolve pinned package sources", "reinstall 612 packages", "restore settings", "verify"];
+      var i = 0; out.innerHTML = "";
+      (function next() {
+        if (i < steps.length) {
+          out.insertAdjacentHTML("beforeend", line("✓", steps[i], "dimline")); i += 1;
+          setTimeout(next, reduce ? 0 : 420);
+        } else {
+          out.insertAdjacentHTML("beforeend", line("state", "healthy again", "ok") + line("reminder", "documents and photos come from backups", "dimline") +
+            '<button class="stage__act stage__act--ghost" type="button" id="rs">Reset</button>');
+          out.querySelector("#rs").addEventListener("click", idle);
+        }
+      })();
+    }
+    idle();
+  }
+})();

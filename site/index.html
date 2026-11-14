@@ -65,6 +65,144 @@
       <p class="hero__note">A project journal, not a product page. Status labels are honest: what is implemented, prototyped, planned, researched, or still an open question.</p>
     </section>
 
+    <!-- ── The stack ────────────────────────────────────────────────── -->
+    <section class="stack" id="stack" aria-labelledby="h-stack">
+      <div class="stack__head">
+        <p class="eyebrow" style="margin-bottom:1rem">The stack</p>
+        <h2 id="h-stack">Five layers. One system.</h2>
+        <p class="lede">What the machine is made of, one layer at a time, each labelled with how real it is today.</p>
+        <p class="caption">Panels below are small simulations of intended behaviour. Nothing in them is shipped software unless its label says Implemented.</p>
+      </div>
+
+      <!-- 1 · Sam -->
+      <article class="feat" id="stack-sam">
+        <div class="feat__copy">
+          <p class="feat__kicker"><span>01</span> Search <span class="tag tag--proto">Prototype</span></p>
+          <h3>Ask the computer. Get an answer as fast as you can type.</h3>
+          <p>Sam is the native search and retrieval service for the machine itself: files, apps, settings, what is using memory, whether Wi-Fi is on.</p>
+          <ul class="feat__points">
+            <li><strong>Deterministic.</strong> A registry of intents and fixed handlers. No generative model runs inside it.</li>
+            <li><strong>Every result names its source</strong> and how fresh it is.</li>
+            <li><strong>Hands off, never guesses</strong> when a question is outside the computer's own domain.</li>
+            <li><strong>Works with no Ida present.</strong> Ida can call it; it does not need Ida.</li>
+          </ul>
+        </div>
+        <div class="stage" data-stage="sam">
+          <div class="stage__bar" role="group" aria-label="Try a question">
+            <button class="chip" type="button" aria-pressed="true" data-q="mem">what is using memory?</button>
+            <button class="chip" type="button" aria-pressed="false" data-q="wifi">is wifi on?</button>
+            <button class="chip" type="button" aria-pressed="false" data-q="file">find tax-2026.pdf</button>
+            <button class="chip" type="button" aria-pressed="false" data-q="poem">write me a poem</button>
+          </div>
+          <div class="stage__out" aria-live="polite"></div>
+          <div class="stage__foot">simulated · data is illustrative · <a href="https://github.com/luishowin/sam">Sam repository</a></div>
+        </div>
+      </article>
+
+      <!-- 2 · Ida -->
+      <article class="feat" id="stack-ida">
+        <div class="feat__copy">
+          <p class="feat__kicker"><span>02</span> Intelligence <span class="tag tag--impl">Implemented · Core</span></p>
+          <h3>The system decides. The agent proposes.</h3>
+          <p>Ida is the optional intelligent layer: a launcher growing into a system agent. Ida Core (Rust, v0.0.1 to v0.0.3) already has a capability registry, a trust path and a bounded planner.</p>
+          <ul class="feat__points">
+            <li><strong>Preview aggressively, commit conservatively.</strong></li>
+            <li><strong>Stronger boundaries as stakes rise:</strong> read, modify, destructive.</li>
+            <li><strong>Replaceable.</strong> Another compatible agent, another model, or none at all.</li>
+          </ul>
+        </div>
+        <div class="stage" data-stage="trust">
+          <div class="stage__bar" role="group" aria-label="Try an action">
+            <button class="chip" type="button" aria-pressed="true" data-a="read">read</button>
+            <button class="chip" type="button" aria-pressed="false" data-a="modify">modify</button>
+            <button class="chip" type="button" aria-pressed="false" data-a="destroy">destructive</button>
+          </div>
+          <div class="stage__out" aria-live="polite"></div>
+          <div class="stage__foot">simulated trust path · design target, not shipped behaviour</div>
+        </div>
+      </article>
+
+      <!-- 3 · Apps -->
+      <article class="feat" id="stack-apps">
+        <div class="feat__copy">
+          <p class="feat__kicker"><span>03</span> Applications <span class="tag tag--plan">Planned</span></p>
+          <h3>Every app has two front doors.</h3>
+          <p>A human interface that is calm and consistent, and a machine interface that is documented and permissioned. An agent reads your calendar through an API, not by screen-scraping pixels.</p>
+          <ul class="feat__points">
+            <li><strong>Same underlying service</strong> behind both doors.</li>
+            <li><strong>Permission-controlled,</strong> versioned, usable without opening the app.</li>
+            <li><strong>Twenty-three app mockups exist</strong> as interface studies, from Calculator to Camera, Maps and Weather. The data and system integration are mocked.</li>
+          </ul>
+        </div>
+        <div class="stage" data-stage="doors">
+          <div class="stage__bar" role="tablist" aria-label="Interface">
+            <button class="chip" type="button" role="tab" aria-selected="true" data-d="human">Human</button>
+            <button class="chip" type="button" role="tab" aria-selected="false" data-d="machine">Machine</button>
+          </div>
+          <div class="stage__out" aria-live="polite"></div>
+          <div class="stage__foot">Calendar · illustrative API, not a published contract</div>
+        </div>
+      </article>
+
+      <!-- 4 · Recovery -->
+      <article class="feat" id="stack-recovery">
+        <div class="feat__copy">
+          <p class="feat__kicker"><span>04</span> Ownership <span class="tag tag--plan">Planned</span></p>
+          <h3>Break it. Then rebuild it from one file.</h3>
+          <p>Version-controlled machine configuration and reproducible installs, so an experiment that nukes the install is a bad afternoon, not a lost machine.</p>
+          <ul class="feat__points">
+            <li><strong>One configuration entry point</strong> regenerates the intended system.</li>
+            <li><strong>Honest about limits.</strong> Config rebuilds software, not your life. Documents and credentials still need real backups.</li>
+          </ul>
+        </div>
+        <div class="stage" data-stage="recover">
+          <div class="stage__out" aria-live="polite"></div>
+          <div class="stage__foot">simulated · no real files are touched</div>
+        </div>
+      </article>
+
+      <!-- 5 · Built -->
+      <article class="feat" id="stack-built">
+        <div class="feat__copy">
+          <p class="feat__kicker"><span>05</span> Interface <span class="tag tag--proto">Prototype</span></p>
+          <h3>See the interface studies. Open them in your browser.</h3>
+          <p>Twenty-six working studies exist: twenty-three applications, a desktop shell, the SLATE keyboard and a battery glyph sheet. Each is one self-contained HTML file. The interactions are real; the data and files are mocked.</p>
+          <ul class="feat__points">
+            <li><strong>One calm starting canvas</strong> shared by every app.</li>
+            <li><strong>Mockups, not shipped software.</strong> <a href="#010-built">The full list is in Built so far.</a></li>
+          </ul>
+        </div>
+        <div class="stage">
+          <ul class="stage__list">
+            <li><a href="prototypes/desktop/">Desktop shell <small>window chrome, taskbar, presets ↗</small></a></li>
+            <li><a href="prototypes/apps/task-manager/">Task Manager <small>processes, resource graphs ↗</small></a></li>
+            <li><a href="prototypes/apps/notes/">Notes <small>writing surface, note list ↗</small></a></li>
+            <li><a href="prototypes/apps/files/">Files <small>list and grid views ↗</small></a></li>
+            <li><a href="prototypes/apps/camera/">Camera <small>capture, gallery, exposure control ↗</small></a></li>
+            <li><a href="prototypes/apps/maps/">Maps <small>Meridian: layers, places, coordinates ↗</small></a></li>
+            <li><a href="prototypes/apps/weather/">Weather <small>conditions, hourly and daily ↗</small></a></li>
+            <li><a href="prototypes/hardware/keyboard/">Keyboard <small>SLATE layout study ↗</small></a></li>
+            <li><a href="prototypes/hardware/battery-glyphs/">Battery glyphs <small>states in context ↗</small></a></li>
+          </ul>
+          <div class="stage__foot">real links · mocked data</div>
+        </div>
+      </article>
+
+      <!-- Also in the stack -->
+      <div class="alsoin">
+        <h3>Also in the stack</h3>
+        <p>The smaller commitments that make the larger ones believable.</p>
+        <ul class="alsoin__grid">
+          <li><h4>Rust where it fits</h4><p>Memory safety and concurrency for new system components. Other languages stay valid when they earn it.</p><span class="tag tag--impl">Implemented · Ida Core</span></li>
+          <li><h4>Fedora and KDE Plasma</h4><p>A real desktop assembly, with GNOME versus Plasma still an open question.</p><span class="tag tag--proto">Prototype</span></li>
+          <li><h4>Deterministic checks first</h4><p>Checks establish observable facts. AI interprets and explains them.</p><span class="tag tag--plan">Planned</span></li>
+          <li><h4>An unobtrusive chaperone</h4><p>Flags suspicious links, explains driver changes after an update, notices odd USB behaviour.</p><span class="tag tag--plan">Planned</span></li>
+          <li><h4>Reduced motion, quiet sound</h4><p>Motion and sound that communicate state, with opt-outs throughout.</p><span class="tag tag--plan">Planned</span></li>
+          <li><h4>SLATE hardware</h4><p>Thin, modular, repairable, with key feel, acoustics and status LEDs as part of the interface.</p><span class="tag tag--plan">Direction</span></li>
+        </ul>
+      </div>
+    </section>
+
     <!-- ── 001 ──────────────────────────────────────────────────────── -->
     <section class="block chapter" id="001-what-is" aria-labelledby="h-001">
       <p class="chap__num" aria-hidden="true">001</p>
@@ -438,16 +576,16 @@
       <h2 id="h-010">Built so far</h2>
       <p class="status__stamp">November 2026 · Interface prototypes</p>
       <p>
-        Seventeen working interface studies exist today: fifteen applications, a
-        desktop shell and the SLATE keyboard study. Each is one self-contained
-        HTML file. The interactions are real in the browser; the data, files and
-        system integration are mocked. These are <strong>mockups, not shipped
-        software</strong>.
+        Twenty-six working interface studies exist today: twenty-three
+        applications, a desktop shell, the SLATE keyboard study and a battery
+        glyph sheet. Each is one self-contained HTML file. The interactions are
+        real in the browser; the data, files and system integration are mocked.
+        These are <strong>mockups, not shipped software</strong>.
       </p>
 
       <div class="tracker-summary" aria-label="Prototype counts">
         <div class="tracker-stat">
-          <span class="tracker-stat__num">15</span>
+          <span class="tracker-stat__num">23</span>
           <span class="tracker-stat__label">App mockups</span>
         </div>
         <div class="tracker-stat">
@@ -455,11 +593,11 @@
           <span class="tracker-stat__label">Desktop shell</span>
         </div>
         <div class="tracker-stat">
-          <span class="tracker-stat__num">1</span>
-          <span class="tracker-stat__label">Hardware study</span>
+          <span class="tracker-stat__num">2</span>
+          <span class="tracker-stat__label">Hardware and UI studies</span>
         </div>
         <div class="tracker-stat">
-          <span class="tracker-stat__num">9</span>
+          <span class="tracker-stat__num">11</span>
           <span class="tracker-stat__label">Kept iterations</span>
         </div>
         <div class="tracker-stat">
@@ -471,6 +609,12 @@
       <h3 class="sub">Applications</h3>
       <ul class="tracker">
         <li>
+          <a class="tracker__item" href="prototypes/apps/beam/">
+            <span class="tracker__head"><span class="tracker__name">Beam</span><span class="tag tag--proto">Prototype</span></span>
+            <span class="tracker__desc">Nearby file transfer, send and receive queue</span>
+          </a>
+        </li>
+        <li>
           <a class="tracker__item" href="prototypes/apps/calculator/">
             <span class="tracker__head"><span class="tracker__name">Calculator</span><span class="tag tag--proto">Prototype</span></span>
             <span class="tracker__desc">Quiet utility, keyboard-first entry, compact window</span>
@@ -480,6 +624,12 @@
           <a class="tracker__item" href="prototypes/apps/calendar/">
             <span class="tracker__head"><span class="tracker__name">Calendar</span><span class="tag tag--proto">Prototype</span></span>
             <span class="tracker__desc">Month and day views, event sheets, restrained toolbar</span>
+          </a>
+        </li>
+        <li>
+          <a class="tracker__item" href="prototypes/apps/camera/">
+            <span class="tracker__head"><span class="tracker__name">Camera</span><span class="tag tag--proto">Prototype</span></span>
+            <span class="tracker__desc">Capture, gallery, ring light and exposure controls</span>
           </a>
         </li>
         <li>
@@ -519,15 +669,33 @@
           </a>
         </li>
         <li>
+          <a class="tracker__item" href="prototypes/apps/health/">
+            <span class="tracker__head"><span class="tracker__name">Health</span><span class="tag tag--proto">Prototype</span></span>
+            <span class="tracker__desc">Pulse: today, training, trends and profile</span>
+          </a>
+        </li>
+        <li>
+          <a class="tracker__item" href="prototypes/apps/help/">
+            <span class="tracker__head"><span class="tracker__name">Help</span><span class="tag tag--proto">Prototype</span></span>
+            <span class="tracker__desc">In-system help and a catalogue of the mockups</span>
+          </a>
+        </li>
+        <li>
           <a class="tracker__item" href="prototypes/apps/ide/">
             <span class="tracker__head"><span class="tracker__name">IDE</span><span class="tag tag--proto">Prototype</span></span>
             <span class="tracker__desc">Code editor shell for the platform</span>
           </a>
         </li>
         <li>
+          <a class="tracker__item" href="prototypes/apps/maps/">
+            <span class="tracker__head"><span class="tracker__name">Maps</span><span class="tag tag--proto">Prototype</span></span>
+            <span class="tracker__desc">Meridian: layers, places, live coordinates</span>
+          </a>
+        </li>
+        <li>
           <a class="tracker__item" href="prototypes/apps/notes/">
             <span class="tracker__head"><span class="tracker__name">Notes</span><span class="tag tag--proto">Prototype</span></span>
-            <span class="tracker__desc">The Quiet Editor writing surface</span>
+            <span class="tracker__desc">Writing surface with note list, formatting bar and zoom</span>
           </a>
         </li>
         <li>
@@ -555,9 +723,27 @@
           </a>
         </li>
         <li>
+          <a class="tracker__item" href="prototypes/apps/sound-recorder/">
+            <span class="tracker__head"><span class="tracker__name">Sound Recorder</span><span class="tag tag--proto">Prototype</span></span>
+            <span class="tracker__desc">Recording, live level and a recordings list</span>
+          </a>
+        </li>
+        <li>
           <a class="tracker__item" href="prototypes/apps/task-manager/">
             <span class="tracker__head"><span class="tracker__name">Task Manager</span><span class="tag tag--proto">Prototype</span></span>
             <span class="tracker__desc">Processes, resource graphs, per-app detail</span>
+          </a>
+        </li>
+        <li>
+          <a class="tracker__item" href="prototypes/apps/tv/">
+            <span class="tracker__head"><span class="tracker__name">TV</span><span class="tag tag--proto">Prototype</span></span>
+            <span class="tracker__desc">Essential TV: library, live channels, channel studio</span>
+          </a>
+        </li>
+        <li>
+          <a class="tracker__item" href="prototypes/apps/weather/">
+            <span class="tracker__head"><span class="tracker__name">Weather</span><span class="tag tag--proto">Prototype</span></span>
+            <span class="tracker__desc">Current conditions, hourly and daily forecast</span>
           </a>
         </li>
       </ul>
@@ -574,6 +760,12 @@
           <a class="tracker__item" href="prototypes/hardware/keyboard/">
             <span class="tracker__head"><span class="tracker__name">Keyboard</span><span class="tag tag--proto">Prototype</span></span>
             <span class="tracker__desc">SLATE laptop keyboard layout study</span>
+          </a>
+        </li>
+        <li>
+          <a class="tracker__item" href="prototypes/hardware/battery-glyphs/">
+            <span class="tracker__head"><span class="tracker__name">Battery glyphs</span><span class="tag tag--proto">Prototype</span></span>
+            <span class="tracker__desc">Battery states in context, from empty to charging</span>
           </a>
         </li>
       </ul>
@@ -612,6 +804,6 @@
     <p class="footer__meta">MIT · an ongoing personal project · <span id="year"></span></p>
   </footer>
 
-  <script src="main.js?v=2"></script>
+  <script src="main.js?v=3"></script>
 </body>
 </html>
