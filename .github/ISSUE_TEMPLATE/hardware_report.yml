@@ -1,0 +1,60 @@
+name: Hardware, VM or compute offer
+description: Offer a test machine, a VM, GPU time, inference credits or a hardware observation.
+title: "[hardware] "
+labels: ["hardware"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thank you. This form is public. Do not include credentials, API keys,
+        addresses, phone numbers or other private details. Agree access in
+        private before granting anything.
+  - type: dropdown
+    id: offer
+    attributes:
+      label: What are you offering?
+      options:
+        - A physical test machine
+        - A virtual machine
+        - GPU time for model evaluations
+        - Inference credits
+        - A hardware observation or compatibility report
+        - Something else
+    validations:
+      required: true
+  - type: textarea
+    id: details
+    attributes:
+      label: What is available?
+      description: For hardware, include the model, CPU, RAM, GPU, storage and OS. For credits, the provider and rough amount. Do not include keys or account details.
+      placeholder: "e.g. ThinkPad T14, Ryzen 7, 32 GB, Fedora 44 KDE, available for two weeks"
+    validations:
+      required: true
+  - type: input
+    id: duration
+    attributes:
+      label: Duration and constraints
+      placeholder: "e.g. two weeks, evenings only, wiped after use"
+    validations:
+      required: false
+  - type: textarea
+    id: purpose
+    attributes:
+      label: What would you like it used for?
+      description: Build testing, KDE or GNOME compatibility, a specific model evaluation, packaging.
+    validations:
+      required: false
+  - type: input
+    id: contact
+    attributes:
+      label: Preferred contact route
+      description: A public link or GitHub handle is enough. Private details move to a private channel later.
+    validations:
+      required: false
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Before submitting
+      options:
+        - label: This offer contains no credentials, keys or private addresses.
+          required: true

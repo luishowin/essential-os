@@ -1,0 +1,11 @@
+blank_issues_enabled: true
+contact_links:
+  - name: Project status and build tracker
+    url: https://luishowin.github.io/essential-os/#009-roadmap
+    about: What is implemented, prototyped, planned or still an open question.
+  - name: Security policy
+    url: https://github.com/luishowin/essential-os/blob/main/SECURITY.md
+    about: Report a vulnerability privately, not in a public issue.
+  - name: Support the project
+    url: https://luishowin.github.io/essential-os/#011-support
+    about: Money, compute, hardware and other ways to help.

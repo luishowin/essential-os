@@ -1,0 +1,52 @@
+name: Suggestion or request
+description: A feature request, design critique or direction worth considering.
+title: "[suggestion] "
+labels: ["enhancement"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Suggestions are read, but there is no promise that any of them will be
+        built. Architecture changes are recorded as decisions before work starts,
+        so a strong proposal explains the problem, not only the solution.
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area
+      options:
+        - Essential OS (concept, architecture, roadmap)
+        - Ida
+        - Sam
+        - Interface design or UX
+        - A specific application study
+        - Documentation or translations
+        - The website
+    validations:
+      required: true
+  - type: textarea
+    id: problem
+    attributes:
+      label: What problem does this solve?
+      description: Describe the situation or limitation first.
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: What do you suggest?
+      description: Keep it concrete. Trade-offs and risks are welcome.
+    validations:
+      required: true
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered
+    validations:
+      required: false
+  - type: textarea
+    id: context
+    attributes:
+      label: Context
+      description: Links, references, sketches or prior art.
+    validations:
+      required: false

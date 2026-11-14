@@ -1,0 +1,87 @@
+name: Bug report
+description: Something is broken in a mockup, the site, or Ida Core.
+title: "[bug] "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time. This project is maintained by one person on a
+        best-effort basis. Please search existing issues first.
+
+        Do **not** report a security vulnerability here. See
+        [SECURITY.md](https://github.com/luishowin/essential-os/blob/main/SECURITY.md).
+  - type: dropdown
+    id: surface
+    attributes:
+      label: What is affected?
+      options:
+        - The Essential OS website
+        - An interface study (mockup)
+        - Ida Core
+        - Sam
+        - Documentation
+        - Something else
+    validations:
+      required: true
+  - type: input
+    id: where
+    attributes:
+      label: Exact page, file or version
+      description: A URL, chapter number, prototype folder, or Ida Core tag.
+      placeholder: "e.g. #010-built, prototypes/apps/maps/, Ida Core v0.0.3"
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: What did you expect?
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: What happened?
+      description: Include the exact error text if there is one.
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      placeholder: |
+        1. Open ...
+        2. Click ...
+        3. See ...
+    validations:
+      required: true
+  - type: input
+    id: environment
+    attributes:
+      label: OS and desktop
+      placeholder: "e.g. Fedora 44, GNOME 50; or macOS 15 / Safari"
+    validations:
+      required: true
+  - type: input
+    id: gpu
+    attributes:
+      label: GPU or model (if relevant)
+      placeholder: "e.g. RTX 3060, Ollama qwen3:8b"
+    validations:
+      required: false
+  - type: textarea
+    id: extra
+    attributes:
+      label: Screenshots, logs or context
+      description: Drag images here, or paste text. Remove secrets, personal data and API keys.
+    validations:
+      required: false
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Before submitting
+      options:
+        - label: I searched existing issues.
+          required: true
+        - label: I removed API keys, personal data and other secrets.
+          required: true
