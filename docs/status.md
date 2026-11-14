@@ -20,31 +20,39 @@ Published version: <https://luishowin.github.io/essential-os/#010-built>
 
 | Area | Count |
 |---|---|
-| Application mockups | 15 |
+| Application mockups | 23 |
 | Desktop shell studies | 1 current, 2 iterations |
-| Hardware studies | 1 |
-| Kept iterations | 9 |
+| Hardware and UI studies | 2 |
+| Kept iterations | 11 |
 | Claude skills | 1 |
 
 ## Application mockups
 
 | Prototype | What it demonstrates | Status | Date | File |
 |---|---|---|---|---|
+| **Beam** | File transfer between nearby devices, send and receive queue | Prototype | 2026-11-13 | [`apps/beam/`](../prototypes/apps/beam/) |
 | **Calculator** | Quiet utility, keyboard-first entry, compact window | Prototype | 2026-11-08 | [`apps/calculator/`](../prototypes/apps/calculator/) |
 | **Calendar** | Month and day views, event sheets, restrained toolbar | Prototype | 2026-11-07 | [`apps/calendar/`](../prototypes/apps/calendar/) |
+| **Camera** | Photo and video capture, gallery, ring light and exposure controls | Prototype | 2026-11-13 | [`apps/camera/`](../prototypes/apps/camera/) |
 | **Clock** | World clock, timers, desktop-widget treatment | Prototype | 2026-11-07 | [`apps/clock/`](../prototypes/apps/clock/) |
 | **Color Picker** | Palette, sliders, live preview | Prototype | 2026-11-09 | [`apps/color-picker/`](../prototypes/apps/color-picker/) |
 | **Docs** | Document editor, menu bar, bottom command pill | Prototype | 2026-11-02 | [`apps/docs/`](../prototypes/apps/docs/) |
 | **Files** | Browser, sidebar, list and grid views | Prototype | 2026-11-07 | [`apps/files/`](../prototypes/apps/files/) |
 | **Fonts** | Type specimen browsing and font management | Prototype | 2026-11-07 | [`apps/fonts/`](../prototypes/apps/fonts/) |
 | **Glyphs** | Character and glyph inspection | Prototype | 2026-11-07 | [`apps/glyphs/`](../prototypes/apps/glyphs/) |
+| **Health** | Pulse: today, training, trends and profile views | Prototype | 2026-11-13 | [`apps/health/`](../prototypes/apps/health/) |
+| **Help** | In-system help, status legend and a catalogue of the mockups | Prototype | 2026-11-13 | [`apps/help/`](../prototypes/apps/help/) |
 | **IDE** | Code editor shell for the platform | Prototype | 2026-11-08 | [`apps/ide/`](../prototypes/apps/ide/) |
-| **Notes** | The Quiet Editor writing surface | Prototype | 2026-11-02 | [`apps/notes/`](../prototypes/apps/notes/) |
+| **Maps** | Meridian: map browsing, layers, places and live coordinates. Basemap tiles load from CARTO over the network | Prototype | 2026-11-13 | [`apps/maps/`](../prototypes/apps/maps/) |
+| **Notes** | Writing surface with note list, formatting bar and zoom | Prototype | 2026-11-13 | [`apps/notes/`](../prototypes/apps/notes/) |
 | **Photos** | Library, albums, full-window viewer | Prototype | 2026-11-08 | [`apps/photos/`](../prototypes/apps/photos/) |
 | **Settings** | Settings navigation and panels | Prototype | 2026-11-08 | [`apps/settings/`](../prototypes/apps/settings/) |
 | **Sheets** | Spreadsheet grid, formula bar, sheets | Prototype | 2026-11-02 | [`apps/sheets/`](../prototypes/apps/sheets/) |
 | **Software** | Application store and update surface | Prototype | 2026-11-08 | [`apps/software/`](../prototypes/apps/software/) |
+| **Sound Recorder** | Single-file recording, live level and a recordings list | Prototype | 2026-11-13 | [`apps/sound-recorder/`](../prototypes/apps/sound-recorder/) |
 | **Task Manager** | Processes, resource graphs, per-app detail | Prototype | 2026-11-08 | [`apps/task-manager/`](../prototypes/apps/task-manager/) |
+| **TV** | Essential TV: library, live channels and a channel studio | Prototype | 2026-11-13 | [`apps/tv/`](../prototypes/apps/tv/) |
+| **Weather** | Current conditions, hourly and daily forecast | Prototype | 2026-11-13 | [`apps/weather/`](../prototypes/apps/weather/) |
 
 ## Desktop and hardware studies
 
@@ -52,6 +60,7 @@ Published version: <https://luishowin.github.io/essential-os/#010-built>
 |---|---|---|---|---|
 | **Desktop shell** | Window chrome, taskbar, presets, drag, resize, maximize and full screen | Prototype | 2026-11-03 | [`desktop/`](../prototypes/desktop/) |
 | **Keyboard** | SLATE laptop keyboard layout study | Prototype | 2026-11-02 | [`hardware/keyboard/`](../prototypes/hardware/keyboard/) |
+| **Battery glyphs** | Battery states in context, from empty to charging | Prototype | 2026-11-13 | [`hardware/battery-glyphs/`](../prototypes/hardware/battery-glyphs/) |
 
 ## Iteration history
 
@@ -59,7 +68,8 @@ Published version: <https://luishowin.github.io/essential-os/#010-built>
 |---|---|
 | Clock | 1st, 2nd, 3rd |
 | Desktop shell | 1st, 2nd |
-| Notes | 1st |
+| Maps | 1st |
+| Notes | 1st, 2nd |
 | Photos | 1st |
 | Sheets | 1st |
 | Software | Earlier build |
@@ -72,7 +82,7 @@ Published version: <https://luishowin.github.io/essential-os/#010-built>
 
 ## What this proves
 
-- A consistent visual language can be carried across fifteen different
+- A consistent visual language can be carried across twenty-three different
   application types without a component framework or build step.
 - The shell and app pattern works from a small window to a filled desktop.
 - A written skill plus a capable model can produce repeatable results in this

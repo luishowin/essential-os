@@ -214,3 +214,53 @@ than the Fedora/Plasma assembly.
 **Open.** Which prototypes become real applications first, how the shared
 pattern moves from inline HTML into a maintained toolkit, and what usability
 testing reveals once the mockups are put in front of people.
+
+## 2026-11-14 · Eight more applications and the stack section
+
+**What.** Eight further application studies enter the record: **Beam** (nearby
+file transfer), **Camera**, **Health** (Pulse), **Help**, **Maps** (Meridian),
+**Sound Recorder**, **TV** (Essential TV) and **Weather**. A **battery glyph**
+study follows the status glyph through its states in context. All are single
+self-contained HTML files in the established pattern: fake desktop, window
+chrome with resize and presets, container-based responsive tiers and a bottom
+command pill.
+
+Notes was replaced by a new writing-surface direction; the earlier Quiet Editor
+study is kept as `notes-2nd`. Maps keeps its first direction as `maps-1st` and
+promotes the more refined second pass to the root. The battery glyph study is
+filed with the hardware and UI studies rather than with applications.
+
+The project site gained a **stack** section: five feature rows for Sam, Ida,
+applications, recovery and the interface studies, each with a small simulated
+panel. The build tracker was extended from seventeen studies to twenty-six:
+twenty-three applications, a desktop shell, the SLATE keyboard and the battery
+glyph sheet.
+
+**Why.** The first sprint proved the pattern across fifteen application types.
+The second pass tests it against camera, media, mapping, health and utility
+surfaces, which stress different layout and state problems: live capture,
+timelines, tile maps, audio levels and dense data views. Publishing them keeps
+the record honest about how much of the interface layer actually exists and
+lets each direction be reviewed in the browser.
+
+**How.** Produced with the same **Essential OS app skill for Claude** that
+encodes tokens, shell behaviour, responsive tiers and the test checklist. Every
+file remains a single static document with inline CSS and JavaScript, and the
+inline scripts parse cleanly. One deliberate exception: **Maps** loads basemap
+tiles from CARTO (OpenStreetMap data) over the network. Without a connection it
+shows the map background and controls only. The exception is recorded in the
+prototype index and the build tracker.
+
+**What changed in the record.** The prototype index, the build tracker, the
+README status section, the changelog, the Help app's own catalogue of studies
+and the site's stack and tracker sections.
+
+**What did not change.** No application was implemented. Data, media and system
+integration remain mocked. The desktop shell remains an HTML study rather than
+the Fedora/Plasma assembly, and the battery glyph sheet is a drawing study, not
+a system component.
+
+**Open.** Whether the Maps network dependency stays or becomes a local tile
+fixture, whether the replaced Notes direction or the new one should become the
+real editor, and how the growing set of studies is kept from drifting apart as
+the shared pattern is copied by hand.

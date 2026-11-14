@@ -101,8 +101,9 @@ unless it is.
 - **Essential Desktop**, a real Fedora + KDE Plasma assembly: shell, app
   presentation, visual language, energy policy and interaction model.
   → `Labs/essential-desktop` (private working tree)
-- **Seventeen single-file UI prototypes**: fifteen applications, a desktop shell
-  and a SLATE keyboard study. They are browser mockups, not shipped software.
+- **Twenty-six single-file UI prototypes**: twenty-three applications, a desktop
+  shell, the SLATE keyboard study and the battery glyph study. They are browser
+  mockups, not shipped software.
   → [`prototypes/`](prototypes/) and the
   [build tracker](docs/status.md)
 
@@ -176,7 +177,7 @@ docs/          the record: vision, architecture, decisions, research
   planning/      roadmap, first-release scope, quality gates and working process
   brand/         the visual language and wordmark
 status.md      what has actually been built, with status and links
-prototypes/    hosted single-file application, desktop and hardware mockups
+prototypes/    hosted single-file application, desktop, hardware and UI studies
 skills/        the Essential OS app skill for Claude
 contract/      language-neutral interface schemas and conformance fixtures
 site/          the one-page project site

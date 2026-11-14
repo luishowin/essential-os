@@ -39,8 +39,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 - `contract/`: language-neutral JSON Schemas for Intent, Capability and
   ExecutionResult, plus conformance fixtures and a zero-dependency validator.
 - `site/`: the one-page project site.
-- `prototypes/`: seventeen single-file UI mockups (fifteen applications, a
-  desktop shell and the SLATE keyboard study), with kept iterations.
+- `prototypes/`: twenty-six single-file UI mockups (twenty-three applications,
+  a desktop shell, the SLATE keyboard study and the battery glyph study), with
+  kept iterations.
+- Eight further application studies in the same pattern: Beam, Camera, Health
+  (Pulse), Help, Maps (Meridian), Sound Recorder, TV and Weather.
 - `skills/essential-os-app/`: the Claude plugin and skill that encode the
   Essential OS app pattern.
 - `docs/status.md`: the build tracker, listing every prototype with its status,
@@ -51,6 +54,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ### Changed
 
+- Notes is replaced by a new writing-surface direction; the earlier Quiet
+  Editor study is kept as `prototypes/apps/notes/iterations/notes-2nd.html`.
+  Maps keeps its first direction as `iterations/maps-1st.html`.
 - The repository is declared the canonical record. Upstream repositories,
   working copies and backups are mirrors to compare against it.
 - The product and technical specification is revised to v0.2 and renamed from
