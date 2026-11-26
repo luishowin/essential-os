@@ -5,7 +5,7 @@
 **Status:** Vision + research · **Date:** 2026-10-07
 
 **The full statement:** the consolidated product and technical specification is
-[`docs/essential-os-specification.md`](../essential-os-specification.md) (v0.2).
+[`docs/essential-os-specification.md`](../essential-os-specification.md) (v0.3).
 This page is the layer's narrative; the specification is the whole system in one
 document.
 
@@ -150,13 +150,13 @@ user's current setup.
 
 - First reference hardware and minimum target hardware.
 - The primary user and the first three to five jobs to be done.
-- Whether the first deliverable is a custom session on Fedora, an installable
-  image, or both in sequence.
+- Validate the session-first development path in the consolidated specification;
+  prove packaging and removal before composing the distribution image.
 - Which existing compositor/window-management layer the first prototype uses.
 - Whether first-party apps use GTK 4 + Rust as the default, with explicit
   exceptions when justified.
-- Initial package/app distribution approach: Fedora RPMs, Flatpak, or a
-  deliberate mix.
+- Validate the planned RPM/DNF session packaging and decide how additional
+  application sources, including Flatpak, integrate with the Store.
 - Licence strategy for code, icons, fonts, wallpapers and website assets.
 - What "local-first" means for the first release and what data, if any, leaves
   the device.

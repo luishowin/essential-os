@@ -65,6 +65,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ### Changed
 
+- 2026-11-26: reconciled the canonical specification as v0.3 with the Product
+  Vision Extension and the accepted Sam/Ida boundary. Added source authority,
+  Store and offline delivery requirements, sample media, expanded utilities,
+  accessibility and safe customization; clarified preview scope and corrected
+  the five-layer diagram and prototype tracker metadata. See issue #1.
+
 - Notes is replaced by a new writing-surface direction; the earlier Quiet
   Editor study is kept as `prototypes/apps/notes/iterations/notes-2nd.html`.
   Maps keeps its first direction as `iterations/maps-1st.html`.

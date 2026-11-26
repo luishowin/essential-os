@@ -7,6 +7,17 @@ consistently. They are not commitments. A custom desktop environment can take
 substantially longer depending on whether an existing compositor is reused or a
 new one is built. **Advance based on exit criteria, not calendar pressure.**
 
+## Relationship to the product milestones
+
+The [consolidated specification](../essential-os-specification.md#13-development-milestones)
+defines five product maturity milestones. The phases below are delivery and
+validation gates, not a second product definition. Development starts with an
+installable Fedora desktop session; repeatable VM images prove integration
+before a public distribution release. The
+[first-preview scope](mvp-scope.md) sets the initial feature cut line.
+The complete Store, creative suite, sample media, games and expanded toolkit
+remain later ecosystem requirements unless explicitly selected for a preview.
+
 ## Phase 0 — Define the product and build the operating system for the project
 
 **Indicative effort:** 1–2 weeks.
