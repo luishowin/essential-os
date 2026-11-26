@@ -1,8 +1,8 @@
 # Build tracker
 
-**Status:** Living record · **Date:** 2026-11-09
+**Status:** Living record · **Date:** 2026-11-26
 
-A visual and tabular record of what has actually been built so far. Everything
+A visual and tabular record of what has actually been built so far. Every interface study
 listed here is a **single-file HTML mockup**: it runs in a browser, it looks and
 behaves like the intended product, and it is not shipped software.
 

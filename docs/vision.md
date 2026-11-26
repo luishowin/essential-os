@@ -19,7 +19,7 @@ This project is three layers maturing together, not one feature:
        └── Ida           the personal assistant
 ```
 
-Each layer is only useful because of the others. Ida is interesting because she
+The layers reinforce one another but remain independently useful. Ida is interesting because she
 lives *inside* the system rather than inside an app. Essential OS is interesting
 because it has an intelligence layer that can act on it safely. SLATE is
 interesting because it is designed around the idea that a machine can be simple
@@ -32,7 +32,7 @@ domains, intents and predefined handlers: it knows the computer and its permitte
 local information, keeps no personal memory and makes no decisions about what to
 do next. Ida is the personal layer — identity, memory, context and work across
 machines — and she may call Sam for local information. The operating system must
-remain fully useful without Ida, and Sam must be useful without either. The two
+remain fully useful without Ida, and Sam must work without Ida. Essential OS must also work without Sam. The two
 share low-level OS data services where that avoids duplicate indexes; they do not
 share registries, product identity or roadmaps.
 

@@ -48,24 +48,19 @@ Two separate systems, not one assistant:
   verifies results, converses and escalates complex work. It may call Sam for
   local computer knowledge.
 
-Both reach the system only through structured capabilities. Ida is a layer *of*
-Essential OS, not an application running on top of it; Sam is a peer OS service
+Both reach the system only through structured capabilities. Ida is an optional integrated personal assistant; Sam is a peer OS service
 that either the global search experience or Ida can call.
 
-```text
-┌─────────────────────────────────────────────────────┐
-│ 5  Experience          our UX · app family          │
-├─────────────────────────────────────────────────────┤
-│ 4  Desktop infra       shell · session · WM         │
-├─────────────────────────────────────────────────────┤
-│ 3  System services     net · audio · gfx            │
-├─────────────────────────────────────────────────────┤
-│ 2  Foundation          kernel · drivers             │
-├─────────────────────────────────────────────────────┤
-│ 5  Intelligence        Sam (search) · Ida (assistant│
-│                        cross-cutting)               │
-└─────────────────────────────────────────────────────┘
-```
+| Layer | Responsibility |
+|---|---|
+| 1. Foundation | Kernel, firmware, drivers, init, storage and power |
+| 2. System services | Networking, audio, graphics, security, packaging and updates |
+| 3. Desktop infrastructure | Shell, session, window management and settings |
+| 4. Experience | UX, visual language, interaction and application family |
+| 5. Intelligence | Sam retrieval and optional Ida assistance, through structured interfaces |
+
+Intelligence crosses the other layers through approved interfaces; it does not
+sit below the kernel.
 
 ## The intelligence layer
 
@@ -93,8 +88,8 @@ implemented and released.
 
 Two viable paths exist, and the choice is not yet made:
 
-- **KDE Plasma**: the current machine (Plasma 6.7.5) and the Essential Desktop
-  assembly. Rich, configurable, strong Wayland story, mature shell.
+- **KDE Plasma**: the documented Essential Desktop
+  prototype assembly. Rich, configurable, strong Wayland story, mature shell.
 - **GNOME**: Ida's original target (Fedora 44 / GNOME 50), with Ida's existing
   GNOME integration work already done.
 

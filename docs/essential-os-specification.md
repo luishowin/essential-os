@@ -1,8 +1,8 @@
 # ESSENTIAL OS
 ## Product & Technical Specification
 
-**Version:** 0.2  
-**Last updated:** 31 October 2026  
+**Version:** 0.3  
+**Last updated:** 26 November 2026  
 **Status:** Working specification  
 **Project horizon:** 2030  
 **Repository:** github.com/luishowin/essential-os
@@ -10,6 +10,24 @@
 > EXPLORATION. CREATION. PLAY.
 
 ---
+
+## Source authority and scope
+
+This is the consolidated, editable product specification. It incorporates the
+[Product Vision Extension](Essential%20OS%20%E2%80%94%20Product%20Vision%20Extension.pdf)
+and the [Sam/Ida v1.1 specification](specifications/Essential_OS_Sam_and_Ida_Specification_v1.1.pdf).
+The extension supplies product requirements; v1.1 and
+[ADR 0010](decisions/0010-sam-separate-os-search-service.md) govern the Sam/Ida
+boundary. Accepted ADRs record decisions; older proposals and research remain
+historical evidence rather than competing current specifications.
+
+Requirements below are **Planned** unless an implementation status is explicitly
+given. The five milestones in §13 describe product maturity, while the
+[delivery roadmap](planning/roadmap.md) describes engineering and validation
+gates. The [first-preview scope](planning/mvp-scope.md) is the initial release
+cut line; the full ecosystem is not a prerequisite for that preview.
+[Build tracker](status.md) entries are interface prototypes, not shipped apps.
+Detailed implementation status belongs to the Ida and Sam repositories.
 
 ## 1. Product definition
 
@@ -50,6 +68,12 @@ Essential OS should:
 **Initial audience hypothesis:**
 
 Technically curious desktop users, independent creators, students and professionals who appreciate polished software, open technology, customization and control without wanting to spend their time maintaining their computer.
+
+The long-term audience includes children, students, researchers, creators,
+mechanics, developers and specialised professionals. This breadth is an
+ecosystem ambition; it does not imply every workflow is supported at launch.
+The experience aims for the coherence and approachability of leading consumer
+platforms while preserving inspectability, modification and ownership.
 
 Essential OS should not assume that its users are Linux experts.
 
@@ -217,6 +241,17 @@ Exploration, Creation and Play should influence the interaction design, not just
 
 ### Accessibility
 
+Accessibility is a core system capability, including installation, login,
+recovery, application management and settings. Reuse established Linux
+assistive technologies rather than creating an isolated accessibility stack.
+
+Planned capabilities include screen reading and spoken interaction, compatible
+Braille displays, captions and visual alerts, adjustable audio feedback,
+on-screen keyboards, switch access and alternative input. Extensible input
+interfaces should accommodate specialised devices where vendor APIs and
+technical and legal conditions permit; this is not a promise of compatibility
+with every neural-interface or tongue-operated device.
+
 Accessibility requirements include:
 
 - Keyboard navigation.
@@ -279,6 +314,19 @@ Priority areas:
 - File search and previews.
 - Basic system diagnostics.
 
+The planned toolkit includes Task Manager, Disk Manager, Network Tools,
+Hardware Information, Disk Benchmark, Device Manager, System Monitor,
+System Repair and Update Manager. Together these cover processes and resource
+history, drives and partitions, supported formatting and volume operations,
+disk health, connection diagnostics and DNS, sensors and temperatures, battery
+health, driver and firmware status, startup services, logs, rollback and repair.
+Update Manager covers OS, kernel, drivers, security, applications and firmware
+where supported.
+
+Disk benchmarks must explain intensive tests; destructive or privileged
+operations need clear consequences and explicit authorization. Reuse mature
+diagnostic engines and system APIs behind coherent Essential interfaces.
+
 Utilities should expose understandable information rather than simply reproducing technical command-line output.
 
 ### 7.4 Games and entertainment
@@ -293,7 +341,15 @@ The selection should favour:
 - Open-source licensing and redistributable assets where possible.
 - Variety rather than quantity.
 
-Media playback and common multimedia formats should work out of the box.
+Candidate games include chess, checkers, Snake, Blockfall, an original
+flapping arcade game, Gecko Run and Pocket Putt. These are candidates, not a
+committed launch catalogue. Games should launch quickly, work offline, support
+keyboard controls and appropriate controller or touch input, and be removable
+independently. Names, art and implementation must have their own identity.
+
+Media playback should support a broad, legally distributable set of formats.
+Explain formats requiring additional components or licensing rather than
+promising universal playback.
 
 ### 7.5 Wallpapers and personalization
 
@@ -311,6 +367,34 @@ Requirements:
 The first-use experience should feel visually complete, drawing inspiration from the attention Windows and macOS give to wallpapers and desktop presentation.
 
 Additional wallpaper collections can be distributed separately.
+
+### 7.6 Sample media
+
+Include a small, optional, independently removable collection of legally
+redistributable wildlife/nature video, photographs and audio. Where licensing
+permits, include RAW photographs and representative supported containers,
+codecs, bit depths and audio formats. Label formats and attribution so users
+can test playback, image viewing and sound immediately. Samples must be safe
+to delete and must never be a system dependency.
+
+### 7.7 Essential Store
+
+The Essential Store is the planned application store and system-wide
+application manager. One interface should browse, search, install, update,
+remove and inspect available and installed applications, showing source,
+permissions, update status and known compatibility. It should integrate native
+Essential applications, established Linux software and curated trusted sources.
+
+Offline capability needs packaged applications and dependencies, a strategy
+for local repositories and offline packages, and deferred updates. An internet
+connection should improve the computer rather than unlock its core functions.
+
+A planned compatibility workflow may inspect Windows installers/executables,
+check known compatibility, configure an appropriate Wine environment and
+dependencies, and provide launch, update and removal controls. Explain known
+limitations before installation; some applications will not work. Where source
+and licensing permit, a development workflow may help build Linux software and
+Fedora-compatible packages. Neither workflow guarantees universal compatibility.
 
 ## 8. Intelligent interaction
 
@@ -411,6 +495,20 @@ Sensitive credentials must not be stored in public configuration repositories.
 
 Configuration restoration should be idempotent, documented and reversible.
 
+### Safe customization and ordinary tools
+
+Users should be able to change appearance, applications, workflows and the
+development environment while preserving service, update and recovery
+integrity. Provide safe defaults, transparent permissions, clear explanations
+before destructive or privileged changes, reversible operations where
+practical, and documented expert controls.
+
+Prefer established, inspectable technologies such as Rust, C/C++, JavaScript,
+HTML/CSS and standard Linux interfaces and file formats. Keep configuration,
+themes, assets and project files readable with ordinary editors wherever
+practical. Users must be able to inspect, fork and replace components without
+a proprietary development environment.
+
 ## 10. Distribution and installation
 
 Essential OS should eventually be available as a complete bootable installation image.
@@ -445,7 +543,8 @@ If the full application collection cannot fit within the target, applications sh
 
 - Graphical installation.
 - Sensible automatic partitioning.
-- User account creation.
+- Offline user account creation, basic preferences and accessibility setup.
+- Hardware configuration where supported.
 - Optional disk encryption.
 - Minimal configuration requirements.
 - Offline operation.
@@ -621,7 +720,10 @@ Decisions should be documented in the architecture decision record system and sh
 | Sam implementation | Not started |
 | Desktop UI discovery | In progress, approximately 20% by current owner estimate |
 | Design system | In progress |
-| First-party application ecosystem | Planned |
+| First-party application ecosystem | Planned; 23 application UI mockups, not native implementations |
+| UI prototype collection | 26 current studies: 23 apps, desktop shell and 2 hardware/UI studies; see [tracker](status.md) |
+| Essential Store, sample media and expanded toolkit | Planned |
+| Public site and Sprite guide | Published; guide is separate from Sam and Ida |
 | RPM packaging and DNF installation | Planned |
 | Configuration restoration pipeline | Planned |
 | Bootable ISO | Planned |

@@ -160,8 +160,13 @@ on the MX500 drive's `readme.txt`.
 
 The consolidated product and technical statement is
 [`docs/essential-os-specification.md`](docs/essential-os-specification.md)
-(v0.2). It describes the whole system in one place; the documents below hold the
+(v0.3). It describes the whole system in one place; the documents below hold the
 reasoning, the layer detail and the open questions.
+
+The [documentation guide](docs/README.md) defines source authority and scope.
+The consolidated spec incorporates the Product Vision Extension, including the
+Store, offline delivery, sample media, accessibility and safe customization.
+These are planned requirements, not claims of shipped functionality.
 
 The authoritative Sam/Ida architecture is
 [`docs/specifications/Essential_OS_Sam_and_Ida_Specification_v1.1.pdf`](docs/specifications/Essential_OS_Sam_and_Ida_Specification_v1.1.pdf)
@@ -169,7 +174,7 @@ The authoritative Sam/Ida architecture is
 
 ```text
 docs/          the record: vision, architecture, decisions, research
-  essential-os-specification.md  the product and technical specification (v0.2)
+  essential-os-specification.md  the product and technical specification (v0.3)
   specifications/  authoritative standalone specifications
   ida/           the personal assistant (narrative; detail lives in the ida repo)
   essential-os/  the operating system layer
@@ -179,7 +184,7 @@ docs/          the record: vision, architecture, decisions, research
   research/      the project log, history, prior art and source library
   planning/      roadmap, first-release scope, quality gates and working process
   brand/         the visual language and wordmark
-status.md      what has actually been built, with status and links
+  status.md    interface prototype inventory, with status and links
 prototypes/    hosted single-file application, desktop, hardware and UI studies
 skills/        the Essential OS app skill for Claude
 contract/      language-neutral interface schemas and conformance fixtures
